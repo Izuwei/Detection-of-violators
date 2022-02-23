@@ -1,6 +1,9 @@
 import sys
 import cv2
 import numpy as np
+import argparse
+
+from recognizer import Recognizer
 
 inputShape = 320  # 608
 confThreshold = 0.55
@@ -8,7 +11,8 @@ nmsThreshold = 0.4
 
 textFont = cv2.FONT_HERSHEY_DUPLEX
 textColor = (0, 255, 0)
-textScale = 0.6
+textScaleHigh = 0.5
+textScaleMedium = 0.4
 bboxColor = (255, 0, 0)
 
 OBJECTS = [
@@ -68,10 +72,12 @@ labels = []
 with open(labelFile) as f:
     labels = f.read().rstrip("\n").split("\n")
 
+recognizer = Recognizer("./database")
+
 detector = cv2.dnn.readNetFromDarknet(modelConfig, modelWeights)
 
-detector.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
-detector.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+# detector.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+# detector.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 
 video = cv2.VideoCapture("../../VUT/DP/Videos/downtown_la.mp4")
 
@@ -108,22 +114,47 @@ while True:
 
     for idx in indexes:
         classId = classIds[idx]
-        label = labels[classId]
 
-        if classId <= 80 and label in OBJECTS:
+        if classId <= 80:
+            label = labels[classId]
+
             box = bboxes[idx]
             x, y, w, h = box[0], box[1], box[2], box[3]
 
-            cv2.rectangle(frame, (x, y), (x + w, y + h), bboxColor, 2)
-            cv2.putText(
-                frame,
-                f"{label.upper()} {int(confs[idx]*100)}%",
-                (box[0] + 4, box[1] + 20),
-                textFont,
-                textScale,
-                textColor,
-                1,
-            )
+            if label == "person":
+                person_crop = frame[y : y + h, x : x + w]
+                recognized, name = recognizer.find(person_crop)
+
+                cv2.putText(
+                    frame,
+                    name.capitalize(),
+                    (x + 4, y + 12),
+                    textFont,
+                    textScaleMedium,
+                    textColor,
+                    1,
+                )
+
+            if label in OBJECTS:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), bboxColor, 2)
+                cv2.putText(
+                    frame,
+                    f"{label.upper()}",
+                    (x, y - 4),
+                    textFont,
+                    textScaleHigh,
+                    textColor,
+                    1,
+                )
+                cv2.putText(
+                    frame,
+                    f"{int(confs[idx]*100)}%",
+                    (x + 4, y + h - 4),
+                    textFont,
+                    textScaleMedium,
+                    textColor,
+                    1,
+                )
 
     cv2.imshow("Detector", frame)
     outputVideo.write(frame)
