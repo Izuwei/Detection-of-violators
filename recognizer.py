@@ -1,3 +1,4 @@
+import sys
 from deepface import DeepFace
 from deepface.basemodels import Facenet, VGGFace
 
@@ -20,18 +21,21 @@ class Recognizer:
         recognized = False
         identity = "Unknown"
 
-        df = DeepFace.find(
-            person_bbox,
-            "./database",
-            model_name=self.modelName,
-            model=self.model,
-            distance_metric="cosine",
-            enforce_detection=False,
-        )
+        try:
+            df = DeepFace.find(
+                person_bbox,
+                self.database,
+                model_name=self.modelName,
+                model=self.model,
+                distance_metric="cosine",
+                enforce_detection=False,
+            )
 
-        if df.shape[0] > 0:
-            identity = df.iloc[0].identity
-            identity = identity.split("\\")[-1].split("/")[0]
-            recognized = True
+            if df.shape[0] > 0:
+                identity = df.iloc[0].identity
+                identity = identity.split("\\")[-1].split("/")[0]
+                recognized = True
+        except:
+            sys.stderr.write("Face recognition failed.\n")
 
         return recognized, identity

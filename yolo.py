@@ -1,9 +1,11 @@
 import sys
 import cv2
 import numpy as np
+import time
 import argparse
 
 from recognizer import Recognizer
+from tracker import Tracker
 
 inputShape = 320  # 608
 confThreshold = 0.55
@@ -58,9 +60,19 @@ def filterPredictions(frame, outputs):
                 classIds.append(classId)  # Uložení ID třídy
                 confs.append(float(confidence))  # Uložení conf. skóre
 
-    indexes = cv2.dnn.NMSBoxes(bboxes, confs, confThreshold, nmsThreshold)
+    indices = cv2.dnn.NMSBoxes(bboxes, confs, confThreshold, nmsThreshold)
 
-    return indexes, bboxes, classIds, confs
+    # Vyfiltrování pouze správných bboxů po suppresi
+    filtered_bboxes = []
+    filtered_classIds = []
+    filtered_confs = []
+
+    for idx in indices:
+        filtered_bboxes.append(bboxes[idx])
+        filtered_classIds.append(classIds[idx])
+        filtered_confs.append(confs[idx])
+
+    return filtered_classIds, filtered_confs, filtered_bboxes
 
 
 modelConfig = "./yolov3/yolov3.cfg"
@@ -68,13 +80,16 @@ modelWeights = "./yolov3/yolov3.weights"  # Pretrained
 labelFile = "./detection_model/coco.names"
 
 # Načtení tříd ze souboru
-labels = []
+classNames = []
 with open(labelFile) as f:
-    labels = f.read().rstrip("\n").split("\n")
+    classNames = f.read().rstrip("\n").split("\n")
 
-recognizer = Recognizer("./database")
+recognizer = Recognizer("database")
 
+# Inicializace detektoru
 detector = cv2.dnn.readNetFromDarknet(modelConfig, modelWeights)
+# Inicializace trackeru
+tracker = Tracker()
 
 # detector.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 # detector.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
@@ -91,7 +106,7 @@ videoFPS = video.get(cv2.CAP_PROP_FPS)
 codec = cv2.VideoWriter_fourcc(*"XVID")
 
 outputVideo = cv2.VideoWriter(
-    "./processed.avi", codec, videoFPS, (videoWidth, videoHeight)
+    "processed.avi", codec, videoFPS, (videoWidth, videoHeight)
 )
 
 while True:
@@ -110,51 +125,64 @@ while True:
     outputLayersNames = detector.getUnconnectedOutLayersNames()
     outputs = detector.forward(outputLayersNames)
 
-    indexes, bboxes, classIds, confs = filterPredictions(frame, outputs)
+    classIds, confs, bboxes = filterPredictions(frame, outputs)
+    labels = [classNames[id] for id in classIds]
+    trackIds = [None] * len(labels)
 
-    for idx in indexes:
-        classId = classIds[idx]
+    labels, confs, bboxes, trackIds = tracker.track(frame, labels, confs, bboxes)
 
-        if classId <= 80:
-            label = labels[classId]
+    for label, conf, box, trackId in zip(labels, confs, bboxes, trackIds):
+        x, y, w, h = box[0], box[1], box[2], box[3]
 
-            box = bboxes[idx]
-            x, y, w, h = box[0], box[1], box[2], box[3]
+        if label == "person":
+            startX = x if x > 0 else 0
+            startY = y if y > 0 else 0
+            maxHeight = y + h if y + h < videoHeight else videoHeight
+            maxWidth = x + w if x + w < videoWidth else videoWidth
 
-            if label == "person":
-                person_crop = frame[y : y + h, x : x + w]
-                recognized, name = recognizer.find(person_crop)
+            personCrop = frame[startY:maxHeight, startX:maxWidth]
 
-                cv2.putText(
-                    frame,
-                    name.capitalize(),
-                    (x + 4, y + 12),
-                    textFont,
-                    textScaleMedium,
-                    textColor,
-                    1,
-                )
+            _, personName = recognizer.find(personCrop)
 
-            if label in OBJECTS:
-                cv2.rectangle(frame, (x, y), (x + w, y + h), bboxColor, 2)
-                cv2.putText(
-                    frame,
-                    f"{label.upper()}",
-                    (x, y - 4),
-                    textFont,
-                    textScaleHigh,
-                    textColor,
-                    1,
-                )
-                cv2.putText(
-                    frame,
-                    f"{int(confs[idx]*100)}%",
-                    (x + 4, y + h - 4),
-                    textFont,
-                    textScaleMedium,
-                    textColor,
-                    1,
-                )
+            cv2.putText(
+                frame,
+                personName.capitalize(),
+                (x + 4, y + 12),
+                textFont,
+                textScaleMedium,
+                textColor,
+                1,
+            )
+
+        if label in OBJECTS:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), bboxColor, 2)
+            cv2.putText(
+                frame,
+                f"{label.upper()}",
+                (x, y - 4),
+                textFont,
+                textScaleHigh,
+                textColor,
+                1,
+            )
+            cv2.putText(
+                frame,
+                f"ID: {trackId}",
+                (x + 4, y + h - 16),
+                textFont,
+                textScaleMedium,
+                textColor,
+                1,
+            )
+            cv2.putText(
+                frame,
+                f"{int(conf*100)}%",
+                (x + 4, y + h - 4),
+                textFont,
+                textScaleMedium,
+                textColor,
+                1,
+            )
 
     cv2.imshow("Detector", frame)
     outputVideo.write(frame)
