@@ -26,10 +26,12 @@ class Detection(object):
 
     """
 
-    def __init__(self, tlwh, confidence, label, feature):
+    def __init__(self, tlwh, confidence, label, identity, faceDistance, feature):
         self.tlwh = np.asarray(tlwh, dtype=np.float)
         self.confidence = float(confidence)
         self.label = label
+        self.identity = identity
+        self.faceDistance = faceDistance
         self.feature = np.asarray(feature, dtype=np.float32)
 
     def to_tlbr(self):
@@ -50,9 +52,17 @@ class Detection(object):
         return ret
 
     def get_label(self):
-        """Returns label of detected object."""
+        """Returns label of the detected object."""
         return self.label
 
     def get_confidence(self):
-        """Returns confidence score of detected object."""
+        """Returns confidence score of the detected object."""
         return self.confidence
+
+    def get_identity(self):
+        """Returns identity of the detected person."""
+        return self.identity
+
+    def get_faceDistance(self):
+        """Returns faceDistance of the detected person, measuring the similarity of the face."""
+        return self.faceDistance

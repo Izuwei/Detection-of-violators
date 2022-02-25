@@ -73,15 +73,20 @@ class Track:
         feature=None,
         label=None,
         conf=None,
+        identity=None,
+        faceDistance=None,
     ):
         self.mean = mean
         self.label = label
         self.confidence = conf
+        self.identity = identity
+        self.faceDistance = faceDistance
         self.covariance = covariance
         self.track_id = track_id
         self.hits = 1
         self.age = 1
         self.time_since_update = 0
+        self.faceDistanceUpdateThreshold = 0.25
 
         self.state = TrackState.Tentative
         self.features = []
@@ -156,6 +161,20 @@ class Track:
         if self.state == TrackState.Tentative and self.hits >= self._n_init:
             self.state = TrackState.Confirmed
 
+        self.label = detection.label
+        self.confidence = detection.get_confidence()
+
+        # Lepší shoda obličejů => aktualizace jména (identity)
+        if self.label == "person":
+            newFaceDistance = detection.get_faceDistance()
+
+            if (
+                self.faceDistance > newFaceDistance
+                and newFaceDistance < self.faceDistanceUpdateThreshold
+            ):
+                self.identity = detection.get_identity()
+                self.faceDistance = newFaceDistance
+
     def mark_missed(self):
         """Mark this track as missed (no association at the current time step)."""
         if self.state == TrackState.Tentative:
@@ -176,7 +195,17 @@ class Track:
         return self.state == TrackState.Deleted
 
     def get_label(self):
+        """Returns label of the detected object."""
         return self.label
 
     def get_confidence(self):
+        """Returns confidence score of the detected object."""
         return self.confidence
+
+    def get_identity(self):
+        """Returns identity of the detected person."""
+        return self.identity
+
+    def get_faceDistance(self):
+        """Returns faceDistance of the detected person, measuring the similarity of the face."""
+        return self.faceDistance

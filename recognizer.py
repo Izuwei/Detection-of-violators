@@ -20,6 +20,7 @@ class Recognizer:
     def find(self, person_bbox):
         recognized = False
         identity = "Unknown"
+        faceDistance = 1
 
         try:
             df = DeepFace.find(
@@ -33,9 +34,10 @@ class Recognizer:
 
             if df.shape[0] > 0:
                 identity = df.iloc[0].identity
-                identity = identity.split("\\")[-1].split("/")[0]
+                faceDistance = df.iloc[0, 1]
+                identity = identity.replace("\\", "/").split("/")[-2]
                 recognized = True
         except:
             sys.stderr.write("Face recognition failed.\n")
 
-        return recognized, identity
+        return recognized, identity, faceDistance

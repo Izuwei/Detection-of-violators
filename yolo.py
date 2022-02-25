@@ -129,24 +129,37 @@ while True:
     labels = [classNames[id] for id in classIds]
     trackIds = [None] * len(labels)
 
-    labels, confs, bboxes, trackIds = tracker.track(frame, labels, confs, bboxes)
+    recognitions = []
 
-    for label, conf, box, trackId in zip(labels, confs, bboxes, trackIds):
+    for label, bbox in zip(labels, bboxes):
+        if label == "person":
+            x, y, w, h = bbox[0], bbox[1], bbox[2], bbox[3]
+
+            startX = x if x > 0 else 0
+            startY = y if y > 0 else 0
+            endX = x + w if x + w < videoWidth else videoWidth
+            endY = y + h if y + h < videoHeight else videoHeight
+
+            personCrop = frame[startY:endY, startX:endX]
+
+            _, identity, faceDistance = recognizer.find(personCrop)
+            recognitions.append([identity, faceDistance])
+        else:
+            recognitions.append(["Unknown", 1])
+
+    labels, confs, bboxes, recognitions, trackIds = tracker.track(
+        frame, labels, confs, bboxes, recognitions
+    )
+
+    for label, conf, box, identity, trackId in zip(
+        labels, confs, bboxes, recognitions, trackIds
+    ):
         x, y, w, h = box[0], box[1], box[2], box[3]
 
         if label == "person":
-            startX = x if x > 0 else 0
-            startY = y if y > 0 else 0
-            maxHeight = y + h if y + h < videoHeight else videoHeight
-            maxWidth = x + w if x + w < videoWidth else videoWidth
-
-            personCrop = frame[startY:maxHeight, startX:maxWidth]
-
-            _, personName = recognizer.find(personCrop)
-
             cv2.putText(
                 frame,
-                personName.capitalize(),
+                identity[0].capitalize(),
                 (x + 4, y + 12),
                 textFont,
                 textScaleMedium,

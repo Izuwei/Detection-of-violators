@@ -156,6 +156,8 @@ class Tracker:
                 detection.feature,
                 detection.get_label(),
                 detection.get_confidence(),
+                detection.get_identity(),
+                detection.get_faceDistance(),
             )
         )
         self._next_id += 1

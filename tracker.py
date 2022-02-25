@@ -15,21 +15,24 @@ class Tracker:
         self.model = "deep_sort\mars-small128.pb"
         self.matchingThreshold = 0.7
         self.nnBudget = None
+        self.timeSinceUpdate = 2  # Počet snímků od poslední aktualizace měření.
 
         self.encoder = gdet.create_box_encoder(self.model, batch_size=1)
         self.metric = nn_matching.NearestNeighborDistanceMetric(
             "cosine", self.matchingThreshold, self.nnBudget
         )
-        self.tracker = DeepSortTracker(self.metric, max_age=600)
+        self.tracker = DeepSortTracker(self.metric, max_age=900)
 
-    def track(self, frame, labels, confs, bboxes):
+    def track(self, frame, labels, confs, bboxes, recognitions):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         confs = np.array(confs)
         bboxes = np.array(bboxes)
         features = np.array(self.encoder(frame, bboxes))
         detections = [
-            Detection(bbox, conf, label, feature)
-            for bbox, conf, label, feature in zip(bboxes, confs, labels, features)
+            Detection(bbox, conf, label, recognition[0], recognition[1], feature)
+            for bbox, conf, label, recognition, feature in zip(
+                bboxes, confs, labels, recognitions, features
+            )
         ]
 
         self.tracker.predict()
@@ -38,16 +41,21 @@ class Tracker:
         labels = []
         confs = []
         bboxes = []
+        recognitions = []
         trackIds = []
 
         for track in self.tracker.tracks:
-            if not track.is_confirmed() or track.time_since_update > 5:
+            if (
+                not track.is_confirmed()
+                or track.time_since_update > self.timeSinceUpdate
+            ):
                 continue
 
             bbox = track.to_tlwh()
             labels.append(track.get_label())
             confs.append(track.get_confidence())
             bboxes.append([int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])])
+            recognitions.append([track.get_identity(), track.get_faceDistance()])
             trackIds.append(track.track_id)
 
-        return labels, confs, bboxes, trackIds
+        return labels, confs, bboxes, recognitions, trackIds
