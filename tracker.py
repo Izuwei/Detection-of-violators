@@ -1,10 +1,8 @@
-from pyexpat import features
 from deep_sort import generate_detections as gdet
 from deep_sort import nn_matching
-from deep_sort import tracker
 from deep_sort.tracker import Tracker as DeepSortTracker
-from deep_sort.detection import Detection
-import numpy as np
+from deep_sort.detection import Detection as DeepSortDetection
+from detection import Detection
 import cv2
 
 
@@ -13,6 +11,7 @@ class Tracker:
     # Inicializace trackeru DeepSort
     def __init__(self):
         self.model = "deep_sort\mars-small128.pb"
+        self.maxAge = 900
         self.matchingThreshold = 0.7
         self.nnBudget = None
         self.timeSinceUpdate = 2  # Počet snímků od poslední aktualizace měření.
@@ -21,28 +20,28 @@ class Tracker:
         self.metric = nn_matching.NearestNeighborDistanceMetric(
             "cosine", self.matchingThreshold, self.nnBudget
         )
-        self.tracker = DeepSortTracker(self.metric, max_age=900)
+        self.tracker = DeepSortTracker(self.metric, max_age=self.maxAge)
 
-    def track(self, frame, labels, confs, bboxes, recognitions):
+    def track(self, frame, detections):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        confs = np.array(confs)
-        bboxes = np.array(bboxes)
-        features = np.array(self.encoder(frame, bboxes))
+        bboxes = [detection.bbox for detection in detections]
+        features = self.encoder(frame, bboxes)
         detections = [
-            Detection(bbox, conf, label, recognition[0], recognition[1], feature)
-            for bbox, conf, label, recognition, feature in zip(
-                bboxes, confs, labels, recognitions, features
+            DeepSortDetection(
+                detection.bbox,
+                detection.conf,
+                detection.label,
+                detection.identity,
+                detection.faceDistance,
+                feature,
             )
+            for detection, feature in zip(detections, features)
         ]
 
         self.tracker.predict()
         self.tracker.update(detections)
 
-        labels = []
-        confs = []
-        bboxes = []
-        recognitions = []
-        trackIds = []
+        detections = []
 
         for track in self.tracker.tracks:
             if (
@@ -52,10 +51,15 @@ class Tracker:
                 continue
 
             bbox = track.to_tlwh()
-            labels.append(track.get_label())
-            confs.append(track.get_confidence())
-            bboxes.append([int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])])
-            recognitions.append([track.get_identity(), track.get_faceDistance()])
-            trackIds.append(track.track_id)
+            detections.append(
+                Detection(
+                    track.get_label(),
+                    track.get_confidence(),
+                    [int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])],
+                    track.get_identity(),
+                    track.get_faceDistance(),
+                    track.track_id,
+                )
+            )
 
-        return labels, confs, bboxes, recognitions, trackIds
+        return detections
