@@ -70,6 +70,9 @@ class Track:
         track_id,
         n_init,
         max_age,
+        bboxColor,
+        cornerColor,
+        textColor,
         feature=None,
         label=None,
         conf=None,
@@ -82,6 +85,9 @@ class Track:
         self.identity = identity
         self.faceDistance = faceDistance
         self.trail = []
+        self.bboxColor = bboxColor
+        self.cornerColor = cornerColor
+        self.textColor = textColor
         self.covariance = covariance
         self.track_id = track_id
         self.hits = 1
@@ -182,8 +188,10 @@ class Track:
         """Mark this track as missed (no association at the current time step)."""
         if self.state == TrackState.Tentative:
             self.state = TrackState.Deleted
+            self.trail = []
         elif self.time_since_update > self._max_age:
             self.state = TrackState.Deleted
+            self.trail = []
 
     def is_tentative(self):
         """Returns True if this track is tentative (unconfirmed)."""

@@ -4,6 +4,7 @@ from deep_sort.tracker import Tracker as DeepSortTracker
 from deep_sort.detection import Detection as DeepSortDetection
 from detection import Detection
 import cv2
+import random
 
 
 class Tracker:
@@ -21,28 +22,46 @@ class Tracker:
             "cosine", self.matchingThreshold, self.nnBudget
         )
         self.tracker = DeepSortTracker(self.metric, max_age=self.maxAge)
-
-    def track(self, frame, detections):
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        bboxes = [detection.bbox for detection in detections]
-        features = self.encoder(frame, bboxes)
-        detections = [
-            DeepSortDetection(
-                detection.bbox,
-                detection.conf,
-                detection.label,
-                detection.identity,
-                detection.faceDistance,
-                feature,
-            )
-            for detection, feature in zip(detections, features)
+        self.colors = [  # [BGR]
+            (0, 220, 0),  # Zelená
+            (0, 111, 255),  # Oranžová
+            (220, 220, 0),  # Tyrkysová
+            (255, 170, 0),  # Světle modrá
+            (255, 100, 0),  # Modrá
+            (255, 0, 255),  # Fialová
+            (160, 0, 255),  # Růžová
+            (0, 0, 220),  # Červená
         ]
+
+    def colorGenerator(self):
+        return random.choice(self.colors)
+
+    def track(self, frame, inputDetections):
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        bboxes = [detection.bbox for detection in inputDetections]
+        features = self.encoder(frame, bboxes)
+
+        detections = []
+        for detection, feature in zip(inputDetections, features):
+            color = self.colorGenerator()
+            detections.append(
+                DeepSortDetection(
+                    detection.bbox,
+                    detection.conf,
+                    detection.label,
+                    detection.identity,
+                    detection.faceDistance,
+                    feature,
+                    color,
+                    color,
+                    color,
+                )
+            )
 
         self.tracker.predict()
         self.tracker.update(detections)
 
         detections = []
-
         for track in self.tracker.tracks:
             if (
                 not track.is_confirmed()
@@ -60,6 +79,9 @@ class Tracker:
                     track.get_faceDistance(),
                     track.track_id,
                     track.trail,
+                    track.bboxColor,
+                    track.cornerColor,
+                    track.textColor,
                 )
             )
 

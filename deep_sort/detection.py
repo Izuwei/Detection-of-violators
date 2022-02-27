@@ -26,15 +26,29 @@ class Detection(object):
 
     """
 
-    def __init__(self, tlwh, confidence, label, identity, faceDistance, feature):
+    def __init__(
+        self,
+        tlwh,
+        confidence,
+        label,
+        identity,
+        faceDistance,
+        feature,
+        bboxColor,
+        cornerColor,
+        textColor,
+    ):
         self.tlwh = np.asarray(tlwh, dtype=np.float)
         self.confidence = float(confidence)
         self.label = label
         self.identity = identity
         self.faceDistance = faceDistance
+        self.bboxColor = bboxColor
+        self.cornerColor = cornerColor
+        self.textColor = textColor
         self.center = [
-            int(tlwh[0] + (tlwh[2] / 2)),
-            int(tlwh[1] + (tlwh[3] / 2)),
+            int(tlwh[0] + (tlwh[2] >> 1)),
+            int(tlwh[1] + (tlwh[3] >> 1)),
         ]  # [centerX, centerY]
         self.feature = np.asarray(feature, dtype=np.float32)
 

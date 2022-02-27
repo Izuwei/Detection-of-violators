@@ -34,8 +34,8 @@ class Detector:
                     # Rozměry boxu a souřadnice levého horního rohu
                     w = int(prediction[2] * frameWidth)
                     h = int(prediction[3] * frameHeight)
-                    x = int(cx - w / 2)
-                    y = int(cy - h / 2)
+                    x = int(cx - (w >> 1))
+                    y = int(cy - (h >> 1))
 
                     bboxes.append([x, y, w, h])  # Uložení bounding boxu
                     classIds.append(classId)  # Uložení ID třídy
