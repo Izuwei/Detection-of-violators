@@ -7,6 +7,7 @@ class Detection:
         identity="Unknown",
         faceDistance=1,
         trackId=None,
+        trailPts=[],
     ):
         self.label = label
         self.conf = conf
@@ -14,6 +15,7 @@ class Detection:
         self.identity = identity
         self.faceDistance = faceDistance
         self.trackId = trackId
+        self.trail = trailPts
 
     def setIdentity(self, name, faceDistance):
         self.identity = name

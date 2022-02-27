@@ -59,6 +59,7 @@ class Tracker:
                     track.get_identity(),
                     track.get_faceDistance(),
                     track.track_id,
+                    track.trail,
                 )
             )
 

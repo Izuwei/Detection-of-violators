@@ -81,6 +81,7 @@ class Track:
         self.confidence = conf
         self.identity = identity
         self.faceDistance = faceDistance
+        self.trail = []
         self.covariance = covariance
         self.track_id = track_id
         self.hits = 1
@@ -174,6 +175,8 @@ class Track:
             ):
                 self.identity = detection.get_identity()
                 self.faceDistance = newFaceDistance
+
+        self.trail.append(detection.center)
 
     def mark_missed(self):
         """Mark this track as missed (no association at the current time step)."""

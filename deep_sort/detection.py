@@ -32,6 +32,10 @@ class Detection(object):
         self.label = label
         self.identity = identity
         self.faceDistance = faceDistance
+        self.center = [
+            int(tlwh[0] + (tlwh[2] / 2)),
+            int(tlwh[1] + (tlwh[3] / 2)),
+        ]  # [centerX, centerY]
         self.feature = np.asarray(feature, dtype=np.float32)
 
     def to_tlbr(self):

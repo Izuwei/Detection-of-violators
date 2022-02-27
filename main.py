@@ -9,6 +9,7 @@ from recognizer import Recognizer
 from tracker import Tracker
 
 inputShape = 320  # 608
+trailTime = 1.5  # Délka stopy v sekundách
 faceDB = "database"  # Cesta k databázi se snímky obličejů
 
 textFont = cv2.FONT_HERSHEY_DUPLEX
@@ -49,7 +50,7 @@ recognizer = Recognizer(faceDB)
 # Inicializace trackeru DeepSort
 tracker = Tracker()
 
-video = cv2.VideoCapture("../../VUT/DP/Videos/downtown_la.mp4")
+video = cv2.VideoCapture("../../VUT/DP/Videos/raw.webm")
 
 if not video.isOpened():  # Kontrola, zda se video povedlo otevřít
     sys.stderr.write("Failed to open the video.\n")
@@ -138,6 +139,23 @@ while True:
                 textColor,
                 1,
             )
+
+            # Výpočet indexu pro indexování v poli centrálních souřadnic, min. 0
+            lineCount = len(detection.trail) - 1
+            lineCount = 0 if lineCount < 0 else lineCount
+            # Výpočet počtu bodů k vykreslení podle zadaného času a FPS, min. == počet bodů
+            trailLength = int(videoFPS * trailTime)
+            trailLength = trailLength if trailLength < lineCount else lineCount
+
+            for i in range(0, trailLength):
+                print(i)
+                cv2.line(
+                    frame,
+                    detection.trail[lineCount - i],
+                    detection.trail[lineCount - 1 - i],
+                    (255, 0, 0),
+                    1,
+                )
 
     cv2.imshow("Detector", frame)
     outputVideo.write(frame)
