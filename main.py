@@ -59,7 +59,7 @@ def draw(frame, detection, fps):
         )
 
         if detection.label in OBJECTS:
-            cornerLen = int(x >> 1) if x < y else int(y >> 1)
+            cornerLen = int(w >> 1) if w < h else int(h >> 1)
             cornerLen = cornerLen if cornerLen < 20 else 20
             cornerLen = (
                 cornerLen
@@ -68,17 +68,18 @@ def draw(frame, detection, fps):
             )
             x2, y2 = x + w, y + h
             # Bounding box
-            cv2.rectangle(frame, (x, y), (x + w, y + h), detection.bboxColor, 1)
+            cv2.rectangle(frame, (x, y), (x2, y2), detection.bboxColor, 1)
 
+            # Horní levý roh
             cv2.line(frame, (x, y), (x + cornerLen, y), detection.cornerColor, 2)
             cv2.line(frame, (x, y), (x, y + cornerLen), detection.cornerColor, 2)
-
+            # Horní pravý roh
             cv2.line(frame, (x2, y), (x2 - cornerLen, y), detection.cornerColor, 2)
             cv2.line(frame, (x2, y), (x2, y + cornerLen), detection.cornerColor, 2)
-
+            # Dolní levý roh
             cv2.line(frame, (x, y2), (x + cornerLen, y2), detection.cornerColor, 2)
             cv2.line(frame, (x, y2), (x, y2 - cornerLen), detection.cornerColor, 2)
-
+            # Dolní pravý roh
             cv2.line(frame, (x2, y2), (x2 - cornerLen, y2), detection.cornerColor, 2)
             cv2.line(frame, (x2, y2), (x2, y2 - cornerLen), detection.cornerColor, 2)
 
@@ -96,7 +97,7 @@ def draw(frame, detection, fps):
             cv2.putText(
                 frame,
                 f"{int(detection.conf*100)}%",
-                (x + 4, y + h - 5),
+                (x + 4, y2 - 5),
                 textFont,
                 textScaleLow,
                 detection.textColor,
@@ -107,7 +108,7 @@ def draw(frame, detection, fps):
                 cv2.putText(
                     frame,
                     f"ID:{detection.trackId}",
-                    (x + 4, y + h - 15),
+                    (x + 4, y2 - 15),
                     textFont,
                     textScaleLow,
                     detection.textColor,
