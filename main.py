@@ -57,74 +57,73 @@ def draw(frame, detection, fps):
             1,
         )
 
-    if detection.label in OBJECTS:
-        cornerLen = int(w >> 1) - 2 if w < h else int(h >> 1) - 2
-        cornerLen = int(cornerLen >> 1) if cornerLen < 20 else 20
-        x2, y2 = x + w, y + h
-        # Bounding box
-        cv2.rectangle(frame, (x, y), (x2, y2), detection.bboxColor, 1)
+    cornerLen = int(w >> 1) - 2 if w < h else int(h >> 1) - 2
+    cornerLen = int(cornerLen >> 1) if cornerLen < 20 else 20
+    x2, y2 = x + w, y + h
+    # Bounding box
+    cv2.rectangle(frame, (x, y), (x2, y2), detection.bboxColor, 1)
 
-        # Horní levý roh
-        cv2.line(frame, (x, y), (x + cornerLen, y), detection.cornerColor, 2)
-        cv2.line(frame, (x, y), (x, y + cornerLen), detection.cornerColor, 2)
-        # Horní pravý roh
-        cv2.line(frame, (x2, y), (x2 - cornerLen, y), detection.cornerColor, 2)
-        cv2.line(frame, (x2, y), (x2, y + cornerLen), detection.cornerColor, 2)
-        # Dolní levý roh
-        cv2.line(frame, (x, y2), (x + cornerLen, y2), detection.cornerColor, 2)
-        cv2.line(frame, (x, y2), (x, y2 - cornerLen), detection.cornerColor, 2)
-        # Dolní pravý roh
-        cv2.line(frame, (x2, y2), (x2 - cornerLen, y2), detection.cornerColor, 2)
-        cv2.line(frame, (x2, y2), (x2, y2 - cornerLen), detection.cornerColor, 2)
+    # Horní levý roh
+    cv2.line(frame, (x, y), (x + cornerLen, y), detection.cornerColor, 2)
+    cv2.line(frame, (x, y), (x, y + cornerLen), detection.cornerColor, 2)
+    # Horní pravý roh
+    cv2.line(frame, (x2, y), (x2 - cornerLen, y), detection.cornerColor, 2)
+    cv2.line(frame, (x2, y), (x2, y + cornerLen), detection.cornerColor, 2)
+    # Dolní levý roh
+    cv2.line(frame, (x, y2), (x + cornerLen, y2), detection.cornerColor, 2)
+    cv2.line(frame, (x, y2), (x, y2 - cornerLen), detection.cornerColor, 2)
+    # Dolní pravý roh
+    cv2.line(frame, (x2, y2), (x2 - cornerLen, y2), detection.cornerColor, 2)
+    cv2.line(frame, (x2, y2), (x2, y2 - cornerLen), detection.cornerColor, 2)
 
-        # Třída (label)
+    # Třída (label)
+    cv2.putText(
+        frame,
+        f"{detection.label.upper()}",
+        (x, y - 4),
+        textFont,
+        textScaleHigh,
+        detection.textColor,
+        1,
+    )
+    # Confidence
+    cv2.putText(
+        frame,
+        f"{int(detection.conf*100)}%",
+        (x + 4, y2 - 5),
+        textFont,
+        textScaleLow,
+        detection.textColor,
+        1,
+    )
+    # Tracking: ID + path
+    if args.tracking == True:
         cv2.putText(
             frame,
-            f"{detection.label.upper()}",
-            (x, y - 4),
-            textFont,
-            textScaleHigh,
-            detection.textColor,
-            1,
-        )
-        # Confidence
-        cv2.putText(
-            frame,
-            f"{int(detection.conf*100)}%",
-            (x + 4, y2 - 5),
+            f"ID:{detection.trackId}",
+            (x + 4, y2 - 15),
             textFont,
             textScaleLow,
             detection.textColor,
             1,
         )
-        # Tracking: ID + path
-        if args.tracking == True:
-            cv2.putText(
-                frame,
-                f"ID:{detection.trackId}",
-                (x + 4, y2 - 15),
-                textFont,
-                textScaleLow,
-                detection.textColor,
-                1,
-            )
 
-            if args.trail == True:
-                # Výpočet indexu pro indexování v poli centrálních souřadnic, min. 0
-                lineCount = len(detection.trail) - 1
-                lineCount = 0 if lineCount < 0 else lineCount
-                # Výpočet počtu bodů k vykreslení podle zadaného času a FPS, min. == počet bodů
-                trailLength = int(fps * args.traillen)
-                trailLength = trailLength if trailLength < lineCount else lineCount
+        if args.trail == True:
+            # Výpočet indexu pro indexování v poli centrálních souřadnic, min. 0
+            lineCount = len(detection.trail) - 1
+            lineCount = 0 if lineCount < 0 else lineCount
+            # Výpočet počtu bodů k vykreslení podle zadaného času a FPS, min. == počet bodů
+            trailLength = int(fps * args.traillen)
+            trailLength = trailLength if trailLength < lineCount else lineCount
 
-                for i in range(0, trailLength):
-                    cv2.line(
-                        frame,
-                        detection.trail[lineCount - i],
-                        detection.trail[lineCount - 1 - i],
-                        detection.bboxColor,
-                        1,
-                    )
+            for i in range(0, trailLength):
+                cv2.line(
+                    frame,
+                    detection.trail[lineCount - i],
+                    detection.trail[lineCount - 1 - i],
+                    detection.bboxColor,
+                    1,
+                )
 
 
 def main():
@@ -192,10 +191,11 @@ def main():
             detections = tracker.track(frame, detections)
 
         for detection in detections:
-            draw(frame, detection, videoFPS)
+            if detection.label in OBJECTS:
+                draw(frame, detection, videoFPS)
 
         # Výpis počítadel na snímek
-        if args.counter == True:
+        if args.tracking == True and args.counter == True:
             currentObjects = 0
             for detection in detections:
                 if detection.label in OBJECTS:
