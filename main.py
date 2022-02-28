@@ -1,19 +1,16 @@
 import sys
 import cv2
 import time
-import argparse
 import datetime
 
+from argParser import argumentParser
 from detector import Detector
 from detection import Detection
 from recognizer import Recognizer
 from tracker import Tracker
 
 inputShape = 320  # 608
-trailTime = 1.5  # Délka stopy v sekundách
 faceDB = "database"  # Cesta k databázi se snímky obličejů
-tracking = False
-showTimeStamp = True
 
 textFont = cv2.FONT_HERSHEY_DUPLEX
 textScaleHigh = 0.4
@@ -33,9 +30,11 @@ OBJECTS = [
     "giraffe",
 ]
 
-modelConfig = "./yolov3/yolov3.cfg"
-modelWeights = "./yolov3/yolov3.weights"  # Pretrained
-labelFile = "./detection_model/coco.names"
+modelConfig = "yolov3/yolov3.cfg"
+modelWeights = "yolov3/yolov3.weights"  # Pretrained
+labelFile = "coco.names"
+
+args = argumentParser()
 
 
 def draw(frame, detection, fps):
@@ -58,78 +57,74 @@ def draw(frame, detection, fps):
             1,
         )
 
-        if detection.label in OBJECTS:
-            cornerLen = int(w >> 1) if w < h else int(h >> 1)
-            cornerLen = cornerLen if cornerLen < 20 else 20
-            cornerLen = (
-                cornerLen
-                if ((cornerLen << 1) + 10) < w and ((cornerLen << 1) + 10) < h
-                else int(cornerLen >> 1)
-            )
-            x2, y2 = x + w, y + h
-            # Bounding box
-            cv2.rectangle(frame, (x, y), (x2, y2), detection.bboxColor, 1)
+    if detection.label in OBJECTS:
+        cornerLen = int(w >> 1) - 2 if w < h else int(h >> 1) - 2
+        cornerLen = int(cornerLen >> 1) if cornerLen < 20 else 20
+        x2, y2 = x + w, y + h
+        # Bounding box
+        cv2.rectangle(frame, (x, y), (x2, y2), detection.bboxColor, 1)
 
-            # Horní levý roh
-            cv2.line(frame, (x, y), (x + cornerLen, y), detection.cornerColor, 2)
-            cv2.line(frame, (x, y), (x, y + cornerLen), detection.cornerColor, 2)
-            # Horní pravý roh
-            cv2.line(frame, (x2, y), (x2 - cornerLen, y), detection.cornerColor, 2)
-            cv2.line(frame, (x2, y), (x2, y + cornerLen), detection.cornerColor, 2)
-            # Dolní levý roh
-            cv2.line(frame, (x, y2), (x + cornerLen, y2), detection.cornerColor, 2)
-            cv2.line(frame, (x, y2), (x, y2 - cornerLen), detection.cornerColor, 2)
-            # Dolní pravý roh
-            cv2.line(frame, (x2, y2), (x2 - cornerLen, y2), detection.cornerColor, 2)
-            cv2.line(frame, (x2, y2), (x2, y2 - cornerLen), detection.cornerColor, 2)
+        # Horní levý roh
+        cv2.line(frame, (x, y), (x + cornerLen, y), detection.cornerColor, 2)
+        cv2.line(frame, (x, y), (x, y + cornerLen), detection.cornerColor, 2)
+        # Horní pravý roh
+        cv2.line(frame, (x2, y), (x2 - cornerLen, y), detection.cornerColor, 2)
+        cv2.line(frame, (x2, y), (x2, y + cornerLen), detection.cornerColor, 2)
+        # Dolní levý roh
+        cv2.line(frame, (x, y2), (x + cornerLen, y2), detection.cornerColor, 2)
+        cv2.line(frame, (x, y2), (x, y2 - cornerLen), detection.cornerColor, 2)
+        # Dolní pravý roh
+        cv2.line(frame, (x2, y2), (x2 - cornerLen, y2), detection.cornerColor, 2)
+        cv2.line(frame, (x2, y2), (x2, y2 - cornerLen), detection.cornerColor, 2)
 
-            # Třída (label)
+        # Třída (label)
+        cv2.putText(
+            frame,
+            f"{detection.label.upper()}",
+            (x, y - 4),
+            textFont,
+            textScaleHigh,
+            detection.textColor,
+            1,
+        )
+        # Confidence
+        cv2.putText(
+            frame,
+            f"{int(detection.conf*100)}%",
+            (x + 4, y2 - 5),
+            textFont,
+            textScaleLow,
+            detection.textColor,
+            1,
+        )
+        # Tracking: ID + path
+        if args.tracking == True:
             cv2.putText(
                 frame,
-                f"{detection.label.upper()}",
-                (x, y - 4),
-                textFont,
-                textScaleHigh,
-                detection.textColor,
-                1,
-            )
-            # Confidence
-            cv2.putText(
-                frame,
-                f"{int(detection.conf*100)}%",
-                (x + 4, y2 - 5),
+                f"ID:{detection.trackId}",
+                (x + 4, y2 - 15),
                 textFont,
                 textScaleLow,
                 detection.textColor,
                 1,
             )
-            # ID
-            if tracking == True:
-                cv2.putText(
-                    frame,
-                    f"ID:{detection.trackId}",
-                    (x + 4, y2 - 15),
-                    textFont,
-                    textScaleLow,
-                    detection.textColor,
-                    1,
-                )
 
-            # Výpočet indexu pro indexování v poli centrálních souřadnic, min. 0
-            lineCount = len(detection.trail) - 1
-            lineCount = 0 if lineCount < 0 else lineCount
-            # Výpočet počtu bodů k vykreslení podle zadaného času a FPS, min. == počet bodů
-            trailLength = int(fps * trailTime)
-            trailLength = trailLength if trailLength < lineCount else lineCount
+            if args.trail == True:
+                # Výpočet indexu pro indexování v poli centrálních souřadnic, min. 0
+                lineCount = len(detection.trail) - 1
+                lineCount = 0 if lineCount < 0 else lineCount
+                # Výpočet počtu bodů k vykreslení podle zadaného času a FPS, min. == počet bodů
+                trailLength = int(fps * args.traillen)
+                trailLength = trailLength if trailLength < lineCount else lineCount
 
-            for i in range(0, trailLength):
-                cv2.line(
-                    frame,
-                    detection.trail[lineCount - i],
-                    detection.trail[lineCount - 1 - i],
-                    detection.bboxColor,
-                    1,
-                )
+                for i in range(0, trailLength):
+                    cv2.line(
+                        frame,
+                        detection.trail[lineCount - i],
+                        detection.trail[lineCount - 1 - i],
+                        detection.bboxColor,
+                        1,
+                    )
 
 
 def main():
@@ -145,10 +140,10 @@ def main():
     recognizer = Recognizer(faceDB)
 
     # Inicializace trackeru DeepSort
-    if tracking == True:
+    if args.tracking == True:
         tracker = Tracker()
 
-    video = cv2.VideoCapture("../../VUT/DP/Videos/downtown_la.mp4")
+    video = cv2.VideoCapture(args.input)
 
     if not video.isOpened():  # Kontrola, zda se video povedlo otevřít
         sys.stderr.write("Failed to open the video.\n")
@@ -162,6 +157,8 @@ def main():
     outputVideo = cv2.VideoWriter(
         "processed.avi", codec, videoFPS, (videoWidth, videoHeight)
     )
+
+    objectIDs = set()
 
     while True:
         ret, frame = video.read()
@@ -191,14 +188,41 @@ def main():
                 identity, faceDistance = recognizer.find(personCrop)
                 detection.setIdentity(identity, faceDistance)
 
-        if tracking == True:
+        if args.tracking == True:
             detections = tracker.track(frame, detections)
 
         for detection in detections:
             draw(frame, detection, videoFPS)
 
+        # Výpis počítadel na snímek
+        if args.counter == True:
+            currentObjects = 0
+            for detection in detections:
+                if detection.label in OBJECTS:
+                    objectIDs.add(detection.trackId)
+                    currentObjects += 1
+
+            cv2.putText(
+                frame,
+                f"Objects: {currentObjects}",
+                (20, videoHeight - 70),
+                textFont,
+                0.6,
+                (255, 255, 255),
+                1,
+            )
+            cv2.putText(
+                frame,
+                f"Total: {len(objectIDs)}",
+                (20, videoHeight - 50),
+                textFont,
+                0.6,
+                (255, 255, 255),
+                1,
+            )
+
         # Výpis času ve videu na snímek
-        if showTimeStamp == True:
+        if args.time == True:
             frameNum = int(video.get(cv2.CAP_PROP_POS_FRAMES))
             timeStamp = int(frameNum / videoFPS)
 
@@ -207,7 +231,7 @@ def main():
                 f"{datetime.timedelta(seconds=timeStamp)}",
                 (20, videoHeight - 20),
                 textFont,
-                0.6,
+                0.7,
                 (255, 255, 255),
                 1,
             )
