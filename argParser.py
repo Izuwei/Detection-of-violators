@@ -19,7 +19,7 @@ def argumentParser():
         metavar="",
         help="Path to video source.",
     )
-    # TODO: dodělat
+    # TODO: dodělat tiny?
     parser.add_argument(
         "-m",
         "--model",
@@ -41,7 +41,7 @@ def argumentParser():
     )
     parser.add_argument(
         "-p",
-        "--trail",
+        "--paths",
         default=False,
         required=False,
         metavar="",
@@ -68,7 +68,7 @@ def argumentParser():
     )
     parser.add_argument(
         "-s",
-        "--time",
+        "--timestamp",
         default=False,
         required=False,
         metavar="",

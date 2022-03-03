@@ -104,7 +104,7 @@ def draw(frame, detection, fps):
             1,
         )
 
-        if args.trail == True:
+        if args.paths == True:
             # Výpočet indexu pro indexování v poli centrálních souřadnic, min. 0
             lineCount = len(detection.trail) - 1
             lineCount = 0 if lineCount < 0 else lineCount
@@ -118,7 +118,7 @@ def draw(frame, detection, fps):
                     detection.trail[lineCount - i],
                     detection.trail[lineCount - 1 - i],
                     detection.bboxColor,
-                    1,
+                    2,
                 )
 
 
@@ -218,7 +218,7 @@ def main():
             )
 
         # Výpis času ve videu na snímek
-        if args.time == True:
+        if args.timestamp == True:
             frameNum = int(video.get(cv2.CAP_PROP_POS_FRAMES))
             timeStamp = int(frameNum / videoFPS)
 
