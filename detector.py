@@ -3,15 +3,29 @@ import numpy as np
 
 
 class Detector:
-    def __init__(self, classNames, modelConfig, modelWeights, inputShape):
+    def __init__(self, classNames, modelName):
+        self.yolo320Config = "yolov3/yolov3-320.cfg"
+        self.yolo608Config = "yolov3/yolov3-608.cfg"
+        self.yoloWeights = "yolov3/yolov3.weights"  # Pretrained
+        self.classNames = classNames
+
         self.confThreshold = 0.55
         self.nmsThreshold = 0.4
+        self.inputShape = None
 
-        self.inputShape = inputShape
-        self.classNames = classNames
-        self.model = cv2.dnn.readNetFromDarknet(modelConfig, modelWeights)
+        if modelName == "yolo608":  # yolo608
+            self.inputShape = 608
+            self.model = cv2.dnn.readNetFromDarknet(
+                self.yolo608Config, self.yoloWeights
+            )
+        else:  # yolo320 (výchozí)
+            self.inputShape = 320
+            self.model = cv2.dnn.readNetFromDarknet(
+                self.yolo320Config, self.yoloWeights
+            )
         # self.model.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
         # self.model.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+        print(f"Detector: Detection model {modelName} has been used.")
 
     def filterPredictions(self, frame, outputs):
         bboxes = []

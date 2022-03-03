@@ -1,4 +1,8 @@
+import os
+import sys
 import argparse
+
+videoFilename = "processed.avi"
 
 
 def argumentParser():
@@ -71,6 +75,24 @@ def argumentParser():
         action=argparse.BooleanOptionalAction,
         help="Set to display current timestamp.",
     )
+    parser.add_argument(
+        "-o",
+        "--output",
+        default=".",
+        required=False,
+        metavar="",
+        help="Sets path for the output. (default: .)",
+    )
     # TODO: přidat frame
 
-    return parser.parse_args()
+    parser = parser.parse_args()
+
+    # Ošetření cesty
+    if os.path.exists(parser.output) == False:
+        sys.stderr.write("Specified output path does not exist.\n")
+        exit(1)
+
+    # Cesta výstupního video souboru
+    parser.output = os.path.join(parser.output, videoFilename)
+
+    return parser

@@ -2,5 +2,3 @@ __pycache__
 .vscode
 processed.avi
 yolov3
-detection_model
-detection_model_resnet_old

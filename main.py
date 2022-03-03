@@ -9,7 +9,6 @@ from detection import Detection
 from recognizer import Recognizer
 from tracker import Tracker
 
-inputShape = 320  # 608
 faceDB = "database"  # Cesta k databázi se snímky obličejů
 
 textFont = cv2.FONT_HERSHEY_DUPLEX
@@ -30,10 +29,7 @@ OBJECTS = [
     "giraffe",
 ]
 
-modelConfig = "yolov3/yolov3.cfg"
-modelWeights = "yolov3/yolov3.weights"  # Pretrained
 labelFile = "coco.names"
-
 args = argumentParser()
 
 
@@ -133,7 +129,7 @@ def main():
         classNames = f.read().rstrip("\n").split("\n")
 
     # Inicializace detektoru
-    detector = Detector(classNames, modelConfig, modelWeights, inputShape)
+    detector = Detector(classNames, args.model)
 
     # Inicializace DeepFace
     recognizer = Recognizer(faceDB)
@@ -154,7 +150,7 @@ def main():
     codec = cv2.VideoWriter_fourcc(*"XVID")
 
     outputVideo = cv2.VideoWriter(
-        "processed.avi", codec, videoFPS, (videoWidth, videoHeight)
+        args.output, codec, videoFPS, (videoWidth, videoHeight)
     )
 
     objectIDs = set()
