@@ -14,7 +14,7 @@ def argumentParser():
         "-i",
         "--input",
         type=str,
-        default="../../VUT/DP/Videos/downtown_la.mp4",
+        default="D:\VUT\DP\Videos/downtown_la.mp4",
         required=False,
         metavar="",
         help="Path to video source.",
