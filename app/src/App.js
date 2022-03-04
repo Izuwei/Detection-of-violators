@@ -1,4 +1,6 @@
 import TopPanel from "./components/TopPanel";
+
+import "./utils/i18n";
 import "./App.css";
 
 const App = () => {

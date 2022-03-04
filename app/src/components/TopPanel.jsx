@@ -1,7 +1,10 @@
 import React from "react";
 import { AppBar, Toolbar, Typography, Select, MenuItem } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const TopPanel = () => {
+  const { t } = useTranslation();
+  console.log("Render: TopPanel");
   return (
     <AppBar position="static" sx={styles.panel}>
       <Toolbar>
@@ -11,9 +14,10 @@ const TopPanel = () => {
           align="center"
           sx={styles.text}
         >
-          Detection of Violators
+          {t("appName")}
         </Typography>
         <Select
+          value={"en"}
           variant="outlined"
           sx={styles.select}
           MenuProps={{
