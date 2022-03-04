@@ -1,8 +1,10 @@
+import TopPanel from "./components/TopPanel";
 import "./App.css";
 
 const App = () => {
   return (
     <div className="App">
+      <TopPanel />
       <header className="App-header">
         <p>
           Edit <code>src/App.js</code> and save to reload.
