@@ -1,10 +1,35 @@
-import React from "react";
-import { AppBar, Toolbar, Typography, Select, MenuItem } from "@mui/material";
+import React, { memo, useCallback } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Select,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useCookies } from "react-cookie";
 
-const TopPanel = () => {
-  const { t } = useTranslation();
+import gbFlag from "../assets/icons/gb_flag.svg";
+import czFlag from "../assets/icons/cz_flag.svg";
+
+const TopPanel = memo(({}) => {
+  const { t, i18n } = useTranslation();
+  const [cookies, setCookie] = useCookies(["lang"]);
   console.log("Render: TopPanel");
+
+  const onLanguageChange = useCallback(
+    (event) => {
+      const lang = event.target.value;
+      setCookie("lang", lang, { path: "/" });
+      i18n.changeLanguage(lang);
+    },
+    [i18n]
+  );
+
   return (
     <AppBar position="static" sx={styles.panel}>
       <Toolbar>
@@ -16,27 +41,45 @@ const TopPanel = () => {
         >
           {t("appName")}
         </Typography>
-        <Select
-          value={"en"}
-          variant="outlined"
-          sx={styles.select}
-          MenuProps={{
-            PaperProps: {
-              style: styles.menu,
-            },
-          }}
-        >
-          <MenuItem sx={styles.menuItem} value={"en"}>
-            English
-          </MenuItem>
-          <MenuItem sx={styles.menuItem} value={"cs"}>
-            Česky
-          </MenuItem>
-        </Select>
+        <FormControl>
+          <InputLabel id="language-select-label" sx={styles.menuItem}>
+            {t("language")}
+          </InputLabel>
+          <Select
+            value={i18n.language}
+            onChange={onLanguageChange}
+            labelId="language-select-label"
+            label={t("language")}
+            variant="outlined"
+            sx={styles.select}
+            MenuProps={{
+              PaperProps: {
+                style: styles.menu,
+              },
+            }}
+          >
+            <MenuItem sx={styles.menuItem} value={"en"}>
+              <div style={styles.menuItemContainer}>
+                <ListItemIcon sx={{ minWidth: 0 }}>
+                  <img src={gbFlag} style={styles.icon} />
+                </ListItemIcon>
+                <ListItemText primary="English" />
+              </div>
+            </MenuItem>
+            <MenuItem sx={styles.menuItem} value={"cs"}>
+              <div style={styles.menuItemContainer}>
+                <ListItemIcon sx={{ minWidth: 0 }}>
+                  <img src={czFlag} style={styles.icon} />
+                </ListItemIcon>
+                <ListItemText primary="Česky" />
+              </div>
+            </MenuItem>
+          </Select>
+        </FormControl>
       </Toolbar>
     </AppBar>
   );
-};
+});
 
 const styles = {
   panel: {
@@ -49,7 +92,7 @@ const styles = {
   },
   select: {
     height: 35,
-    width: 100,
+    width: 140,
     color: "white",
     "& .MuiOutlinedInput-notchedOutline": {
       borderColor: "white",
@@ -67,6 +110,15 @@ const styles = {
   },
   menuItem: {
     color: "white",
+  },
+  menuItemContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    borderRadius: 5,
   },
 };
 
