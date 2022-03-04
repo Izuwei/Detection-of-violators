@@ -16,18 +16,18 @@ import { useCookies } from "react-cookie";
 import gbFlag from "../assets/icons/gb_flag.svg";
 import czFlag from "../assets/icons/cz_flag.svg";
 
-const TopPanel = memo(({}) => {
+const TopPanel = memo(() => {
   const { t, i18n } = useTranslation();
-  const [cookies, setCookie] = useCookies(["lang"]);
+  const [, setCookie] = useCookies(["lang"]);
   console.log("Render: TopPanel");
 
   const onLanguageChange = useCallback(
     (event) => {
       const lang = event.target.value;
-      setCookie("lang", lang, { path: "/" });
+      setCookie("lang", lang, { path: "/", maxAge: 604800 }); // week == 604800 seconds
       i18n.changeLanguage(lang);
     },
-    [i18n]
+    [i18n, setCookie]
   );
 
   return (
@@ -61,7 +61,7 @@ const TopPanel = memo(({}) => {
             <MenuItem sx={styles.menuItem} value={"en"}>
               <div style={styles.menuItemContainer}>
                 <ListItemIcon sx={{ minWidth: 0 }}>
-                  <img src={gbFlag} style={styles.icon} />
+                  <img src={gbFlag} style={styles.icon} alt="GB-Flag" />
                 </ListItemIcon>
                 <ListItemText primary="English" />
               </div>
@@ -69,7 +69,7 @@ const TopPanel = memo(({}) => {
             <MenuItem sx={styles.menuItem} value={"cs"}>
               <div style={styles.menuItemContainer}>
                 <ListItemIcon sx={{ minWidth: 0 }}>
-                  <img src={czFlag} style={styles.icon} />
+                  <img src={czFlag} style={styles.icon} alt="CZ-Flag" />
                 </ListItemIcon>
                 <ListItemText primary="Česky" />
               </div>
