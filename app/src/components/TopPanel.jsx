@@ -85,6 +85,7 @@ const styles = {
   panel: {
     height: 50,
     justifyContent: "center",
+    marginBottom: 3,
   },
   text: {
     flexGrow: 1,

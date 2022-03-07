@@ -9,7 +9,7 @@ def argumentParser():
     parser = argparse.ArgumentParser(
         description="Detection and analysis of objects in video sequence."
     )
-    # TODO: předělat na 'required'.
+    # TODO: předělat na 'required'., zkontrolovat validní soubor, při chybjicí koncovce háže vyjímku (např. .mp4)
     parser.add_argument(
         "-i",
         "--input",

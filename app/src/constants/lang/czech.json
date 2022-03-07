@@ -1,6 +1,12 @@
 {
   "translation": {
     "appName": "Detekce narušitelů",
-    "language": "Jazyk"
+    "language": "Jazyk",
+    "UploadLabel": "Nahrát video",
+    "AreaLabel": "Výběr oblasti",
+    "Next": "Další",
+    "Back": "Zpět",
+    "Finish": "Dokončit",
+    "Unknown": "Neznámý"
   }
 }

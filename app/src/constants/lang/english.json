@@ -1,6 +1,12 @@
 {
   "translation": {
     "appName": "Detection of Violators",
-    "language": "Language"
+    "language": "Language",
+    "UploadLabel": "Upload video",
+    "AreaLabel": "Area selection",
+    "Next": "Next",
+    "Back": "Back",
+    "Finish": "Finish",
+    "Unknown": "Unknown"
   }
 }
