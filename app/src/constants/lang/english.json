@@ -7,6 +7,11 @@
     "Next": "Next",
     "Back": "Back",
     "Finish": "Finish",
+    "DnDDesc": "Drag 'n' drop video file here, or click to browse files.",
+    "DragDesc": "Drop file here.",
+    "Name": "Name",
+    "Size": "Size",
+    "Modified": "Modified",
     "Unknown": "Unknown"
   }
 }

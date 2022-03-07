@@ -2,6 +2,7 @@ import React, { memo, useContext } from "react";
 import { StepContext } from "../utils/StepProvider";
 import ConfigScreen from "./ConfigScreen";
 import ProcessingScreen from "./ProcessingScreen";
+import { DataProvider } from "../utils/DataProvider";
 
 const ScreenMnager = memo((props) => {
   const { currentStep } = useContext(StepContext);
@@ -11,7 +12,11 @@ const ScreenMnager = memo((props) => {
     <React.Fragment>
       {(() => {
         if (currentStep < 2) {
-          return <ConfigScreen />;
+          return (
+            <DataProvider>
+              <ConfigScreen />
+            </DataProvider>
+          );
         } else if (currentStep < 3) {
           return <ProcessingScreen />;
         } else {

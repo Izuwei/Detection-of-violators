@@ -2,6 +2,7 @@ import React, { memo, useCallback, useContext } from "react";
 import { Stepper, Step, StepLabel, Box, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { StepContext } from "../utils/StepProvider";
+import FileDropzone from "../components/FileDropzone";
 
 const ConfigScreen = memo(() => {
   const { t } = useTranslation();
@@ -38,7 +39,7 @@ const ConfigScreen = memo(() => {
           // TODO: Dodělat componenty
           switch (currentStep) {
             case 0:
-              return "0";
+              return <FileDropzone />;
             case 1:
               return "1";
             default:

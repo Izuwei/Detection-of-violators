@@ -7,6 +7,11 @@
     "Next": "Další",
     "Back": "Zpět",
     "Finish": "Dokončit",
+    "DnDDesc": "Přetáhněte sem soubor s videem nebo kliknutím procházejte soubory.",
+    "DragDesc": "Přetáhněte soubor sem.",
+    "Name": "Název",
+    "Size": "Velikost",
+    "Modified": "Změněno",
     "Unknown": "Neznámý"
   }
 }
