@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useContext, useState } from "react";
+import { IconButton, Tooltip, Typography } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { Stage, Layer, Rect } from "react-konva";
-import { Button, Typography } from "@mui/material";
 import { DataContext } from "../utils/DataProvider";
 import { useTranslation } from "react-i18next";
 
@@ -94,6 +95,8 @@ const AreaSelection = memo(() => {
             width={video.thumbnailWidth}
             height={video.thumbnailHeight}
             fillPatternImage={videoThumbnail}
+            fillPatternScaleX={video.thumbnailScale}
+            fillPatternScaleY={video.thumbnailScale}
           />
           {areaOfInterest.map((value) => {
             return (
@@ -124,7 +127,15 @@ const AreaSelection = memo(() => {
           })}
         </Layer>
       </Stage>
-      <Button onClick={() => reloadVideoThumbnail(video.url)}>Reload</Button>
+      <Tooltip title={t("ReloadImage")}>
+        <IconButton
+          color="info"
+          size="large"
+          onClick={() => reloadVideoThumbnail(video.url)}
+        >
+          <RefreshIcon />
+        </IconButton>
+      </Tooltip>
     </React.Fragment>
   );
 });

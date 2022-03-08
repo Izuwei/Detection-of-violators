@@ -29,6 +29,8 @@ const FileDropzone = memo(() => {
   } = useDropzone({
     accept: "video/*",
     multiple: false,
+    maxFiles: 1,
+    maxSize: 2000000000, // TODO: předělat na 1 GB
     onDrop: uploadVideo,
   });
 
