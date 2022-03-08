@@ -5,6 +5,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 import { DataContext } from "../utils/DataProvider";
@@ -15,7 +16,7 @@ import { useTranslation } from "react-i18next";
  */
 const FileDropzone = memo(() => {
   const { t } = useTranslation();
-  const { video, videoDetails, uploadVideo } = useContext(DataContext);
+  const { video, uploadVideo } = useContext(DataContext);
   console.log("Render: Dropzone");
 
   const {
@@ -43,22 +44,28 @@ const FileDropzone = memo(() => {
 
   return (
     <React.Fragment>
-      {video === undefined && (
+      {video.data === undefined && (
         <div {...getRootProps({ style: styles })}>
           <input {...getInputProps()} />
           {isDragActive ? t("DragDesc") : t("DnDDesc")}
         </div>
       )}
-      {video !== undefined && (
+      {video.data !== undefined && (
         <div>
           <video height="400" controls style={{ borderRadius: 4 }}>
-            <source src={URL.createObjectURL(video)} />
+            <source src={video.url} />
           </video>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell sx={tableStyles.cell} align="center">
                   {t("Name")}
+                </TableCell>
+                <TableCell sx={tableStyles.cell} align="center">
+                  {t("Duration")}
+                </TableCell>
+                <TableCell sx={tableStyles.cell} align="center">
+                  {t("Resolution")}
                 </TableCell>
                 <TableCell sx={tableStyles.cell} align="center">
                   {t("Size")}
@@ -74,19 +81,43 @@ const FileDropzone = memo(() => {
                   sx={{ borderBottom: "none", ...tableStyles.cell }}
                   align="center"
                 >
-                  {video.name}
+                  <Typography noWrap={true} sx={tableStyles.text}>
+                    {video.data.name}
+                  </Typography>
                 </TableCell>
                 <TableCell
                   sx={{ borderBottom: "none", ...tableStyles.cell }}
                   align="center"
                 >
-                  {(video.size / 1000000).toFixed(2)} MB
+                  <Typography sx={tableStyles.text}>
+                    {new Date(1000 * video.duration)
+                      .toISOString()
+                      .substr(11, 8)}
+                  </Typography>
                 </TableCell>
                 <TableCell
                   sx={{ borderBottom: "none", ...tableStyles.cell }}
                   align="center"
                 >
-                  {new Date(video.lastModified).toDateString()}
+                  <Typography sx={tableStyles.text}>
+                    {video.width}x{video.height}
+                  </Typography>
+                </TableCell>
+                <TableCell
+                  sx={{ borderBottom: "none", ...tableStyles.cell }}
+                  align="center"
+                >
+                  <Typography sx={tableStyles.text}>
+                    {(video.data.size / 1000000).toFixed(2)} MB
+                  </Typography>
+                </TableCell>
+                <TableCell
+                  sx={{ borderBottom: "none", ...tableStyles.cell }}
+                  align="center"
+                >
+                  <Typography sx={tableStyles.text}>
+                    {new Date(video.data.lastModified).toDateString()}
+                  </Typography>
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -131,6 +162,14 @@ const rejectStyles = {
 const tableStyles = {
   cell: {
     padding: 1,
+  },
+  text: {
+    fontSize: 14,
+    maxWidth: 120,
+    margin: "auto",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
   },
 };
 

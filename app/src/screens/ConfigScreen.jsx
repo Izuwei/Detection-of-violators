@@ -3,6 +3,7 @@ import { Stepper, Step, StepLabel, Box, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { StepContext } from "../utils/StepProvider";
 import FileDropzone from "../components/FileDropzone";
+import AreaSelection from "../components/AreaSelection";
 
 const ConfigScreen = memo(() => {
   const { t } = useTranslation();
@@ -41,9 +42,9 @@ const ConfigScreen = memo(() => {
             case 0:
               return <FileDropzone />;
             case 1:
-              return "1";
+              return <AreaSelection />;
             default:
-              return "error";
+              return "error"; // TODO: Dodělat Error componentu
           }
         })()}
       </div>

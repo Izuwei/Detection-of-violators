@@ -10,6 +10,8 @@
     "DnDDesc": "Přetáhněte sem soubor s videem nebo kliknutím procházejte soubory.",
     "DragDesc": "Přetáhněte soubor sem.",
     "Name": "Název",
+    "Duration": "Délka",
+    "Resolution": "Rozlišení",
     "Size": "Velikost",
     "Modified": "Změněno",
     "Unknown": "Neznámý"
