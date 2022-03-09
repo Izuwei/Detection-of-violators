@@ -15,6 +15,7 @@ import { useCookies } from "react-cookie";
 
 import gbFlag from "../assets/icons/gb_flag.svg";
 import czFlag from "../assets/icons/cz_flag.svg";
+import appIcon from "../assets/icons/app_icon.svg";
 
 const TopPanel = memo(() => {
   const { t, i18n } = useTranslation();
@@ -33,12 +34,8 @@ const TopPanel = memo(() => {
   return (
     <AppBar position="static" sx={styles.panel}>
       <Toolbar>
-        <Typography
-          variant="h5"
-          component="div"
-          align="center"
-          sx={styles.text}
-        >
+        <img src={appIcon} style={styles.appIcon} alt="app-icon" />
+        <Typography variant="h5" component="div" align="left" sx={styles.text}>
           {t("appName")}
         </Typography>
         <FormControl>
@@ -61,7 +58,7 @@ const TopPanel = memo(() => {
             <MenuItem sx={styles.menuItem} value={"en"}>
               <div style={styles.menuItemContainer}>
                 <ListItemIcon sx={{ minWidth: 0 }}>
-                  <img src={gbFlag} style={styles.icon} alt="GB-Flag" />
+                  <img src={gbFlag} style={styles.flagIcon} alt="GB-Flag" />
                 </ListItemIcon>
                 <ListItemText primary="English" />
               </div>
@@ -69,7 +66,7 @@ const TopPanel = memo(() => {
             <MenuItem sx={styles.menuItem} value={"cs"}>
               <div style={styles.menuItemContainer}>
                 <ListItemIcon sx={{ minWidth: 0 }}>
-                  <img src={czFlag} style={styles.icon} alt="CZ-Flag" />
+                  <img src={czFlag} style={styles.flagIcon} alt="CZ-Flag" />
                 </ListItemIcon>
                 <ListItemText primary="Česky" />
               </div>
@@ -116,7 +113,12 @@ const styles = {
     display: "flex",
     alignItems: "center",
   },
-  icon: {
+  appIcon: {
+    marginRight: 10,
+    width: 36,
+    height: 36,
+  },
+  flagIcon: {
     width: 20,
     height: 20,
     borderRadius: 5,

@@ -9,6 +9,7 @@ export const DataProvider = memo(({ children }) => {
     width: undefined,
     height: undefined,
     duration: undefined,
+    aspectRatio: undefined,
   });
   const [videoThumbnail, setVideoThumbnail] = useState(undefined);
   const [detectionArea, setDetectionArea] = useState([]);
@@ -109,6 +110,7 @@ export const DataProvider = memo(({ children }) => {
               width: tempVideo.videoWidth,
               height: tempVideo.videoHeight,
               duration: parseInt(tempVideo.duration),
+              aspectRatio: tempVideo.videoWidth / tempVideo.videoHeight,
             }));
             console.log("Info: Video uploaded.");
           },
@@ -119,11 +121,25 @@ export const DataProvider = memo(({ children }) => {
     [reloadVideoThumbnail]
   );
 
+  const removeVideo = useCallback(() => {
+    setVideoThumbnail(undefined);
+    setDetectionArea([]);
+    setVideo({
+      data: undefined,
+      url: undefined,
+      width: undefined,
+      height: undefined,
+      duration: undefined,
+      aspectRatio: undefined,
+    });
+  }, []);
+
   return (
     <DataContext.Provider
       value={{
         video: video,
         uploadVideo: uploadVideo,
+        removeVideo: removeVideo,
         videoThumbnail: videoThumbnail,
         reloadVideoThumbnail: reloadVideoThumbnail,
         areaOfInterest: detectionArea,

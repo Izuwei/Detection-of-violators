@@ -1,12 +1,15 @@
-import React, { memo, useContext, useMemo } from "react";
+import React, { memo, useCallback, useContext, useMemo } from "react";
 import {
+  IconButton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import Clear from "@mui/icons-material/Clear";
 import { useDropzone } from "react-dropzone";
 import { DataContext } from "../utils/DataProvider";
 import { useTranslation } from "react-i18next";
@@ -14,10 +17,23 @@ import { useTranslation } from "react-i18next";
 /**
  * https://react-dropzone.js.org/#section-styling-dropzone
  */
-const FileDropzone = memo(() => {
+const FileDropzone = memo(({ setStepStatus }) => {
   const { t } = useTranslation();
-  const { video, uploadVideo } = useContext(DataContext);
+  const { video, uploadVideo, removeVideo } = useContext(DataContext);
   console.log("Render: Dropzone");
+
+  const handleClear = useCallback(() => {
+    setStepStatus(false);
+    removeVideo();
+  }, [setStepStatus, removeVideo]);
+
+  const handleDropFile = useCallback(
+    (event) => {
+      uploadVideo(event);
+      setStepStatus(true);
+    },
+    [uploadVideo, setStepStatus]
+  );
 
   const {
     getRootProps,
@@ -31,7 +47,7 @@ const FileDropzone = memo(() => {
     multiple: false,
     maxFiles: 1,
     maxSize: 2000000000, // TODO: předělat na 1 GB
-    onDrop: uploadVideo,
+    onDrop: handleDropFile,
   });
 
   const styles = useMemo(
@@ -54,7 +70,11 @@ const FileDropzone = memo(() => {
       )}
       {video.data !== undefined && (
         <React.Fragment>
-          <video width={"100%"} controls style={{ borderRadius: 4 }}>
+          <video
+            width={video.aspectRatio < 1.5 && video.height > 400 ? 500 : "100%"}
+            controls
+            style={{ borderRadius: 4 }}
+          >
             <source src={video.url} />
           </video>
           <Table>
@@ -124,6 +144,11 @@ const FileDropzone = memo(() => {
               </TableRow>
             </TableBody>
           </Table>
+          <Tooltip title={t("Delete")}>
+            <IconButton color="info" size="large" onClick={handleClear}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
         </React.Fragment>
       )}
     </React.Fragment>
@@ -136,7 +161,7 @@ const baseStyles = {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: 24,
+  fontSize: 22,
   height: 400,
   width: "100%",
   borderWidth: 2,

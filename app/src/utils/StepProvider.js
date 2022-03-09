@@ -7,6 +7,7 @@ export const StepProvider = memo(({ children }) => {
   console.log("Render: StepProvider");
 
   const [activeStep, setActiveStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState([false, true]);
 
   const nextStep = useCallback(() => {
     setActiveStep((prev) => prev + 1);
@@ -16,6 +17,17 @@ export const StepProvider = memo(({ children }) => {
     setActiveStep((prev) => prev - 1);
   }, []);
 
+  const setStepStatus = useCallback(
+    (status) => {
+      setCompletedSteps((prevState) => {
+        let stateCopy = prevState.slice();
+        stateCopy[activeStep] = status;
+        return stateCopy;
+      });
+    },
+    [activeStep]
+  );
+
   return (
     <StepContext.Provider
       value={{
@@ -23,6 +35,8 @@ export const StepProvider = memo(({ children }) => {
         currentStep: activeStep,
         backStep: backStep,
         nextStep: nextStep,
+        completedSteps,
+        setStepStatus: setStepStatus,
       }}
     >
       {children}

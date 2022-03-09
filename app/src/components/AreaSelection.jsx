@@ -32,7 +32,7 @@ const AreaSelection = memo(() => {
   const [drawingAOI, setDrawingAOI] = useState([]);
 
   useEffect(() => {
-    var contentArea = parseInt(width * 0.6);
+    var contentArea = parseInt(width * 0.4);
     contentArea = contentArea < 500 ? 500 : contentArea;
     const thumbnailWidth =
       video.width < contentArea ? video.width : contentArea;
@@ -107,14 +107,14 @@ const AreaSelection = memo(() => {
   return (
     <React.Fragment>
       {areaOfInterest.length === 1 ? (
-        <Typography align="center" sx={styles.coords}>
+        <Typography sx={styles.coords}>
           X:{parseInt(areaOfInterest[0].x)} Y:
           {parseInt(areaOfInterest[0].y)} Width:
           {parseInt(areaOfInterest[0].width)} Height:
           {parseInt(areaOfInterest[0].height)}
         </Typography>
       ) : (
-        <Typography align="center" sx={styles.coords}>
+        <Typography sx={styles.coords}>
           X: - Y: - {t("Width")}: - {t("Height")}: -
         </Typography>
       )}
@@ -178,6 +178,9 @@ const AreaSelection = memo(() => {
 const styles = {
   coords: {
     fontFamily: "Consolas",
+    fontSize: 14,
+    // width: "100%",
+    // textAlign: "right",
   },
 };
 
