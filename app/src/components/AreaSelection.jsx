@@ -1,12 +1,20 @@
-import React, { memo, useCallback, useContext, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { IconButton, Tooltip, Typography } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Stage, Layer, Rect } from "react-konva";
 import { DataContext } from "../utils/DataProvider";
 import { useTranslation } from "react-i18next";
+import useWindowDimensions from "../utils/windowDimensions";
 
 const AreaSelection = memo(() => {
   const { t } = useTranslation();
+  const { width } = useWindowDimensions();
 
   const {
     video,
@@ -15,17 +23,44 @@ const AreaSelection = memo(() => {
     areaOfInterest,
     setupAreaOfInterest,
   } = useContext(DataContext);
-  console.log(video);
+
+  const [thumbnailSize, setThumbnailSize] = useState({
+    width: 500,
+    height: 500,
+    scale: 1,
+  }); // Random values, has no effect but fixes warnings.
   const [drawingAOI, setDrawingAOI] = useState([]);
+
+  useEffect(() => {
+    var contentArea = parseInt(width * 0.6);
+    contentArea = contentArea < 500 ? 500 : contentArea;
+    const thumbnailWidth =
+      video.width < contentArea ? video.width : contentArea;
+    const scale = thumbnailWidth / video.width;
+
+    setThumbnailSize({
+      width: thumbnailWidth,
+      height: parseInt(video.height * scale),
+      scale: scale,
+    });
+  }, [video, width]);
 
   const handleMouseDown = useCallback(
     (event) => {
       if (drawingAOI.length === 0) {
         const { x, y } = event.target.getStage().getPointerPosition();
-        setDrawingAOI([{ x, y, width: 0, height: 0, key: 0 }]);
+        setDrawingAOI([
+          {
+            x: x / thumbnailSize.scale,
+            y: y / thumbnailSize.scale,
+            width: 0,
+            height: 0,
+            key: 0,
+          },
+        ]);
       }
     },
-    [drawingAOI]
+    [drawingAOI, thumbnailSize]
   );
 
   const handleMouseMove = useCallback(
@@ -39,14 +74,14 @@ const AreaSelection = memo(() => {
           {
             x: sx,
             y: sy,
-            width: x - sx,
-            height: y - sy,
+            width: x / thumbnailSize.scale - sx,
+            height: y / thumbnailSize.scale - sy,
             key: 0,
           },
         ]);
       }
     },
-    [drawingAOI, setupAreaOfInterest]
+    [drawingAOI, setupAreaOfInterest, thumbnailSize]
   );
 
   const handleMouseUp = useCallback(
@@ -60,23 +95,23 @@ const AreaSelection = memo(() => {
           {
             sx: sx,
             sy: sy,
-            ex: x,
-            ey: y,
+            ex: x / thumbnailSize.scale,
+            ey: y / thumbnailSize.scale,
           },
         ]);
       }
     },
-    [drawingAOI, setupAreaOfInterest]
+    [drawingAOI, setupAreaOfInterest, thumbnailSize]
   );
 
   return (
     <React.Fragment>
       {areaOfInterest.length === 1 ? (
         <Typography align="center" sx={styles.coords}>
-          X:{parseInt(areaOfInterest[0].x / video.thumbnailScale)} Y:
-          {parseInt(areaOfInterest[0].y / video.thumbnailScale)} Width:
-          {parseInt(areaOfInterest[0].width / video.thumbnailScale)} Height:
-          {parseInt(areaOfInterest[0].height / video.thumbnailScale)}
+          X:{parseInt(areaOfInterest[0].x)} Y:
+          {parseInt(areaOfInterest[0].y)} Width:
+          {parseInt(areaOfInterest[0].width)} Height:
+          {parseInt(areaOfInterest[0].height)}
         </Typography>
       ) : (
         <Typography align="center" sx={styles.coords}>
@@ -84,29 +119,29 @@ const AreaSelection = memo(() => {
         </Typography>
       )}
       <Stage
-        width={video.thumbnailWidth}
-        height={video.thumbnailHeight}
+        width={thumbnailSize.width}
+        height={thumbnailSize.height}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
         <Layer>
           <Rect
-            width={video.thumbnailWidth}
-            height={video.thumbnailHeight}
+            width={thumbnailSize.width}
+            height={thumbnailSize.height}
             fillPatternImage={videoThumbnail}
-            fillPatternScaleX={video.thumbnailScale}
-            fillPatternScaleY={video.thumbnailScale}
+            fillPatternScaleX={thumbnailSize.scale}
+            fillPatternScaleY={thumbnailSize.scale}
           />
           {areaOfInterest.map((value) => {
             return (
               <Rect
                 cornerRadius={3}
                 key={value.key}
-                x={value.x}
-                y={value.y}
-                width={value.width}
-                height={value.height}
+                x={value.x * thumbnailSize.scale}
+                y={value.y * thumbnailSize.scale}
+                width={value.width * thumbnailSize.scale}
+                height={value.height * thumbnailSize.scale}
                 fill="transparent"
                 stroke="orange"
               />
@@ -116,10 +151,10 @@ const AreaSelection = memo(() => {
             return (
               <Rect
                 key={value.key}
-                x={value.x}
-                y={value.y}
-                width={value.width}
-                height={value.height}
+                x={value.x * thumbnailSize.scale}
+                y={value.y * thumbnailSize.scale}
+                width={value.width * thumbnailSize.scale}
+                height={value.height * thumbnailSize.scale}
                 fill="transparent"
                 stroke="orange"
               />

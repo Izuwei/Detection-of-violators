@@ -53,8 +53,8 @@ const FileDropzone = memo(() => {
         </div>
       )}
       {video.data !== undefined && (
-        <div>
-          <video height="400" controls style={{ borderRadius: 4 }}>
+        <React.Fragment>
+          <video width={"100%"} controls style={{ borderRadius: 4 }}>
             <source src={video.url} />
           </video>
           <Table>
@@ -124,14 +124,13 @@ const FileDropzone = memo(() => {
               </TableRow>
             </TableBody>
           </Table>
-        </div>
+        </React.Fragment>
       )}
     </React.Fragment>
   );
 });
 
 const baseStyles = {
-  flex: 1,
   display: "flex",
   cursor: "pointer",
   flexDirection: "column",
@@ -139,6 +138,7 @@ const baseStyles = {
   justifyContent: "center",
   fontSize: 24,
   height: 400,
+  width: "100%",
   borderWidth: 2,
   borderRadius: 4,
   borderColor: "#eeeeee",

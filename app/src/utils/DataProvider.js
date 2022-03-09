@@ -10,19 +10,18 @@ export const DataProvider = memo(({ children }) => {
     height: undefined,
     duration: undefined,
   });
-  const [videoThumbnail, setVideoThumbnail] = useState(undefined); // base64 img/png
+  const [videoThumbnail, setVideoThumbnail] = useState(undefined);
   const [detectionArea, setDetectionArea] = useState([]);
 
-  /**
-   * Attention: Coordinates are calculated against the thumbnail, so it is necessary to recalculate them against the scale.
-   */
   const setupAreaOfInterest = useCallback(
     (boxes) => {
       if (boxes.length === 0) {
         setDetectionArea([]);
       } else {
-        const sx = parseInt(Math.min(boxes[0].sx, boxes[0].ex)); // Starting point x
-        const sy = parseInt(Math.min(boxes[0].sy, boxes[0].ey)); // Starting point y
+        var sx = parseInt(Math.min(boxes[0].sx, boxes[0].ex)); // Starting point x
+        var sy = parseInt(Math.min(boxes[0].sy, boxes[0].ey)); // Starting point y
+        sx = sx < 0 ? 0 : sx;
+        sy = sy < 0 ? 0 : sy;
 
         var ex = parseInt(Math.max(boxes[0].sx, boxes[0].ex)); // End point x
         var ey = parseInt(Math.max(boxes[0].sy, boxes[0].ey)); // End point y
@@ -37,10 +36,10 @@ export const DataProvider = memo(({ children }) => {
         } else {
           setDetectionArea((prevState) => [
             {
-              x: sx < 0 ? 0 : sx,
-              y: sy < 0 ? 0 : sy,
-              width: ex - sx,
-              height: ey - sy,
+              x: sx,
+              y: sy,
+              width: width,
+              height: height,
               key: prevState.length + 1,
             },
           ]);
@@ -83,8 +82,8 @@ export const DataProvider = memo(({ children }) => {
     function reloadRandomFrame() {
       if (!isNaN(tempVideo.duration)) {
         var rand = Math.round(Math.random() * tempVideo.duration) + 1;
-        console.log("Thumbnail: loaded at " + rand + " seconds.");
         tempVideo.currentTime = rand;
+        console.log("Thumbnail: loaded at " + rand + " seconds.");
       }
     }
   }, []);
@@ -103,19 +102,12 @@ export const DataProvider = memo(({ children }) => {
           function () {
             reloadVideoThumbnail(videoURL);
 
-            const thumbnailWidth =
-              tempVideo.videoWidth < 900 ? tempVideo.videoWidth : 900;
-            const scale = thumbnailWidth / tempVideo.videoWidth;
-
             setVideo((prevState) => ({
               ...prevState,
               data: accptedFile[0],
               url: videoURL,
               width: tempVideo.videoWidth,
               height: tempVideo.videoHeight,
-              thumbnailWidth: thumbnailWidth,
-              thumbnailHeight: parseInt(tempVideo.videoHeight * scale),
-              thumbnailScale: scale,
               duration: parseInt(tempVideo.duration),
             }));
             console.log("Info: Video uploaded.");

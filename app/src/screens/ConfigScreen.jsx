@@ -35,7 +35,13 @@ const ConfigScreen = memo(() => {
           );
         })}
       </Stepper>
-      <div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
         {(() => {
           // TODO: Dodělat componenty
           switch (currentStep) {
