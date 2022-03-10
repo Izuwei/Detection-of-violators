@@ -22,6 +22,10 @@ class Detection:
         self.bboxColor = bboxColor
         self.cornerColor = cornerColor
         self.textColor = textColor
+        self.center = [
+            int(bbox[0] + (bbox[2] >> 1)),
+            int(bbox[1] + (bbox[3] >> 1)),
+        ]  # [centerX, centerY]
 
     def setIdentity(self, name, faceDistance):
         self.identity = name

@@ -8,6 +8,7 @@ from detector import Detector
 from detection import Detection
 from recognizer import Recognizer
 from tracker import Tracker
+from quietStdout import QuietStdout
 
 faceDB = "database"  # Cesta k databázi se snímky obličejů
 
@@ -41,7 +42,7 @@ def draw(frame, detection, fps):
         detection.bbox[3],
     )
 
-    if detection.label == "person":
+    if args.recognition == True and detection.label == "person":
         # Identita osoby
         cv2.putText(
             frame,
@@ -149,6 +150,13 @@ def main():
     videoFPS = video.get(cv2.CAP_PROP_FPS)
     codec = cv2.VideoWriter_fourcc(*"XVID")
 
+    # Ošetření hranic detekční oblasti
+    if args.area != None:
+        args.area[0] = args.area[0] if args.area[0] >= 0 else 0
+        args.area[1] = args.area[1] if args.area[1] >= 0 else 0
+        args.area[2] = args.area[2] if args.area[2] <= videoWidth else videoWidth
+        args.area[3] = args.area[3] if args.area[3] <= videoHeight else videoHeight
+
     outputVideo = cv2.VideoWriter(
         args.output, codec, videoFPS, (videoWidth, videoHeight)
     )
@@ -162,33 +170,50 @@ def main():
         if not ret:
             break
 
+        # Detekce objektů
         labels, confs, bboxes = detector.predict(frame)
 
         detections = []
         for label, conf, bbox in zip(labels, confs, bboxes):
             detections.append(Detection(label, conf, bbox))
 
-        for detection in detections:
-            if detection.label == "person":
-                bbox = detection.bbox
-                x, y, w, h = bbox[0], bbox[1], bbox[2], bbox[3]
+        # Rozpoznávání obličejů
+        if args.recognition == True:
+            with QuietStdout():
+                for detection in detections:
+                    if detection.label == "person":
+                        bbox = detection.bbox
+                        x, y, w, h = bbox[0], bbox[1], bbox[2], bbox[3]
 
-                startX = x if x > 0 else 0
-                startY = y if y > 0 else 0
-                endX = x + w if x + w < videoWidth else videoWidth
-                endY = y + h if y + h < videoHeight else videoHeight
+                        startX = x if x > 0 else 0
+                        startY = y if y > 0 else 0
+                        endX = x + w if x + w < videoWidth else videoWidth
+                        endY = y + h if y + h < videoHeight else videoHeight
 
-                personCrop = frame[startY:endY, startX:endX]
+                        personCrop = frame[startY:endY, startX:endX]
 
-                identity, faceDistance = recognizer.find(personCrop)
-                detection.setIdentity(identity, faceDistance)
+                        identity, faceDistance = recognizer.find(personCrop)
+                        detection.setIdentity(identity, faceDistance)
 
+        # Trasování
         if args.tracking == True:
             detections = tracker.track(frame, detections)
 
+        # Vykreslení zjištěných detekcí
         for detection in detections:
             if detection.label in OBJECTS:
-                draw(frame, detection, videoFPS)
+                # Detekce na celém snímku
+                if args.area == None:
+                    draw(frame, detection, videoFPS)
+
+                # Detekce ve vymezené části snímku
+                elif (detection.center[0] >= args.area[0] and detection.center[0] <= args.area[2] and
+                      detection.center[1] >= args.area[1] and detection.center[1] <= args.area[3]):
+                    draw(frame, detection, videoFPS)
+
+        # Vykreslení rámečku detekční oblasti
+        if args.frame == True and args.area != None:
+            cv2.rectangle(frame, (args.area[0], args.area[1]), (args.area[2], args.area[3]), (27, 26, 222), 2)
 
         # Výpis počítadel na snímek
         if args.tracking == True and args.counter == True:
