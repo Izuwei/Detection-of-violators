@@ -8,6 +8,7 @@
     "Next": "Další",
     "Back": "Zpět",
     "Finish": "Dokončit",
+    "Close": "Zavřít",
     "Step1Desc": "Nahrajte video soubor ke zpracování.",
     "Step2Desc": "Vyberte oblast, ve které chcete provést detekci.",
     "DnDDesc": "Přetáhněte sem video nebo kliknutím procházejte soubory",
@@ -21,6 +22,8 @@
     "Width": "Šířka",
     "Height": "Výška",
     "ReloadImage": "Změnit náhled",
-    "Unknown": "Neznámý"
+    "Unknown": "Neznámý",
+    "VideoUploadSuccessNotification": "Video bylo úspěšně načteno",
+    "VideoUploadErrorNotification": "Nepodporovaný formát videa"
   }
 }

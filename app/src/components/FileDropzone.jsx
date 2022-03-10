@@ -10,15 +10,19 @@ import {
   Typography,
 } from "@mui/material";
 import Clear from "@mui/icons-material/Clear";
-import { useDropzone } from "react-dropzone";
-import { DataContext } from "../utils/DataProvider";
 import { useTranslation } from "react-i18next";
+import { useDropzone } from "react-dropzone";
+import { useSnackbar } from "notistack";
+
+import { DataContext } from "../utils/DataProvider";
 
 /**
  * https://react-dropzone.js.org/#section-styling-dropzone
  */
 const FileDropzone = memo(({ setStepStatus }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+
   const { video, uploadVideo, removeVideo } = useContext(DataContext);
   console.log("Render: Dropzone");
 
@@ -31,8 +35,18 @@ const FileDropzone = memo(({ setStepStatus }) => {
     (event) => {
       uploadVideo(event);
       setStepStatus(true);
+      enqueueSnackbar(t("VideoUploadSuccessNotification"), {
+        variant: "success",
+      });
     },
-    [uploadVideo, setStepStatus]
+    [uploadVideo, setStepStatus, enqueueSnackbar, t]
+  );
+
+  const handleDropError = useCallback(
+    (event) => {
+      enqueueSnackbar(t("VideoUploadErrorNotification"), { variant: "error" });
+    },
+    [enqueueSnackbar, t]
   );
 
   const {
@@ -46,8 +60,9 @@ const FileDropzone = memo(({ setStepStatus }) => {
     accept: "video/*",
     multiple: false,
     maxFiles: 1,
-    maxSize: 2000000000, // TODO: předělat na 1 GB
-    onDrop: handleDropFile,
+    maxSize: 2000000000, // TODO: předělat na 1 GB a omezit formaty (bez mkv)
+    onDropAccepted: handleDropFile,
+    onDropRejected: handleDropError,
   });
 
   const styles = useMemo(
@@ -66,6 +81,8 @@ const FileDropzone = memo(({ setStepStatus }) => {
         <div {...getRootProps({ style: styles })}>
           <input {...getInputProps()} />
           {isDragActive ? t("DragDesc") : t("DnDDesc")}
+          <br />
+          <p style={{ fontSize: 14, fontStyle: "italic" }}>.avi, .mp4, .webm</p>
         </div>
       )}
       {video.data !== undefined && (

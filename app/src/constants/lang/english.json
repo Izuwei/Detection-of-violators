@@ -8,6 +8,7 @@
     "Next": "Next",
     "Back": "Back",
     "Finish": "Finish",
+    "Close": "Close",
     "Step1Desc": "Upload video for processing.",
     "Step2Desc": "Select the area in which you want to perform detection.",
     "DnDDesc": "Drag 'n' drop video here, or click to browse files",
@@ -21,6 +22,8 @@
     "Width": "Width",
     "Height": "Height",
     "ReloadImage": "Reload image",
-    "Unknown": "Unknown"
+    "Unknown": "Unknown",
+    "VideoUploadSuccessNotification": "Video has been successfully loaded",
+    "VideoUploadErrorNotification": "Unsupported video format"
   }
 }

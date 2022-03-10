@@ -167,6 +167,7 @@ const AreaSelection = memo(() => {
           color="info"
           size="large"
           onClick={() => reloadVideoThumbnail(video.url)}
+          sx={{ marginTop: 1 }}
         >
           <RefreshIcon />
         </IconButton>

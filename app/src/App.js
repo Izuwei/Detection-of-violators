@@ -1,21 +1,54 @@
 import "./utils/i18n";
+
+import { createRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { CookiesProvider } from "react-cookie";
+import { SnackbarProvider } from "notistack";
+import { IconButton, Tooltip } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
+import { StepProvider } from "./utils/StepProvider";
 import TopPanel from "./components/TopPanel";
 import ScreenMnager from "./screens/ScreenManager";
-import { StepProvider } from "./utils/StepProvider";
 
 import "./App.css";
 
 const App = () => {
+  const notistackRef = createRef();
+  const { t } = useTranslation();
+  console.log("Render: App");
+
+  const onCloseSnackbar = useCallback(
+    (key) => () => {
+      notistackRef.current.closeSnackbar(key);
+    },
+    [notistackRef]
+  );
+
   return (
-    <CookiesProvider>
-      <div className="App">
-        <TopPanel />
-        <StepProvider>
-          <ScreenMnager />
-        </StepProvider>
-      </div>
-    </CookiesProvider>
+    <div className="App">
+      <CookiesProvider>
+        <SnackbarProvider
+          ref={notistackRef}
+          maxSnack={3}
+          action={(key) => (
+            <Tooltip title={t("Close")}>
+              <IconButton
+                onClick={onCloseSnackbar(key)}
+                sx={{ color: "white" }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        >
+          <TopPanel />
+          <StepProvider>
+            <ScreenMnager />
+          </StepProvider>
+        </SnackbarProvider>
+      </CookiesProvider>
+    </div>
   );
 };
 
