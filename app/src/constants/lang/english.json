@@ -33,6 +33,10 @@
     "Finishing": "Finishing...",
     "UploadError": "Error occurred while uploading video",
     "ProcessingError": "Error occurred while processing video",
-    "ConnectionError": "Error connection to the server"
+    "ConnectionError": "Error connection to the server",
+    "StartAgain": "Start again",
+    "ShareLink": "Share link",
+    "CopyToClipboard": "Copy to clipboard",
+    "LinkCopiedToClipboard": "Link copied to clipboard"
   }
 }

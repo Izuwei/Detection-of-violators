@@ -40,7 +40,7 @@ const ProcessingScreen = memo(() => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { resetStep } = useContext(StepContext);
+  const { nextStep, resetStep } = useContext(StepContext);
   const { video, areaOfInterest, setProcessedVideo } = useContext(DataContext);
 
   const [description, setDescription] = useState(t("Uploading"));
@@ -74,6 +74,8 @@ const ProcessingScreen = memo(() => {
     socket.on("processed", (videoURL) => {
       setDescription(t("Finishing"));
       setProcessedVideo(videoURL);
+      nextStep();
+
       console.log(videoURL); // video url by tady měla být
     });
 
@@ -102,7 +104,15 @@ const ProcessingScreen = memo(() => {
     return () => {
       socket.disconnect();
     };
-  }, [video, areaOfInterest, setProcessedVideo, enqueueSnackbar, t, resetStep]);
+  }, [
+    video,
+    areaOfInterest,
+    setProcessedVideo,
+    enqueueSnackbar,
+    t,
+    nextStep,
+    resetStep,
+  ]);
 
   return (
     <div className="container" style={styles.container}>
@@ -115,15 +125,6 @@ const ProcessingScreen = memo(() => {
         name={t("Processed")}
       />
     </div>
-    // <React.Fragment>
-    //   {videoResult === undefined ? (
-    //     <div>TODO: Processing...</div>
-    //   ) : (
-    //     <video controls muted style={{ borderRadius: 4 }}>
-    //       <source src={videoResult} type="video/mp4" />
-    //     </video>
-    //   )}
-    // </React.Fragment>
   );
 });
 

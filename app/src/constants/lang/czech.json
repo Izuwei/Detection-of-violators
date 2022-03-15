@@ -33,6 +33,10 @@
     "Finishing": "Dokončuji...",
     "UploadError": "Nastala chyba při nahrávání videa",
     "ProcessingError": "Nastala chyba při zpracování videa",
-    "ConnectionError": "Nastala chyba při spojení se serverem"
+    "ConnectionError": "Nastala chyba při spojení se serverem",
+    "StartAgain": "Začít znovu",
+    "ShareLink": "Sdílet odkaz",
+    "CopyToClipboard": "Zkopírovat do schránky",
+    "LinkCopiedToClipboard": "Odkaz byl zkopírován do schránky"
   }
 }
