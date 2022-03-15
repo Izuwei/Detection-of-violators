@@ -11,6 +11,7 @@ export const DataProvider = memo(({ children }) => {
     duration: undefined,
     aspectRatio: undefined,
   });
+  const [processedVideo, setProcessedVideo] = useState(undefined);
   const [videoThumbnail, setVideoThumbnail] = useState(undefined);
   const [detectionArea, setDetectionArea] = useState([]);
 
@@ -144,6 +145,8 @@ export const DataProvider = memo(({ children }) => {
         reloadVideoThumbnail: reloadVideoThumbnail,
         areaOfInterest: detectionArea,
         setupAreaOfInterest: setupAreaOfInterest,
+        processedVideo: processedVideo,
+        setProcessedVideo: setProcessedVideo,
       }}
     >
       {children}

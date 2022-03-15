@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
   });
 
   siofu.on("error", (event) => {
-    // TODO: dodělat ošetření pak ke klientský straně
+    socket.emit("upload_error", event);
     console.log("Error from uploader", event);
   });
 
@@ -80,12 +80,10 @@ io.on("connection", (socket) => {
     python.stdout.on("data", (data) => {
       const text = data.toString();
       if (text.match(/^Progress:/)) {
-        console.log(text.split(" ")[1]);
         socket.emit("progress", parseInt(text.split(" ")[1]));
       }
     });
 
-    // TODO: dodělat výpisy
     python.stderr.on("data", (data) => {
       console.log(data.toString());
     });
@@ -99,8 +97,7 @@ io.on("connection", (socket) => {
           `${config.server_url}:${config.express_port}/video/${socket.id}`
         );
       } else {
-        // TODO: dodělat ošetření na klientské straně.
-        console.log("Python error.");
+        socket.emit("process_error", code);
       }
     });
   });

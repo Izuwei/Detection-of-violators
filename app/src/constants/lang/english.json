@@ -24,6 +24,15 @@
     "ReloadImage": "Reload image",
     "Unknown": "Unknown",
     "VideoUploadSuccessNotification": "Video has been successfully loaded",
-    "VideoUploadErrorNotification": "Unsupported video format"
+    "VideoUploadErrorNotification": "Unsupported video format",
+    "Uploaded": "Uploaded",
+    "Processed": "Processed",
+    "Uploading": "Uploading...",
+    "SettingUpEnvironment": "Setting up environment...",
+    "Processing": "Processing...",
+    "Finishing": "Finishing...",
+    "UploadError": "Error occurred while uploading video",
+    "ProcessingError": "Error occurred while processing video",
+    "ConnectionError": "Error connection to the server"
   }
 }

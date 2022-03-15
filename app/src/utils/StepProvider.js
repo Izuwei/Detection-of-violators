@@ -9,6 +9,10 @@ export const StepProvider = memo(({ children }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([false, true]);
 
+  const resetStep = useCallback(() => {
+    setActiveStep(0);
+  }, []);
+
   const nextStep = useCallback(() => {
     setActiveStep((prev) => prev + 1);
   }, []);
@@ -37,6 +41,7 @@ export const StepProvider = memo(({ children }) => {
         nextStep: nextStep,
         completedSteps,
         setStepStatus: setStepStatus,
+        resetStep: resetStep,
       }}
     >
       {children}
