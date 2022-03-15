@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 
-videoFilename = "processed.avi"
+suffix = ".mp4"
 
 def argumentParser():
     parser = argparse.ArgumentParser(
@@ -13,10 +13,19 @@ def argumentParser():
         "-i",
         "--input",
         type=str,
-        default="D:\VUT\DP\Videos/downtown_la.mp4",
+        default="D:\VUT\DP\Videos/downtown_short.mp4",
         required=False,
         metavar="",
         help="Path to video source.",
+    )
+    parser.add_argument(
+        "-n",
+        "--name",
+        type=str,
+        default="processed",
+        required=False,
+        metavar="",
+        help="The name of the output file.",
     )
     # TODO: dodělat tiny?
     parser.add_argument(
@@ -117,8 +126,11 @@ def argumentParser():
         sys.stderr.write("Specified output path does not exist.\n")
         exit(1)
 
+    # Přidání přípony souboru
+    parser.name += suffix
+
     # Cesta výstupního video souboru
-    parser.output = os.path.join(parser.output, videoFilename)
+    parser.output = os.path.join(parser.output, parser.name)
 
     # Převod formátu detekční oblasti z [x,y,w,h] na [x1,y1,x2,y2]
     if parser.area != None:

@@ -60,7 +60,7 @@ const FileDropzone = memo(({ setStepStatus }) => {
     accept: "video/*",
     multiple: false,
     maxFiles: 1,
-    maxSize: 2000000000, // TODO: předělat na 1 GB a omezit formaty (bez mkv)
+    maxSize: 3000000000, // TODO: předělat na 1 GB a omezit formaty (bez mkv, avi)
     onDropAccepted: handleDropFile,
     onDropRejected: handleDropError,
   });
@@ -82,7 +82,7 @@ const FileDropzone = memo(({ setStepStatus }) => {
           <input {...getInputProps()} />
           {isDragActive ? t("DragDesc") : t("DnDDesc")}
           <br />
-          <p style={{ fontSize: 14, fontStyle: "italic" }}>.avi, .mp4, .webm</p>
+          <p style={{ fontSize: 14, fontStyle: "italic" }}>.mp4, .webm</p>
         </div>
       )}
       {video.data !== undefined && (
@@ -90,6 +90,7 @@ const FileDropzone = memo(({ setStepStatus }) => {
           <video
             width={video.aspectRatio < 1.5 && video.height > 400 ? 500 : "100%"}
             controls
+            muted
             style={{ borderRadius: 4 }}
           >
             <source src={video.url} />

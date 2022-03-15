@@ -1,0 +1,8 @@
+{
+  "client_url": "http://localhost",
+  "server_url": "http://localhost",
+  "client_port": 3000,
+  "socket_port": 3001,
+  "express_port": 3002,
+  "python_program": "main.py"
+}

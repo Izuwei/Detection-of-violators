@@ -8,6 +8,7 @@ import { IconButton, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { StepProvider } from "./utils/StepProvider";
+import { DataProvider } from "./utils/DataProvider";
 import TopPanel from "./components/TopPanel";
 import ScreenMnager from "./screens/ScreenManager";
 
@@ -44,7 +45,9 @@ const App = () => {
         >
           <TopPanel />
           <StepProvider>
-            <ScreenMnager />
+            <DataProvider>
+              <ScreenMnager />
+            </DataProvider>
           </StepProvider>
         </SnackbarProvider>
       </CookiesProvider>

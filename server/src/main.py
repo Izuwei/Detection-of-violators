@@ -148,7 +148,7 @@ def main():
     videoWidth = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     videoHeight = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     videoFPS = video.get(cv2.CAP_PROP_FPS)
-    codec = cv2.VideoWriter_fourcc(*"XVID")
+    codec = cv2.VideoWriter_fourcc(*"avc1")
 
     # Ošetření hranic detekční oblasti
     if args.area != None:
