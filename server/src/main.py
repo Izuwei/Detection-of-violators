@@ -145,6 +145,7 @@ def main():
         sys.stderr.write("Failed to open the video.\n")
         exit(1)
 
+    frameCnt = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     videoWidth = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     videoHeight = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     videoFPS = video.get(cv2.CAP_PROP_FPS)
@@ -163,12 +164,22 @@ def main():
 
     objectIDs = set()
 
+    sendLimit = frameCnt // 20
+    sentProgress = 1
+    progressFrame = 0
+
     while True:
         ret, frame = video.read()
 
         # Kontrola dostupnosti snímku
         if not ret:
             break
+
+        if progressFrame == sendLimit:
+            print("Progress: " + str(sentProgress * 5) + " %", flush=True)
+            sentProgress += 1
+            progressFrame = 0
+        progressFrame += 1
 
         # Detekce objektů
         labels, confs, bboxes = detector.predict(frame)
@@ -263,6 +274,7 @@ def main():
         if cv2.waitKey(2) & 0xFF == ord("q"):
             break
 
+    print("Progress: 100 %", flush=True)
     video.release()
     cv2.destroyAllWindows()
 

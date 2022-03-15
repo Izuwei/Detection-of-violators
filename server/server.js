@@ -50,7 +50,6 @@ io.on("connection", (socket) => {
   siofu.listen(socket);
 
   siofu.on("saved", (event) => {
-    console.log(event.file);
     videoPath = event.file.pathName;
   });
 
@@ -78,13 +77,17 @@ io.on("connection", (socket) => {
       }
     );
 
-    // TODO: dodělat výpisy
-    python.stderr.on("data", (data) => {
-      console.log("Python: " + data);
+    python.stdout.on("data", (data) => {
+      const text = data.toString();
+      if (text.match(/^Progress:/)) {
+        console.log(text.split(" ")[1]);
+        socket.emit("progress", parseInt(text.split(" ")[1]));
+      }
     });
 
-    python.stdout.on("data", (data) => {
-      console.log("Python: " + data);
+    // TODO: dodělat výpisy
+    python.stderr.on("data", (data) => {
+      console.log(data.toString());
     });
 
     python.on("close", (code) => {

@@ -7,6 +7,7 @@ import { DataContext } from "../utils/DataProvider";
 const ProcessingScreen = memo(() => {
   const { video, areaOfInterest } = useContext(DataContext);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [detectionProgress, setDetectionProgress] = useState(0);
   const [videoResult, setVideoResult] = useState(undefined);
 
   console.log("Render: ProcessingScreen");
@@ -18,7 +19,7 @@ const ProcessingScreen = memo(() => {
     uploader.addEventListener("progress", (event) => {
       const progress = parseInt((event.bytesLoaded / event.file.size) * 100);
       setUploadProgress(progress);
-      console.log("Progress: " + progress);
+      // console.log("Progress: " + progress);
     });
 
     uploader.addEventListener("complete", (event) => {
@@ -28,20 +29,14 @@ const ProcessingScreen = memo(() => {
 
     uploader.submitFiles([video.data]);
 
+    socket.on("progress", (progress) => {
+      console.log("Progress: " + progress);
+      setDetectionProgress(progress);
+    });
+
     socket.on("processed", (videoURL) => {
       setVideoResult(videoURL);
       console.log(videoURL); // video url by tady měla být
-    });
-
-    // Toto zatím nepoužívám, nevím jestli použiju
-    socket.on("result", (event) => {
-      console.log(event);
-      const videoBlob = new Blob([event], {
-        type: "video/avi",
-      });
-      var url = URL.createObjectURL(videoBlob);
-      setVideoResult(url);
-      console.log(url);
     });
   }, [video, areaOfInterest, setVideoResult]);
 
