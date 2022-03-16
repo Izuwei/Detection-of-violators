@@ -11,6 +11,16 @@ export const DataProvider = memo(({ children }) => {
     duration: undefined,
     aspectRatio: undefined,
   });
+  const [procConfig, setProcConfig] = useState({
+    cars: false,
+    model: "medium",
+    recognition: false,
+    tracking: false,
+    tracks: false,
+    trackLen: 1.5,
+    counters: false,
+    timestamp: false,
+  });
   const [processedVideo, setProcessedVideo] = useState(undefined);
   const [videoThumbnail, setVideoThumbnail] = useState(undefined);
   const [detectionArea, setDetectionArea] = useState([]);
@@ -143,6 +153,8 @@ export const DataProvider = memo(({ children }) => {
         removeVideo: removeVideo,
         videoThumbnail: videoThumbnail,
         reloadVideoThumbnail: reloadVideoThumbnail,
+        procConfig: procConfig,
+        setProcConfig: setProcConfig,
         areaOfInterest: detectionArea,
         setupAreaOfInterest: setupAreaOfInterest,
         processedVideo: processedVideo,

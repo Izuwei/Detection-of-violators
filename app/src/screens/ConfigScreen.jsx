@@ -8,9 +8,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+
 import { StepContext } from "../utils/StepProvider";
 import FileDropzone from "../components/FileDropzone";
 import AreaSelection from "../components/AreaSelection";
+import ProcessConfig from "../components/ProcessConfig";
 
 const ConfigScreen = memo(() => {
   const { t } = useTranslation();
@@ -24,7 +26,7 @@ const ConfigScreen = memo(() => {
   } = useContext(StepContext);
   console.log("Render: Stepper");
 
-  const optionalSteps = [false, true];
+  const optionalSteps = [false, false, true];
 
   const createStepLabel = useCallback(
     (label) => {
@@ -32,6 +34,8 @@ const ConfigScreen = memo(() => {
         case steps[0]: // Upload
           return t("UploadLabel");
         case steps[1]: // Area
+          return t("ConfigurationLabel");
+        case steps[2]: // Area
           return t("AreaLabel");
         default:
           return t("Unknown");
@@ -74,6 +78,8 @@ const ConfigScreen = memo(() => {
               return <p>{t("Step1Desc")}</p>;
             case 1:
               return <p>{t("Step2Desc")}</p>;
+            case 2:
+              return <p>{t("Step3Desc")}</p>;
             default:
               return "error"; // TODO: Dodělat Error componentu
           }
@@ -92,6 +98,8 @@ const ConfigScreen = memo(() => {
             case 0:
               return <FileDropzone setStepStatus={setStepStatus} />;
             case 1:
+              return <ProcessConfig />;
+            case 2:
               return <AreaSelection />;
             default:
               return "error"; // TODO: Dodělat Error componentu

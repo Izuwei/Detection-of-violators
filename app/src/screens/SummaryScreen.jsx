@@ -20,7 +20,7 @@ const SummaryScreen = memo((props) => {
         variant: "success",
       });
     }
-  }, [processedVideo]);
+  }, [processedVideo, enqueueSnackbar, t]);
 
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>

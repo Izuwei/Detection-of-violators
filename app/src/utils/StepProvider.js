@@ -3,11 +3,11 @@ import React, { createContext, memo, useCallback, useState } from "react";
 export const StepContext = createContext();
 
 export const StepProvider = memo(({ children }) => {
-  const STEPS = ["Upload", "Area"];
+  const STEPS = ["Upload", "Configuration", "Area"];
   console.log("Render: StepProvider");
 
   const [activeStep, setActiveStep] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState([false, true]);
+  const [completedSteps, setCompletedSteps] = useState([false, true, true]);
 
   const resetStep = useCallback(() => {
     setActiveStep(0);

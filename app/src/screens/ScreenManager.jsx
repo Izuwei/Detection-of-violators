@@ -12,11 +12,11 @@ const ScreenMnager = memo((props) => {
     <React.Fragment>
       {(() => {
         // TODO: opravit to číslování na ==
-        if (currentStep < 2) {
+        if (currentStep < 3) {
           return <ConfigScreen />;
-        } else if (currentStep < 3) {
-          return <ProcessingScreen />;
         } else if (currentStep < 4) {
+          return <ProcessingScreen />;
+        } else if (currentStep < 5) {
           return <SummaryScreen />;
         } else {
           resetStep();
