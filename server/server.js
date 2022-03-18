@@ -1,4 +1,5 @@
 const config = require("./config.json");
+const utils = require("./utils");
 
 const fs = require("fs");
 const path = require("path");
@@ -60,6 +61,7 @@ io.on("connection", (socket) => {
 
   socket.on("start-detection", (data) => {
     console.log("Processing: " + videoPath);
+    const args = utils.parseArgsCLI(data);
 
     const python = spawn(
       "python",
@@ -71,7 +73,7 @@ io.on("connection", (socket) => {
         videoDir,
         "--name",
         socket.id,
-      ],
+      ].concat(args),
       {
         cwd: "./src",
       }

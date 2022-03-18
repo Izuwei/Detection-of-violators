@@ -41,7 +41,8 @@ const ProcessingScreen = memo(() => {
   const { enqueueSnackbar } = useSnackbar();
 
   const { nextStep, resetStep } = useContext(StepContext);
-  const { video, areaOfInterest, setProcessedVideo } = useContext(DataContext);
+  const { video, procConfig, areaOfInterest, setProcessedVideo } =
+    useContext(DataContext);
 
   const [description, setDescription] = useState(t("Uploading"));
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -59,7 +60,7 @@ const ProcessingScreen = memo(() => {
     });
 
     uploader.addEventListener("complete", (event) => {
-      socket.emit("start-detection", { area: areaOfInterest });
+      socket.emit("start-detection", { ...procConfig, area: areaOfInterest });
       setDescription(t("SettingUpEnvironment"));
       setUploadProgress(100);
     });
@@ -108,6 +109,7 @@ const ProcessingScreen = memo(() => {
     video,
     areaOfInterest,
     setProcessedVideo,
+    procConfig,
     enqueueSnackbar,
     t,
     nextStep,

@@ -212,6 +212,10 @@ def main():
 
         # Vykreslení zjištěných detekcí
         for detection in detections:
+            # Jestli nedetekujeme auta, tak skip
+            if detection.label == "car" and args.cars == False:
+                continue
+
             if detection.label in OBJECTS:
                 # Detekce na celém snímku
                 if args.area == None:

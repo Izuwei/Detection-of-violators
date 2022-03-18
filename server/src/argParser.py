@@ -65,6 +65,15 @@ def argumentParser():
         help="Sets path for the output. (default: .)",
     )
     parser.add_argument(
+        "-v",
+        "--cars",
+        default=False,
+        required=False,
+        metavar="",
+        action=argparse.BooleanOptionalAction,
+        help="Include cars into detected objects.",
+    )
+    parser.add_argument(
         "-f",
         "--frame",
         default=False,

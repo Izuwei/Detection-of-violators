@@ -45,6 +45,7 @@
     "DisplayCountersInfo": "Display current and total number of detected objects on each frame.",
     "DisplayTimestampInfo": "Display current timestamp in the video on each frame.",
     "ReloadImage": "Reload image",
+    "RenderArea": "Render area on each frame",
     "Unknown": "Unknown",
     "VideoUploadSuccessNotification": "Video has been successfully loaded",
     "VideoUploadErrorNotification": "Unsupported video format",
@@ -60,6 +61,6 @@
     "StartAgain": "Start again",
     "ShareLink": "Share link",
     "CopyToClipboard": "Copy to clipboard",
-    "LinkCopiedToClipboard": "Link copied to clipboard"
+    "LinkCopiedToClipboard": "Link copied to the clipboard"
   }
 }

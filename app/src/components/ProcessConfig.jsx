@@ -273,7 +273,7 @@ const ProcessConfig = memo((props) => {
               valueLabelDisplay="auto"
               step={0.5}
               marks
-              min={0}
+              min={0.5}
               max={10}
             />
             <InfoIconContainer title={t("TrackLengthInfo")} />

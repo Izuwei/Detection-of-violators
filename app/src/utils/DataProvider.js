@@ -20,6 +20,7 @@ export const DataProvider = memo(({ children }) => {
     trackLen: 1.5,
     counters: false,
     timestamp: false,
+    frame: true,
   });
   const [processedVideo, setProcessedVideo] = useState(undefined);
   const [videoThumbnail, setVideoThumbnail] = useState(undefined);

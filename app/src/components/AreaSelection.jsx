@@ -5,12 +5,15 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { IconButton, Tooltip, Typography } from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import { Stage, Layer, Rect } from "react-konva";
-import { DataContext } from "../utils/DataProvider";
 import { useTranslation } from "react-i18next";
+
+import RefreshIcon from "@mui/icons-material/Refresh";
+import CropFreeIcon from "@mui/icons-material/CropFree";
+
 import useWindowDimensions from "../utils/windowDimensions";
+import { DataContext } from "../utils/DataProvider";
 
 const AreaSelection = memo(() => {
   const { t } = useTranslation();
@@ -22,6 +25,8 @@ const AreaSelection = memo(() => {
     reloadVideoThumbnail,
     areaOfInterest,
     setupAreaOfInterest,
+    procConfig,
+    setProcConfig,
   } = useContext(DataContext);
 
   const [thumbnailSize, setThumbnailSize] = useState({
@@ -162,16 +167,33 @@ const AreaSelection = memo(() => {
           })}
         </Layer>
       </Stage>
-      <Tooltip title={t("ReloadImage")}>
-        <IconButton
-          color="info"
-          size="large"
-          onClick={() => reloadVideoThumbnail(video.url)}
-          sx={{ marginTop: 1 }}
-        >
-          <RefreshIcon />
-        </IconButton>
-      </Tooltip>
+      <Box sx={{ display: "flex", justifyContent: "row" }}>
+        <Tooltip title={t("ReloadImage")}>
+          <IconButton
+            color="info"
+            size="large"
+            onClick={() => reloadVideoThumbnail(video.url)}
+            sx={{ margin: 1 }}
+          >
+            <RefreshIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={t("RenderArea")}>
+          <IconButton
+            color="info"
+            size="large"
+            onClick={() =>
+              setProcConfig((state) => ({ ...state, frame: !state.frame }))
+            }
+            sx={{
+              margin: 1,
+              color: procConfig.frame ? "#2e7d32" : "#d32f2f",
+            }}
+          >
+            <CropFreeIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
     </React.Fragment>
   );
 });

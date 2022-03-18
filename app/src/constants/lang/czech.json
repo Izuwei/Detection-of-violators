@@ -45,6 +45,7 @@
     "DisplayCountersInfo": "Na každém snímku zobrazí aktuální a celkový počet detekovaných objektů.",
     "DisplayTimestampInfo": "Zobrazí aktuální časovovou stopu ve videu na každém snímku.",
     "ReloadImage": "Změnit náhled",
+    "RenderArea": "Vykreslit oblast na každém snímku",
     "Unknown": "Neznámý",
     "VideoUploadSuccessNotification": "Video bylo úspěšně načteno",
     "VideoUploadErrorNotification": "Nepodporovaný formát videa",
