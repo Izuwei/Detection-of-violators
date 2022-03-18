@@ -23,6 +23,8 @@
     "Delete": "Delete",
     "Width": "Width",
     "Height": "Height",
+    "Accuracy": "Accuracy",
+    "Performance": "Performance",
     "Options": "Options",
     "ModelAccuracy": "Model accuracy",
     "High": "High",

@@ -167,7 +167,7 @@ const AreaSelection = memo(() => {
           })}
         </Layer>
       </Stage>
-      <Box sx={{ display: "flex", justifyContent: "row" }}>
+      <Box sx={{ display: "flex" }}>
         <Tooltip title={t("ReloadImage")}>
           <IconButton
             color="info"
