@@ -11,8 +11,9 @@ import { useTranslation } from "react-i18next";
 
 import { StepContext } from "../utils/StepProvider";
 import FileDropzone from "../components/FileDropzone";
-import AreaSelection from "../components/AreaSelection";
 import ProcessConfig from "../components/ProcessConfig";
+import AreaSelection from "../components/AreaSelection";
+import FaceUpload from "../components/FaceUpload";
 
 const ConfigScreen = memo(() => {
   const { t } = useTranslation();
@@ -26,17 +27,19 @@ const ConfigScreen = memo(() => {
   } = useContext(StepContext);
   console.log("Render: Stepper");
 
-  const optionalSteps = [false, false, true];
+  const optionalSteps = [false, false, true, true];
 
   const createStepLabel = useCallback(
     (label) => {
       switch (label) {
         case steps[0]: // Upload
           return t("UploadLabel");
-        case steps[1]: // Area
+        case steps[1]: // Config
           return t("ConfigurationLabel");
         case steps[2]: // Area
           return t("AreaLabel");
+        case steps[3]: // Faces
+          return t("RecognitionLabel");
         default:
           return t("Unknown");
       }
@@ -80,6 +83,8 @@ const ConfigScreen = memo(() => {
               return <p>{t("Step2Desc")}</p>;
             case 2:
               return <p>{t("Step3Desc")}</p>;
+            case 3:
+              return <p>{t("Step4Desc")}</p>;
             default:
               return "error"; // TODO: Dodělat Error componentu
           }
@@ -101,6 +106,8 @@ const ConfigScreen = memo(() => {
               return <ProcessConfig />;
             case 2:
               return <AreaSelection />;
+            case 3:
+              return <FaceUpload />;
             default:
               return "error"; // TODO: Dodělat Error componentu
           }

@@ -72,7 +72,7 @@ const RadialSeparators = (props) => {
 const InfoIconContainer = (props) => {
   return (
     <Tooltip title={props.title}>
-      <Icon color="info" sx={{ marginLeft: 1 }}>
+      <Icon color="info" sx={{ marginLeft: 1, cursor: "help" }}>
         <InfoIcon />
       </Icon>
     </Tooltip>
@@ -405,7 +405,7 @@ const ProcessConfig = memo((props) => {
               <Slider
                 disabled={procConfig.tracks === false}
                 sx={{ width: 220 }}
-                defaultValue={1.5}
+                value={procConfig.trackLen}
                 onChange={(event) =>
                   setProcConfig((state) => ({
                     ...state,

@@ -25,6 +25,7 @@ export const DataProvider = memo(({ children }) => {
   const [processedVideo, setProcessedVideo] = useState(undefined);
   const [videoThumbnail, setVideoThumbnail] = useState(undefined);
   const [detectionArea, setDetectionArea] = useState([]);
+  const [recognitionDatabase, setRecognitionDatabase] = useState([]);
 
   const setupAreaOfInterest = useCallback(
     (boxes) => {
@@ -160,6 +161,8 @@ export const DataProvider = memo(({ children }) => {
         setupAreaOfInterest: setupAreaOfInterest,
         processedVideo: processedVideo,
         setProcessedVideo: setProcessedVideo,
+        recognitionDatabase: recognitionDatabase,
+        setRecognitionDatabase: setRecognitionDatabase,
       }}
     >
       {children}
