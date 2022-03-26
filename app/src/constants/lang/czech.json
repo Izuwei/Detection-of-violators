@@ -70,6 +70,7 @@
     "Processing": "Zpracovávám...",
     "Finishing": "Dokončuji...",
     "UploadError": "Nastala chyba při nahrávání videa",
+    "FaceUploadError": "Nastala chyba při nahrávání obrázku obličeje",
     "ProcessingError": "Nastala chyba při zpracování videa",
     "ConnectionError": "Nastala chyba při spojení se serverem",
     "EmptyImageError": "Obrázky nemohou být prázdné",

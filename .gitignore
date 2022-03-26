@@ -1,5 +1,7 @@
 __pycache__
 .vscode
 node_modules
+server/tmp
+server/videos
 *.mp4
 *.webm

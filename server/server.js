@@ -43,10 +43,14 @@ console.log("Videos location: " + videoDir);
  */
 io.on("connection", (socket) => {
   var videoPath = "";
+
   const clientTmpDir = path.join(tmpDir, socket.id);
   fs.mkdirSync(clientTmpDir);
 
-  var siofu = new SocketIOFileUpload();
+  const clientDatabaseDir = path.join(clientTmpDir, "database");
+  fs.mkdirSync(clientDatabaseDir);
+
+  var siofu = new SocketIOFileUpload({ topicName: "video" });
   siofu.dir = clientTmpDir;
   siofu.listen(socket);
 
@@ -56,7 +60,28 @@ io.on("connection", (socket) => {
 
   siofu.on("error", (event) => {
     socket.emit("upload_error", event);
-    console.log("Error from uploader", event);
+    console.log("Video upload error", event);
+  });
+
+  var faceUpload = new SocketIOFileUpload({ topicName: "faces" });
+  faceUpload.dir = clientDatabaseDir;
+  faceUpload.listen(socket);
+
+  faceUpload.on("saved", (event) => {
+    let firstname = event.file.firstname.replace(/\s/g, "").toLowerCase();
+    let lastname = event.file.lastname.replace(/\s/g, "").toLowerCase();
+    let suffix = event.file.name.split(".").pop();
+
+    fs.rename(
+      `${clientDatabaseDir}/${event.file.name}`,
+      `${clientDatabaseDir}/${firstname}_${lastname}_${event.file.meta.id}.${suffix}`,
+      () => {}
+    );
+  });
+
+  faceUpload.on("error", (event) => {
+    socket.emit("face_upload_error", event);
+    console.log("Face upload error", event);
   });
 
   socket.on("start-detection", (data) => {

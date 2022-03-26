@@ -70,6 +70,7 @@
     "Processing": "Processing...",
     "Finishing": "Finishing...",
     "UploadError": "Error occurred while uploading video",
+    "FaceUploadError": "Error occurred while uploading face image",
     "ProcessingError": "Error occurred while processing video",
     "ConnectionError": "Error connection to the server",
     "EmptyImageError": "Images cannot be empty",

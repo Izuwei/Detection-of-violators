@@ -41,31 +41,73 @@ const ProcessingScreen = memo(() => {
   const { enqueueSnackbar } = useSnackbar();
 
   const { nextStep, resetStep } = useContext(StepContext);
-  const { video, procConfig, areaOfInterest, setProcessedVideo } =
-    useContext(DataContext);
+  const {
+    video,
+    procConfig,
+    areaOfInterest,
+    recognitionDatabase,
+    setProcessedVideo,
+  } = useContext(DataContext);
 
   const [description, setDescription] = useState(t("Uploading"));
   const [uploadProgress, setUploadProgress] = useState(0);
   const [detectionProgress, setDetectionProgress] = useState(0);
 
-  console.log("Render: ProcessingScreen");
-
   useEffect(() => {
-    const socket = io(config.server_url + ":" + config.socket_port);
-    const uploader = new SocketIOFileUpload(socket);
+    var faces = [];
+    var faceCnt = 0;
+    var faceSent = 0;
 
-    uploader.addEventListener("progress", (event) => {
+    for (
+      let personIdx = 0;
+      personIdx < recognitionDatabase.length;
+      personIdx++
+    ) {
+      for (
+        let faceIdx = 0;
+        faceIdx < recognitionDatabase[personIdx].images.length;
+        faceIdx++
+      ) {
+        recognitionDatabase[personIdx].images[faceIdx].file.meta = {
+          id: "" + personIdx + faceIdx,
+          firstname: recognitionDatabase[personIdx].firstname,
+          lastname: recognitionDatabase[personIdx].lastname,
+        };
+        faces.push(recognitionDatabase[personIdx].images[faceIdx].file);
+        faceCnt += 1;
+      }
+    }
+
+    const socket = io(config.server_url + ":" + config.socket_port);
+    var baseUploader = new SocketIOFileUpload(socket, { topicName: "video" });
+
+    baseUploader.addEventListener("progress", (event) => {
       const progress = parseInt((event.bytesLoaded / event.file.size) * 100);
       setUploadProgress(progress);
     });
 
-    uploader.addEventListener("complete", (event) => {
+    baseUploader.addEventListener("complete", (event) => {
       socket.emit("start-detection", { ...procConfig, area: areaOfInterest });
       setDescription(t("SettingUpEnvironment"));
       setUploadProgress(100);
     });
 
-    uploader.submitFiles([video.data]);
+    var imageUploader = new SocketIOFileUpload(socket, {
+      topicName: "faces",
+    });
+
+    imageUploader.addEventListener("complete", (event) => {
+      faceSent += 1;
+      if (faceSent === faceCnt) {
+        baseUploader.submitFiles([video.data]); // Face images sent => upload video
+      }
+    });
+
+    if (faces.length === 0) {
+      baseUploader.submitFiles([video.data]); // Upload video without uploading face images
+    } else {
+      imageUploader.submitFiles(faces); // Upload face images before video
+    }
 
     socket.on("progress", (progress) => {
       setDetectionProgress(progress);
@@ -94,6 +136,12 @@ const ProcessingScreen = memo(() => {
       resetStep();
     });
 
+    socket.on("face_upload_error", (err) => {
+      enqueueSnackbar(t("FaceUploadError"), {
+        variant: "error",
+      });
+    });
+
     socket.on("connect_error", (err) => {
       enqueueSnackbar(t("ConnectionError"), {
         variant: "error",
@@ -108,6 +156,7 @@ const ProcessingScreen = memo(() => {
   }, [
     video,
     areaOfInterest,
+    recognitionDatabase,
     setProcessedVideo,
     procConfig,
     enqueueSnackbar,
