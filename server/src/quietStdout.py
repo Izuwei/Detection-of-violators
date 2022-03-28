@@ -5,7 +5,7 @@ import os
 class QuietStdout:
     def __enter__(self):
         self.originalStdout = sys.stdout
-        sys.stdout = open(os.devnull, 'w')
+        sys.stdout = open(os.devnull, "w")
 
     def __exit__(self, excType, excVal, excTb):
         sys.stdout.close()

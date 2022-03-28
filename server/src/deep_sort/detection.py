@@ -33,6 +33,8 @@ class Detection(object):
         label,
         identity,
         faceDistance,
+        personId,
+        faceId,
         feature,
         bboxColor,
         cornerColor,
@@ -43,6 +45,8 @@ class Detection(object):
         self.label = label
         self.identity = identity
         self.faceDistance = faceDistance
+        self.personId = personId
+        self.faceId = faceId
         self.bboxColor = bboxColor
         self.cornerColor = cornerColor
         self.textColor = textColor
@@ -84,3 +88,11 @@ class Detection(object):
     def get_faceDistance(self):
         """Returns faceDistance of the detected person, measuring the similarity of the face."""
         return self.faceDistance
+
+    def get_personId(self):
+        """Returns ID of the detected person."""
+        return self.personId
+
+    def get_faceId(self):
+        """Returns face image ID of the detected person."""
+        return self.faceId

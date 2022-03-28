@@ -2,7 +2,6 @@ import os
 import sys
 import argparse
 
-suffix = ".mp4"
 
 def argumentParser():
     parser = argparse.ArgumentParser(
@@ -13,10 +12,10 @@ def argumentParser():
         "-i",
         "--input",
         type=str,
-        default="D:\VUT\DP\Videos/downtown_short.mp4",
+        default="D:\VUT\DP\Videos/downtown_la.mp4",
         required=False,
         metavar="",
-        help="Path to video source.",
+        help="Path to video file.",
     )
     parser.add_argument(
         "-n",
@@ -135,9 +134,6 @@ def argumentParser():
         sys.stderr.write("Specified output path does not exist.\n")
         exit(1)
 
-    # Přidání přípony souboru
-    parser.name += suffix
-
     # Cesta výstupního video souboru
     parser.output = os.path.join(parser.output, parser.name)
 
@@ -147,7 +143,7 @@ def argumentParser():
         parser.area[1] = abs(parser.area[1])
         parser.area[2] = abs(parser.area[2])
         parser.area[3] = abs(parser.area[3])
-        parser.area[2] = parser.area[0] + parser.area[2] # x2 = x1 + width
-        parser.area[3] = parser.area[1] + parser.area[3] # y2 = y1 + height
+        parser.area[2] = parser.area[0] + parser.area[2]  # x2 = x1 + width
+        parser.area[3] = parser.area[1] + parser.area[3]  # y2 = y1 + height
 
     return parser

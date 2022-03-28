@@ -4,10 +4,11 @@ import time
 import datetime
 
 from argParser import argumentParser
-from detector import Detector
 from detection import Detection
+from detector import Detector
 from recognizer import Recognizer
 from tracker import Tracker
+from recorder import Recorder
 from quietStdout import QuietStdout
 
 faceDB = "database"  # Cesta k databázi se snímky obličejů
@@ -139,6 +140,8 @@ def main():
     if args.tracking == True:
         tracker = Tracker()
 
+    recorder = Recorder(OBJECTS)
+
     video = cv2.VideoCapture(args.input)
 
     if not video.isOpened():  # Kontrola, zda se video povedlo otevřít
@@ -159,7 +162,7 @@ def main():
         args.area[3] = args.area[3] if args.area[3] <= videoHeight else videoHeight
 
     outputVideo = cv2.VideoWriter(
-        args.output, codec, videoFPS, (videoWidth, videoHeight)
+        args.output + ".mp4", codec, videoFPS, (videoWidth, videoHeight)
     )
 
     objectIDs = set()
@@ -174,6 +177,9 @@ def main():
         # Kontrola dostupnosti snímku
         if not ret:
             break
+
+        frameNum = int(video.get(cv2.CAP_PROP_POS_FRAMES))
+        timeStamp = int(frameNum / videoFPS)
 
         if progressFrame == sendLimit:
             print("Progress: " + str(sentProgress * 5) + " %", flush=True)
@@ -203,8 +209,10 @@ def main():
 
                         personCrop = frame[startY:endY, startX:endX]
 
-                        identity, faceDistance = recognizer.find(personCrop)
-                        detection.setIdentity(identity, faceDistance)
+                        identity, faceDistance, personId, faceId = recognizer.find(
+                            personCrop
+                        )
+                        detection.setIdentity(identity, faceDistance, personId, faceId)
 
         # Trasování
         if args.tracking == True:
@@ -220,15 +228,27 @@ def main():
                 # Detekce na celém snímku
                 if args.area == None:
                     draw(frame, detection, videoFPS)
+                    recorder.add(detection, timeStamp)
 
                 # Detekce ve vymezené části snímku
-                elif (detection.center[0] >= args.area[0] and detection.center[0] <= args.area[2] and
-                      detection.center[1] >= args.area[1] and detection.center[1] <= args.area[3]):
+                elif (
+                    detection.center[0] >= args.area[0]
+                    and detection.center[0] <= args.area[2]
+                    and detection.center[1] >= args.area[1]
+                    and detection.center[1] <= args.area[3]
+                ):
                     draw(frame, detection, videoFPS)
+                    recorder.add(detection, timeStamp)
 
         # Vykreslení rámečku detekční oblasti
         if args.frame == True and args.area != None:
-            cv2.rectangle(frame, (args.area[0], args.area[1]), (args.area[2], args.area[3]), (27, 26, 222), 2)
+            cv2.rectangle(
+                frame,
+                (args.area[0], args.area[1]),
+                (args.area[2], args.area[3]),
+                (27, 26, 222),
+                2,
+            )
 
         # Výpis počítadel na snímek
         if args.tracking == True and args.counter == True:
@@ -259,9 +279,6 @@ def main():
 
         # Výpis času ve videu na snímek
         if args.timestamp == True:
-            frameNum = int(video.get(cv2.CAP_PROP_POS_FRAMES))
-            timeStamp = int(frameNum / videoFPS)
-
             cv2.putText(
                 frame,
                 f"{datetime.timedelta(seconds=timeStamp)}",
@@ -281,6 +298,10 @@ def main():
     print("Progress: 100 %", flush=True)
     video.release()
     cv2.destroyAllWindows()
+
+    summaryData = recorder.parseJSON()
+    with open(args.output + ".json", "w") as f:
+        f.write(summaryData)
 
 
 if __name__ == "__main__":

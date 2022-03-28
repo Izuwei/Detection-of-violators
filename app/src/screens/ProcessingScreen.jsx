@@ -68,12 +68,35 @@ const ProcessingScreen = memo(() => {
         faceIdx < recognitionDatabase[personIdx].images.length;
         faceIdx++
       ) {
-        recognitionDatabase[personIdx].images[faceIdx].file.meta = {
-          id: "" + personIdx + faceIdx,
-          firstname: recognitionDatabase[personIdx].firstname,
-          lastname: recognitionDatabase[personIdx].lastname,
+        // Image data
+        let firstname = recognitionDatabase[personIdx].firstname
+          .replace(/\s/g, "")
+          .toLowerCase();
+        let lastname = recognitionDatabase[personIdx].lastname
+          .replace(/\s/g, "")
+          .toLowerCase();
+        let personID = recognitionDatabase[personIdx].id;
+        let imageID = recognitionDatabase[personIdx].images[faceIdx].id;
+        let suffix = recognitionDatabase[personIdx].images[faceIdx].file.name
+          .split(".")
+          .pop();
+
+        // Rename file by recreating objects, because 'name' prop is read_only
+        var newFile = new File(
+          [recognitionDatabase[personIdx].images[faceIdx].file],
+          `${firstname}_${lastname}_${personID}_${imageID}.${suffix}`,
+          { type: recognitionDatabase[personIdx].images[faceIdx].file.type }
+        );
+
+        // Save metadata into image
+        newFile.meta = {
+          personID: personID,
+          imageID: imageID,
+          firstname: firstname,
+          lastname: lastname,
         };
-        faces.push(recognitionDatabase[personIdx].images[faceIdx].file);
+
+        faces.push(newFile);
         faceCnt += 1;
       }
     }

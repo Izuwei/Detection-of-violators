@@ -67,17 +67,20 @@ io.on("connection", (socket) => {
   faceUpload.dir = clientDatabaseDir;
   faceUpload.listen(socket);
 
-  faceUpload.on("saved", (event) => {
-    let firstname = event.file.firstname.replace(/\s/g, "").toLowerCase();
-    let lastname = event.file.lastname.replace(/\s/g, "").toLowerCase();
-    let suffix = event.file.name.split(".").pop();
-
-    fs.rename(
-      `${clientDatabaseDir}/${event.file.name}`,
-      `${clientDatabaseDir}/${firstname}_${lastname}_${event.file.meta.id}.${suffix}`,
-      () => {}
-    );
-  });
+  // faceUpload.on("saved", (event) => {
+  //   let firstname = event.file.meta.firstname.replace(/\s/g, "").toLowerCase();
+  //   let lastname = event.file.meta.lastname.replace(/\s/g, "").toLowerCase();
+  //   let personID = event.file.meta.personID;
+  //   let imageID = event.file.meta.imageID;
+  //   let suffix = event.file.name.split(".").pop();
+  //   console.log(event);
+  //
+  //   fs.rename(
+  //     `${clientDatabaseDir}/${event.file.name}`,
+  //     `${clientDatabaseDir}/${firstname}_${lastname}_${personID}_${imageID}.${suffix}`,
+  //     () => {}
+  //   );
+  // });
 
   faceUpload.on("error", (event) => {
     socket.emit("face_upload_error", event);

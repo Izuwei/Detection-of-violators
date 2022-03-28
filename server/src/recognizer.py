@@ -1,5 +1,4 @@
 import sys
-import re
 from deepface import DeepFace
 from deepface.basemodels import Facenet, VGGFace
 
@@ -19,8 +18,10 @@ class Recognizer:
         print("Recognizer: Model " + self.modelName + " loaded.")
 
     def find(self, person_bbox):
-        identity = "Unknown"
+        name = "Unknown"
         faceDistance = 1
+        personId = ""
+        faceId = ""
 
         try:
             df = DeepFace.find(
@@ -35,9 +36,13 @@ class Recognizer:
             if df.shape[0] > 0:
                 identity = df.iloc[0].identity
                 faceDistance = df.iloc[0, 1]
-                identity = identity.replace("\\", "/").split("/")[-2]
-                identity = re.sub(r"_+", " ", identity).strip().title()
+                identity = (
+                    identity.replace("\\", "/").split("/")[-1].split(".")[0].split("_")
+                )
+                name = identity[0] + " " + identity[1]
+                personId = identity[2]
+                faceId = identity[3]
         except:
             sys.stderr.write("Face recognition failed.\n")
 
-        return identity, faceDistance
+        return name.title(), faceDistance, personId, faceId

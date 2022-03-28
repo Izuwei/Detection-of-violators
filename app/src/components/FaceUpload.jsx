@@ -15,6 +15,7 @@ import { useDropzone } from "react-dropzone";
 import { useSnackbar } from "notistack";
 
 import { DataContext } from "../utils/DataProvider";
+import newID from "../utils/IDgenerator";
 
 import AddIcon from "@mui/icons-material/Add";
 import RestartIcon from "@mui/icons-material/RestartAlt";
@@ -59,7 +60,12 @@ const FaceUpload = memo((props) => {
       } else {
         setRecognitionDatabase((state) => [
           ...state,
-          { firstname: firstname, lastname: lastname, images: images },
+          {
+            id: newID(),
+            firstname: firstname,
+            lastname: lastname,
+            images: images,
+          },
         ]);
         enqueueSnackbar(t("Person added into database"), {
           variant: "success",
@@ -103,7 +109,11 @@ const FaceUpload = memo((props) => {
     var fnb = [];
 
     for (let i = 0; i < event.length; i++) {
-      fnb.push({ file: event[i], url: URL.createObjectURL(event[i]) });
+      fnb.push({
+        id: newID(),
+        file: event[i],
+        url: URL.createObjectURL(event[i]),
+      });
     }
 
     setImages((state) => state.concat(fnb));

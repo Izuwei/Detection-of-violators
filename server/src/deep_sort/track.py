@@ -78,12 +78,16 @@ class Track:
         conf=None,
         identity=None,
         faceDistance=None,
+        personId="",
+        faceId="",
     ):
         self.mean = mean
         self.label = label
         self.confidence = conf
         self.identity = identity
         self.faceDistance = faceDistance
+        self.personId = personId
+        self.faceId = faceId
         self.trail = []
         self.bboxColor = bboxColor
         self.cornerColor = cornerColor
@@ -181,6 +185,8 @@ class Track:
             ):
                 self.identity = detection.get_identity()
                 self.faceDistance = newFaceDistance
+                self.personId = detection.get_personId()
+                self.faceId = detection.get_faceId()
 
         self.trail.append(detection.center)
 
@@ -220,3 +226,11 @@ class Track:
     def get_faceDistance(self):
         """Returns faceDistance of the detected person, measuring the similarity of the face."""
         return self.faceDistance
+
+    def get_personId(self):
+        """Returns ID of the detected person."""
+        return self.personId
+
+    def get_faceId(self):
+        """Returns face image ID of the detected person."""
+        return self.faceId
