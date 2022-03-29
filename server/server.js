@@ -8,7 +8,14 @@ const { spawn } = require("child_process");
 var SocketIOFileUpload = require("socketio-file-upload");
 
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
+app.use(
+  cors({
+    origin: config.client_url + ":" + config.client_port,
+  })
+);
 
 const io = require("socket.io")(config.socket_port, {
   cors: {
@@ -101,6 +108,8 @@ io.on("connection", (socket) => {
         videoDir,
         "--name",
         socket.id,
+        "--database",
+        clientDatabaseDir,
       ].concat(args),
       {
         cwd: "./src",
@@ -122,10 +131,11 @@ io.on("connection", (socket) => {
       console.log("Python ended with: " + code);
 
       if (code === 0) {
-        socket.emit(
-          "processed",
-          `${config.server_url}:${config.express_port}/video/${socket.id}`
-        );
+        socket.emit("processed", {
+          videoURL: `${config.server_url}:${config.express_port}/video/${socket.id}`,
+          downloadURL: `${config.server_url}:${config.express_port}/download/${socket.id}`,
+          dataURL: `${config.server_url}:${config.express_port}/data/${socket.id}`,
+        });
       } else {
         socket.emit("process_error", code);
       }
@@ -143,15 +153,15 @@ io.on("connection", (socket) => {
  * Express.js
  */
 const videoRouter = require("./routes/video");
+const downloadRouter = require("./routes/download");
+const dataRouter = require("./routes/data");
 
 app.use("/video", videoRouter);
+app.use("/download", downloadRouter);
+app.use("/data", dataRouter);
 
 app.get("/", (req, res) => {
   res.send("Server is running.");
-});
-
-app.get("/video", (req, res) => {
-  res.sendFile("assets/sample.mp4", { root: __dirname });
 });
 
 app.listen(config.express_port);

@@ -1,8 +1,31 @@
-import React, { memo, useCallback, useContext } from "react";
-import { Box, IconButton, TextField, Tooltip } from "@mui/material";
-import RestartIcon from "@mui/icons-material/RestartAlt";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Chip,
+  Divider,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "notistack";
+
+import RestartIcon from "@mui/icons-material/RestartAlt";
+import DownloadIcon from "@mui/icons-material/Download";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import PersonIcon from "@mui/icons-material/Person";
 
 import { DataContext } from "../utils/DataProvider";
 import { StepContext } from "../utils/StepProvider";
@@ -10,27 +33,60 @@ import { StepContext } from "../utils/StepProvider";
 const SummaryScreen = memo((props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { video, processedVideo } = useContext(DataContext);
   const { resetStep } = useContext(StepContext);
+  const { video, processedVideo, recognitionDatabase } =
+    useContext(DataContext);
+
+  const videoRef = useRef(null);
+  const [videoData, setVideoData] = useState({});
+
+  console.log(recognitionDatabase);
 
   const copyToClipboard = useCallback(() => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(processedVideo);
+      navigator.clipboard.writeText(processedVideo.videoURL);
       enqueueSnackbar(t("LinkCopiedToClipboard"), {
         variant: "success",
       });
     }
   }, [processedVideo, enqueueSnackbar, t]);
 
+  const moveVideoTimestamp = useCallback((newTime) => {
+    videoRef.current.currentTime = newTime;
+  }, []);
+
+  const getImageUrlByID = useCallback(
+    (personID, imageID) => {
+      const personImages = recognitionDatabase.find(
+        (p) => p.id === personID
+      ).images;
+      return personImages.find((img) => img.id === imageID).url;
+    },
+    [recognitionDatabase]
+  );
+
+  useEffect(() => {
+    fetch(processedVideo.dataURL)
+      .then((response) => response.json())
+      .then((message) => {
+        console.log(message);
+        setVideoData(message);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [processedVideo]);
+
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>
       <video
+        ref={videoRef}
         width={video.aspectRatio < 1.5 && video.height > 400 ? 500 : "100%"}
         controls
         muted
         style={{ borderRadius: 4 }}
       >
-        <source src={processedVideo} />
+        <source src={processedVideo.videoURL} />
       </video>
       <Box
         sx={{
@@ -46,7 +102,7 @@ const SummaryScreen = memo((props) => {
           <TextField
             variant="outlined"
             label={t("ShareLink")}
-            defaultValue={processedVideo}
+            defaultValue={processedVideo.videoURL}
             onClick={copyToClipboard}
             InputProps={{
               readOnly: true,
@@ -62,19 +118,136 @@ const SummaryScreen = memo((props) => {
             }}
           />
         </Tooltip>
-        <Tooltip title={t("StartAgain")}>
-          <IconButton
-            color="error"
-            size="large"
-            sx={{ width: 50, height: 50 }}
-            onClick={resetStep}
-          >
-            <RestartIcon />
-          </IconButton>
-        </Tooltip>
+        <div
+          style={{
+            display: "flex",
+            contentAlign: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Tooltip title={t("Download")}>
+            <a href={processedVideo.downloadURL}>
+              <IconButton color="info" size="large" sx={styles.icons}>
+                <DownloadIcon />
+              </IconButton>
+            </a>
+          </Tooltip>
+          <Tooltip title={t("StartAgain")}>
+            <IconButton
+              color="error"
+              size="large"
+              sx={styles.icons}
+              onClick={resetStep}
+            >
+              <RestartIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </Box>
+      <Box>
+        {Object.keys(videoData).map((key, index) => {
+          if (key === "person" && videoData[key].length !== 0) {
+            return videoData[key].map((person, personIdx) => (
+              <Accordion key={"p_" + personIdx}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography sx={{ color: "#1976d2", fontWeight: 500 }}>
+                    {person.name === "Unknown"
+                      ? t("UnknownPerson")
+                      : person.name}
+                  </Typography>
+                </AccordionSummary>
+                {person.detections.map((detection, detectionIdx) => (
+                  <AccordionDetails
+                    key={"det_" + detectionIdx}
+                    sx={{
+                      paddingTop: 0,
+                      paddingRight: 2,
+                      paddingBottom: 0,
+                      paddingLeft: 2,
+                    }}
+                  >
+                    <div style={{ display: "flex" }}>
+                      <div style={{ width: "15%" }}>
+                        {person.name === "Unknown" ? (
+                          <PersonIcon sx={{ width: "100%", height: "100%" }} />
+                        ) : (
+                          <img
+                            style={{ width: "100%", borderRadius: 4 }}
+                            src={getImageUrlByID(
+                              parseInt(person.id),
+                              parseInt(detection.id)
+                            )}
+                            alt={person.id}
+                          />
+                        )}
+                      </div>
+                      <div
+                        style={{
+                          width: "85%",
+                          textAlign: "left",
+                          padding: 10,
+                        }}
+                      >
+                        {detection.timestamp.map((time, timeIdx) => (
+                          <Chip
+                            key={"ptime_" + timeIdx}
+                            sx={{ margin: 0.4 }}
+                            label={new Date(time * 1000)
+                              .toISOString()
+                              .substr(11, 8)}
+                            onDelete={() => moveVideoTimestamp(time)}
+                            deleteIcon={
+                              <Tooltip title={t("Move")}>
+                                <PlayCircleIcon />
+                              </Tooltip>
+                            }
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <Divider orientation="horizontal" sx={{ margin: 2 }} />
+                  </AccordionDetails>
+                ))}
+              </Accordion>
+            ));
+          } else if (key !== "person" && videoData[key].length !== 0) {
+            return (
+              <Accordion key={"o_" + index}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography sx={{ color: "#1976d2", fontWeight: 500 }}>
+                    {t(key)}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ textAlign: "left" }}>
+                  {videoData[key].map((time, timeIdx) => (
+                    <Chip
+                      key={"otime_" + timeIdx}
+                      sx={{ margin: 0.4 }}
+                      label={new Date(time * 1000).toISOString().substr(11, 8)}
+                      onDelete={() => moveVideoTimestamp(time)}
+                      deleteIcon={
+                        <Tooltip title={t("Move")}>
+                          <PlayCircleIcon />
+                        </Tooltip>
+                      }
+                    />
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            );
+          } else return <React.Fragment key={"e_" + index} />;
+        })}
       </Box>
     </Box>
   );
 });
+
+const styles = {
+  icons: {
+    width: 50,
+    height: 50,
+    margin: 0.5,
+  },
+};
 
 export default SummaryScreen;

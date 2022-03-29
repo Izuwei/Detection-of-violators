@@ -76,8 +76,22 @@
     "EmptyImageError": "Obrázky nemohou být prázdné",
     "AddPersonError": "Při přidání osoby došlo k chybě",
     "StartAgain": "Začít znovu",
+    "Download": "Stáhnout",
     "ShareLink": "Sdílet odkaz",
     "CopyToClipboard": "Zkopírovat do schránky",
-    "LinkCopiedToClipboard": "Odkaz byl zkopírován do schránky"
+    "LinkCopiedToClipboard": "Odkaz byl zkopírován do schránky",
+    "Move": "Přesunout",
+    "UnknownPerson": "Neznámá osoba",
+    "person": "Osoba",
+    "car": "Auto",
+    "cat": "Kočka",
+    "dog": "Pes",
+    "horse": "Kůň",
+    "sheep": "Ovce",
+    "cow": "Kráva",
+    "elephant": "Slon",
+    "bear": "Medvěd",
+    "zebra": "Zebra",
+    "giraffe": "Žirafa"
   }
 }

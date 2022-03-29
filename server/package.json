@@ -15,5 +15,11 @@
     "nodemon": "^2.0.15",
     "socket.io": "^4.4.1",
     "socketio-file-upload": "^0.7.3"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "tmp/*",
+      "videos/*"
+    ]
   }
 }

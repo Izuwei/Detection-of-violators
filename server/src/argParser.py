@@ -26,6 +26,15 @@ def argumentParser():
         metavar="",
         help="The name of the output file.",
     )
+    parser.add_argument(
+        "-d",
+        "--database",
+        type=str,
+        default="database",
+        required=False,
+        metavar="",
+        help="Path to face database.",
+    )
     # TODO: dodělat tiny?
     parser.add_argument(
         "-m",

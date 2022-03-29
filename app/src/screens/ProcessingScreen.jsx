@@ -137,12 +137,12 @@ const ProcessingScreen = memo(() => {
       setDescription(t("Processing"));
     });
 
-    socket.on("processed", (videoURL) => {
+    socket.on("processed", (data) => {
       setDescription(t("Finishing"));
-      setProcessedVideo(videoURL);
+      setProcessedVideo(data);
       nextStep();
 
-      console.log(videoURL); // video url by tady měla být
+      console.log(data); // video url by tady měla být
     });
 
     socket.on("process_error", (err) => {

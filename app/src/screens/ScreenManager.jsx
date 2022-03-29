@@ -9,7 +9,7 @@ const ScreenMnager = memo((props) => {
   console.log("Render: ScreenManager");
 
   return (
-    <React.Fragment>
+    <div style={{ marginBottom: 18 }}>
       {(() => {
         // TODO: opravit to číslování na ==
         if (currentStep < 4) {
@@ -23,7 +23,7 @@ const ScreenMnager = memo((props) => {
           return;
         }
       })()}
-    </React.Fragment>
+    </div>
   );
 });
 

@@ -11,8 +11,6 @@ from tracker import Tracker
 from recorder import Recorder
 from quietStdout import QuietStdout
 
-faceDB = "database"  # Cesta k databázi se snímky obličejů
-
 textFont = cv2.FONT_HERSHEY_DUPLEX
 textScaleHigh = 0.4
 textScaleLow = 0.3
@@ -134,7 +132,7 @@ def main():
     detector = Detector(classNames, args.model)
 
     # Inicializace DeepFace
-    recognizer = Recognizer(faceDB)
+    recognizer = Recognizer(args.database)
 
     # Inicializace trackeru DeepSort
     if args.tracking == True:
@@ -182,7 +180,7 @@ def main():
         timeStamp = int(frameNum / videoFPS)
 
         if progressFrame == sendLimit:
-            print("Progress: " + str(sentProgress * 5) + " %", flush=True)
+            print("Progress: " + str(min(sentProgress * 5, 100)) + " %", flush=True)
             sentProgress += 1
             progressFrame = 0
         progressFrame += 1

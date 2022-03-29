@@ -43,6 +43,7 @@ class Recognizer:
                 personId = identity[2]
                 faceId = identity[3]
         except:
-            sys.stderr.write("Face recognition failed.\n")
+            # sys.stderr.write("Face recognition failed.\n")
+            pass
 
         return name.title(), faceDistance, personId, faceId

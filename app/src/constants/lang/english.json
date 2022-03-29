@@ -76,8 +76,22 @@
     "EmptyImageError": "Images cannot be empty",
     "AddPersonError": "Error while adding person",
     "StartAgain": "Start again",
+    "Download": "Download",
     "ShareLink": "Share link",
     "CopyToClipboard": "Copy to clipboard",
-    "LinkCopiedToClipboard": "Link copied to the clipboard"
+    "LinkCopiedToClipboard": "Link copied to the clipboard",
+    "Move": "Move",
+    "UnknownPerson": "Unknown person",
+    "person": "Person",
+    "car": "Car",
+    "cat": "Cat",
+    "dog": "Dog",
+    "horse": "Horse",
+    "sheep": "Sheep",
+    "cow": "Cow",
+    "elephant": "Elephant",
+    "bear": "Bear",
+    "zebra": "Zebra",
+    "giraffe": "Giraffe"
   }
 }
