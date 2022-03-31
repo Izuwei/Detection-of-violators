@@ -51,6 +51,7 @@
     "DisplayCountersInfo": "Na každém snímku zobrazí aktuální a celkový počet detekovaných objektů.",
     "DisplayTimestampInfo": "Zobrazí aktuální časovovou stopu ve videu na každém snímku.",
     "RecognitionInfo": "Nahrajte alespoň 5 snímků tváře osoby, jenž jsou otočeny o 45 stupňů.",
+    "SummaryInfo": "Video bude na serveru dostupné 24 hodin, poté bude nenávratně smazáno.",
     "NameInputInfo": "Musí obsahovat alespoň jeden znak.",
     "ReloadImage": "Změnit náhled",
     "RenderArea": "Vykreslit oblast na každém snímku",
@@ -92,6 +93,8 @@
     "elephant": "Slon",
     "bear": "Medvěd",
     "zebra": "Zebra",
-    "giraffe": "Žirafa"
+    "giraffe": "Žirafa",
+    "VideoNotFound": "Video nebylo nalezeno",
+    "UnavailableContent": "Nedostupný obsah"
   }
 }

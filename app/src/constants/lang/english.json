@@ -51,6 +51,7 @@
     "DisplayCountersInfo": "Display current and total number of detected objects on each frame.",
     "DisplayTimestampInfo": "Display current timestamp in the video on each frame.",
     "RecognitionInfo": "Upload at least 5 images of a person's face that is rotated 45 degrees.",
+    "SummaryInfo": "The video will be available on the server for 24 hours, after that it will be permanently deleted.",
     "NameInputInfo": "Must contain at least one character.",
     "ReloadImage": "Reload image",
     "RenderArea": "Render area on each frame",
@@ -92,6 +93,8 @@
     "elephant": "Elephant",
     "bear": "Bear",
     "zebra": "Zebra",
-    "giraffe": "Giraffe"
+    "giraffe": "Giraffe",
+    "VideoNotFound": "Video not found",
+    "UnavailableContent": "Unavailable content"
   }
 }

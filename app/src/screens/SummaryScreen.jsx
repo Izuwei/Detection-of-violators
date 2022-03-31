@@ -13,6 +13,7 @@ import {
   Box,
   Chip,
   Divider,
+  Icon,
   IconButton,
   TextField,
   Tooltip,
@@ -21,14 +22,16 @@ import {
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "notistack";
 
-import RestartIcon from "@mui/icons-material/RestartAlt";
+import { DataContext } from "../utils/DataProvider";
+import { StepContext } from "../utils/StepProvider";
+import config from "../config.json";
+
+import InfoIcon from "@mui/icons-material/Info";
 import DownloadIcon from "@mui/icons-material/Download";
+import RestartIcon from "@mui/icons-material/RestartAlt";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PersonIcon from "@mui/icons-material/Person";
-
-import { DataContext } from "../utils/DataProvider";
-import { StepContext } from "../utils/StepProvider";
 
 const SummaryScreen = memo((props) => {
   const { t } = useTranslation();
@@ -40,16 +43,18 @@ const SummaryScreen = memo((props) => {
   const videoRef = useRef(null);
   const [videoData, setVideoData] = useState({});
 
-  console.log(recognitionDatabase);
+  const shareLink = `${config.client_url}:${
+    config.client_port
+  }/video/${processedVideo.videoURL.split("/").pop()}`;
 
   const copyToClipboard = useCallback(() => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(processedVideo.videoURL);
+      navigator.clipboard.writeText(shareLink);
       enqueueSnackbar(t("LinkCopiedToClipboard"), {
         variant: "success",
       });
     }
-  }, [processedVideo, enqueueSnackbar, t]);
+  }, [shareLink, enqueueSnackbar, t]);
 
   const moveVideoTimestamp = useCallback((newTime) => {
     videoRef.current.currentTime = newTime;
@@ -73,9 +78,11 @@ const SummaryScreen = memo((props) => {
         setVideoData(message);
       })
       .catch((error) => {
-        console.error(error);
+        enqueueSnackbar(t("DetectionDataError"), {
+          variant: "error",
+        });
       });
-  }, [processedVideo]);
+  }, [processedVideo, enqueueSnackbar, t]);
 
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>
@@ -102,7 +109,7 @@ const SummaryScreen = memo((props) => {
           <TextField
             variant="outlined"
             label={t("ShareLink")}
-            defaultValue={processedVideo.videoURL}
+            defaultValue={shareLink}
             onClick={copyToClipboard}
             InputProps={{
               readOnly: true,
@@ -111,7 +118,7 @@ const SummaryScreen = memo((props) => {
               shrink: true,
             }}
             sx={{
-              width: 400,
+              width: 380,
               ".MuiOutlinedInput-input:hover": {
                 cursor: "pointer",
               },
@@ -125,6 +132,21 @@ const SummaryScreen = memo((props) => {
             justifyContent: "center",
           }}
         >
+          <Tooltip title={t("SummaryInfo")}>
+            <Icon
+              fontSize="large"
+              color="info"
+              sx={{
+                margin: "auto",
+                display: "flex",
+                width: 58,
+                height: 58,
+                cursor: "help",
+              }}
+            >
+              <InfoIcon sx={{ margin: "auto" }} />
+            </Icon>
+          </Tooltip>
           <Tooltip title={t("Download")}>
             <a href={processedVideo.downloadURL}>
               <IconButton color="info" size="large" sx={styles.icons}>

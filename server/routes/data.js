@@ -3,7 +3,11 @@ const router = express.Router();
 var path = require("path");
 
 router.get("/:id", async (req, res) => {
-  res.sendFile(path.resolve("videos/" + req.params.id + ".json"));
+  res.sendFile(path.resolve("videos/" + req.params.id + ".json"), (err) => {
+    if (err) {
+      res.status(err.status || 404).end();
+    }
+  });
 });
 
 module.exports = router;

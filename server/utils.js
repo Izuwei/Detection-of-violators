@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const parseArgsCLI = (data) => {
   var args = [];
 
@@ -61,4 +64,37 @@ const parseArgsCLI = (data) => {
   return args;
 };
 
-module.exports = { parseArgsCLI };
+/**
+ * The function deletes files in the specified directory that are older than the specified interval since its creation.
+ *
+ * @param {string} dir Absolute path to directory where old files will be deleted.
+ * @param {int} age Age of file to be deteled in miliseconds.
+ */
+const deleteFiles = (dir, age) => {
+  fs.readdir(dir, (err, files) => {
+    files.forEach((file, index) => {
+      var filePath = path.join(dir, file);
+      fs.stat(filePath, (err, stat) => {
+        if (err) {
+          console.log("Failed to remove file: " + filePath);
+          return;
+        }
+
+        var currentTime = new Date().getTime();
+        var endTime = new Date(stat.ctime).getTime() + age;
+
+        if (currentTime > endTime) {
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.log("Failed to remove file: " + filePath);
+            } else {
+              console.log("File deleted: " + filePath);
+            }
+          });
+        }
+      });
+    });
+  });
+};
+
+module.exports = { parseArgsCLI, deleteFiles };

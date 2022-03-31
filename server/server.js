@@ -50,6 +50,7 @@ console.log("Videos location: " + videoDir);
  */
 io.on("connection", (socket) => {
   var videoPath = "";
+  var pythonProcess = undefined;
 
   const clientTmpDir = path.join(tmpDir, socket.id);
   fs.mkdirSync(clientTmpDir);
@@ -74,21 +75,6 @@ io.on("connection", (socket) => {
   faceUpload.dir = clientDatabaseDir;
   faceUpload.listen(socket);
 
-  // faceUpload.on("saved", (event) => {
-  //   let firstname = event.file.meta.firstname.replace(/\s/g, "").toLowerCase();
-  //   let lastname = event.file.meta.lastname.replace(/\s/g, "").toLowerCase();
-  //   let personID = event.file.meta.personID;
-  //   let imageID = event.file.meta.imageID;
-  //   let suffix = event.file.name.split(".").pop();
-  //   console.log(event);
-  //
-  //   fs.rename(
-  //     `${clientDatabaseDir}/${event.file.name}`,
-  //     `${clientDatabaseDir}/${firstname}_${lastname}_${personID}_${imageID}.${suffix}`,
-  //     () => {}
-  //   );
-  // });
-
   faceUpload.on("error", (event) => {
     socket.emit("face_upload_error", event);
     console.log("Face upload error", event);
@@ -98,7 +84,7 @@ io.on("connection", (socket) => {
     console.log("Processing: " + videoPath);
     const args = utils.parseArgsCLI(data);
 
-    const python = spawn(
+    pythonProcess = spawn(
       "python",
       [
         config.python_program,
@@ -116,18 +102,18 @@ io.on("connection", (socket) => {
       }
     );
 
-    python.stdout.on("data", (data) => {
+    pythonProcess.stdout.on("data", (data) => {
       const text = data.toString();
       if (text.match(/^Progress:/)) {
         socket.emit("progress", parseInt(text.split(" ")[1]));
       }
     });
 
-    python.stderr.on("data", (data) => {
+    pythonProcess.stderr.on("data", (data) => {
       console.log(data.toString());
     });
 
-    python.on("close", (code) => {
+    pythonProcess.on("close", (code) => {
       console.log("Python ended with: " + code);
 
       if (code === 0) {
@@ -140,10 +126,18 @@ io.on("connection", (socket) => {
         socket.emit("process_error", code);
       }
     });
+
+    pythonProcess.on("exit", () => {
+      if (fs.existsSync(clientTmpDir)) {
+        fs.rmSync(clientTmpDir, { recursive: true });
+      }
+    });
   });
 
   socket.on("disconnect", () => {
-    if (fs.existsSync(clientTmpDir)) {
+    if (pythonProcess !== undefined) {
+      pythonProcess.kill("SIGINT");
+    } else if (fs.existsSync(clientTmpDir)) {
       fs.rmSync(clientTmpDir, { recursive: true });
     }
   });
@@ -165,3 +159,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(config.express_port);
+
+// Delete each video file after 24 hours, check every hour
+setInterval(() => utils.deleteFiles(__dirname + "/videos", 86400000), 3600000);
