@@ -27,9 +27,7 @@ const io = require("socket.io")(config.socket_port, {
  * Setup temporary folder.
  */
 var tmpDir = path.join(__dirname, "tmp");
-if (fs.existsSync(tmpDir)) {
-  fs.rmSync(tmpDir, { recursive: true });
-}
+utils.rmDirRecursive(tmpDir);
 fs.mkdirSync(tmpDir);
 
 console.log("TmpDir location: " + tmpDir);
@@ -38,9 +36,7 @@ console.log("TmpDir location: " + tmpDir);
  * Setup video folder.
  */
 var videoDir = path.join(__dirname, "videos");
-if (fs.existsSync(videoDir)) {
-  fs.rmSync(videoDir, { recursive: true });
-}
+utils.rmDirRecursive(videoDir);
 fs.mkdirSync(videoDir);
 
 console.log("Videos location: " + videoDir);
@@ -128,17 +124,15 @@ io.on("connection", (socket) => {
     });
 
     pythonProcess.on("exit", () => {
-      if (fs.existsSync(clientTmpDir)) {
-        fs.rmSync(clientTmpDir, { recursive: true });
-      }
+      utils.rmDirRecursive(clientTmpDir);
     });
   });
 
   socket.on("disconnect", () => {
     if (pythonProcess !== undefined) {
       pythonProcess.kill("SIGINT");
-    } else if (fs.existsSync(clientTmpDir)) {
-      fs.rmSync(clientTmpDir, { recursive: true });
+    } else {
+      utils.rmDirRecursive(clientTmpDir);
     }
   });
 });

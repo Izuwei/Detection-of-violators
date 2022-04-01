@@ -17,7 +17,7 @@ const ErrorScreen = memo((props) => {
         color: "#1976d2",
       }}
     >
-      {t("UnavailableContent")}
+      {t("NotFound")}
     </p>
   );
 });

@@ -97,4 +97,10 @@ const deleteFiles = (dir, age) => {
   });
 };
 
-module.exports = { parseArgsCLI, deleteFiles };
+const rmDirRecursive = (dir) => {
+  if (fs.existsSync(dir)) {
+    fs.rmSync(dir, { recursive: true });
+  }
+};
+
+module.exports = { parseArgsCLI, deleteFiles, rmDirRecursive };

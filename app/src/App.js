@@ -1,16 +1,18 @@
 import "./utils/i18n";
 
-import { createRef, useCallback } from "react";
+import { createRef, useCallback, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { IconButton, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { CookiesProvider } from "react-cookie";
 import { SnackbarProvider } from "notistack";
-import { IconButton, Tooltip } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 
 import { StepProvider } from "./utils/StepProvider";
 import { DataProvider } from "./utils/DataProvider";
+import { WsProvider } from "./utils/WsProvider";
+
 import TopPanel from "./components/TopPanel";
 import ScreenMnager from "./screens/ScreenManager";
 import VideoScreen from "./screens/VideoScreen";
@@ -23,6 +25,10 @@ const App = () => {
   const { t } = useTranslation();
   console.log("Render: App");
 
+  useEffect(() => {
+    document.title = t("appName");
+  }, [t]);
+
   const onCloseSnackbar = useCallback(
     (key) => () => {
       notistackRef.current.closeSnackbar(key);
@@ -32,7 +38,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className="App">
+      <div className="App" style={{ height: "100vh" }}>
         <CookiesProvider>
           <SnackbarProvider
             ref={notistackRef}
@@ -51,11 +57,13 @@ const App = () => {
             <TopPanel />
             <StepProvider>
               <DataProvider>
-                <Routes>
-                  <Route exact path="/" element={<ScreenMnager />} />
-                  <Route path="/video/:videoId" element={<VideoScreen />} />
-                  <Route path="*" element={<ErrorScreen />} />
-                </Routes>
+                <WsProvider>
+                  <Routes>
+                    <Route exact path="/" element={<ScreenMnager />} />
+                    <Route path="/video/:videoId" element={<VideoScreen />} />
+                    <Route path="*" element={<ErrorScreen />} />
+                  </Routes>
+                </WsProvider>
               </DataProvider>
             </StepProvider>
           </SnackbarProvider>

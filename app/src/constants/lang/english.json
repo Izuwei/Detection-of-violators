@@ -95,6 +95,6 @@
     "zebra": "Zebra",
     "giraffe": "Giraffe",
     "VideoNotFound": "Video not found",
-    "UnavailableContent": "Unavailable content"
+    "NotFound": "Content not found"
   }
 }

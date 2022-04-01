@@ -95,6 +95,6 @@
     "zebra": "Zebra",
     "giraffe": "Žirafa",
     "VideoNotFound": "Video nebylo nalezeno",
-    "UnavailableContent": "Nedostupný obsah"
+    "NotFound": "Obsah nebyl nalezen"
   }
 }

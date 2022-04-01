@@ -10,6 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { StepContext } from "../utils/StepProvider";
+import { WsContext } from "../utils/WsProvider";
 import FileDropzone from "../components/FileDropzone";
 import ProcessConfig from "../components/ProcessConfig";
 import AreaSelection from "../components/AreaSelection";
@@ -25,7 +26,7 @@ const ConfigScreen = memo(() => {
     completedSteps,
     setStepStatus,
   } = useContext(StepContext);
-  console.log("Render: Stepper");
+  const { startProcessing } = useContext(WsContext);
 
   const optionalSteps = [false, false, true, true];
 
@@ -46,6 +47,15 @@ const ConfigScreen = memo(() => {
     },
     [steps, t]
   );
+
+  const handleNextStep = useCallback(() => {
+    if (currentStep === steps.length - 1) {
+      nextStep();
+      startProcessing();
+    } else {
+      nextStep();
+    }
+  }, [currentStep, steps, nextStep, startProcessing]);
 
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>
@@ -120,7 +130,10 @@ const ConfigScreen = memo(() => {
           </Button>
         )}
         <Box sx={{ flex: "1 1 auto" }} />
-        <Button onClick={nextStep} disabled={!completedSteps[currentStep]}>
+        <Button
+          onClick={handleNextStep}
+          disabled={!completedSteps[currentStep]}
+        >
           {currentStep === steps.length - 1 ? t("Finish") : t("Next")}
         </Button>
       </Box>

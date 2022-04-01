@@ -83,6 +83,7 @@ const styles = {
     height: 50,
     justifyContent: "center",
     marginBottom: 3,
+    minWidth: 500,
   },
   text: {
     flexGrow: 1,

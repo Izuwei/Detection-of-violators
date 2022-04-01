@@ -1,43 +1,27 @@
-import React, { memo, useContext } from "react";
-import { Box, LinearProgress, Typography } from "@mui/material";
+import React, {
+  createContext,
+  memo,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
+import { io } from "socket.io-client";
+import SocketIOFileUpload from "socketio-file-upload";
 import { useTranslation } from "react-i18next";
+import { useSnackbar } from "notistack";
 
-import { WsContext } from "../utils/WsProvider";
+import { DataContext } from "../utils/DataProvider";
+import { StepContext } from "../utils/StepProvider";
 
-function LinearProgressWithLabel(props) {
-  return (
-    <Box sx={{ paddingLeft: 2, paddingRight: 2 }}>
-      <Typography align="left" sx={{ marginLeft: 1 }}>
-        {props.name}
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: 2,
-        }}
-      >
-        <Box sx={{ width: "100%", mr: 1 }}>
-          <LinearProgress variant="determinate" {...props} />
-        </Box>
-        <Box sx={{ minWidth: 35 }}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-          >{`${props.value}%`}</Typography>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
+import config from "../config.json";
 
-const ProcessingScreen = memo(() => {
+export const WsContext = createContext();
+
+export const WsProvider = memo(({ children }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { description, uploadProgress, detectionProgress } =
-    useContext(WsContext);
-
-  /*
+  const { nextStep, resetStep } = useContext(StepContext);
   const {
     video,
     procConfig,
@@ -45,15 +29,16 @@ const ProcessingScreen = memo(() => {
     recognitionDatabase,
     setProcessedVideo,
   } = useContext(DataContext);
-  const { nextStep, resetStep } = useContext(StepContext);
-  
-  const { enqueueSnackbar } = useSnackbar();
 
   const [description, setDescription] = useState(t("Uploading"));
   const [uploadProgress, setUploadProgress] = useState(0);
   const [detectionProgress, setDetectionProgress] = useState(0);
 
-  useEffect(() => {
+  const startProcessing = useCallback(() => {
+    setDescription(t("Uploading"));
+    setUploadProgress(0);
+    setDetectionProgress(0);
+
     var faces = [];
     var faceCnt = 0;
     var faceSent = 0;
@@ -142,13 +127,14 @@ const ProcessingScreen = memo(() => {
       setProcessedVideo(data);
       nextStep();
 
-      console.log(data); // video url by tady měla být
+      console.log(data);
     });
 
     socket.on("process_error", (err) => {
       enqueueSnackbar(t("ProcessingError"), {
         variant: "error",
       });
+      socket.disconnect();
       resetStep();
     });
 
@@ -156,6 +142,7 @@ const ProcessingScreen = memo(() => {
       enqueueSnackbar(t("UploadError"), {
         variant: "error",
       });
+      socket.disconnect();
       resetStep();
     });
 
@@ -163,6 +150,7 @@ const ProcessingScreen = memo(() => {
       enqueueSnackbar(t("FaceUploadError"), {
         variant: "error",
       });
+      socket.disconnect();
       resetStep();
     });
 
@@ -170,6 +158,7 @@ const ProcessingScreen = memo(() => {
       enqueueSnackbar(t("ConnectionError"), {
         variant: "error",
       });
+      socket.disconnect();
       resetStep();
     });
 
@@ -183,35 +172,22 @@ const ProcessingScreen = memo(() => {
     recognitionDatabase,
     setProcessedVideo,
     procConfig,
-    enqueueSnackbar,
     t,
+    enqueueSnackbar,
     nextStep,
     resetStep,
   ]);
-*/
 
   return (
-    <div className="container" style={styles.container}>
-      <Typography variant="h4" sx={{ margin: 6, color: "#1976d2" }}>
-        {description}
-      </Typography>
-      <LinearProgressWithLabel value={uploadProgress} name={t("Uploaded")} />
-      <LinearProgressWithLabel
-        value={detectionProgress}
-        name={t("Processed")}
-      />
-    </div>
+    <WsContext.Provider
+      value={{
+        startProcessing: startProcessing,
+        description: description,
+        uploadProgress: uploadProgress,
+        detectionProgress: detectionProgress,
+      }}
+    >
+      {children}
+    </WsContext.Provider>
   );
 });
-
-const styles = {
-  container: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    marginTop: 200,
-    maxWidth: "50%",
-    minWidth: 500,
-  },
-};
-
-export default ProcessingScreen;
