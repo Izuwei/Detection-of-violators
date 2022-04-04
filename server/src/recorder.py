@@ -55,8 +55,8 @@ class Recorder:
         # Other objects except person
         else:
             if (timestamp - self.last[detection.label]) > self.timeDist:
-                self.last[detection.label] = timestamp
                 self.records[detection.label].append(timestamp)
+            self.last[detection.label] = timestamp
 
     def parseJSON(self):
         return json.dumps(self.records, indent=2)

@@ -15,6 +15,7 @@ import { useDropzone } from "react-dropzone";
 import { useSnackbar } from "notistack";
 
 import { DataContext } from "../utils/DataProvider";
+import { ThemeContext } from "../utils/ThemeProvider";
 
 /**
  * https://react-dropzone.js.org/#section-styling-dropzone
@@ -23,6 +24,7 @@ const FileDropzone = memo(({ setStepStatus }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { theme } = useContext(ThemeContext);
   const { video, uploadVideo, removeVideo } = useContext(DataContext);
   console.log("Render: Dropzone");
 
@@ -57,10 +59,10 @@ const FileDropzone = memo(({ setStepStatus }) => {
     isDragAccept,
     isDragReject,
   } = useDropzone({
-    accept: "video/*",
+    accept: "video/mp4, video/webm",
     multiple: false,
     maxFiles: 1,
-    maxSize: 3000000000, // TODO: předělat na 1 GB a omezit formaty (bez mkv, avi)
+    maxSize: 2000000000, // 2 GB
     onDropAccepted: handleDropFile,
     onDropRejected: handleDropError,
   });
@@ -68,11 +70,31 @@ const FileDropzone = memo(({ setStepStatus }) => {
   const styles = useMemo(
     () => ({
       ...baseStyles,
-      ...(isFocused ? focusedStyles : {}),
-      ...(isDragAccept ? acceptStyles : {}),
-      ...(isDragReject ? rejectStyles : {}),
+      backgroundColor: theme.dropZoneBackground,
+      borderColor: theme.dropZoneBorder,
+      ...(isFocused ? { borderColor: theme.primary } : {}),
+      ...(isDragAccept ? { borderColor: theme.dropZoneBorderAccept } : {}),
+      ...(isDragReject ? { borderColor: theme.dropZoneBorderReject } : {}),
     }),
-    [isFocused, isDragAccept, isDragReject]
+    [isFocused, isDragAccept, isDragReject, theme]
+  );
+
+  const tableStyles = useMemo(
+    () => ({
+      cell: {
+        padding: 1,
+        color: theme.text,
+      },
+      text: {
+        fontSize: 14,
+        maxWidth: 120,
+        margin: "auto",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+      },
+    }),
+    [theme]
   );
 
   return (
@@ -83,6 +105,9 @@ const FileDropzone = memo(({ setStepStatus }) => {
           {isDragActive ? t("DragDesc") : t("DnDDesc")}
           <br />
           <p style={{ fontSize: 14, fontStyle: "italic" }}>.mp4, .webm</p>
+          <p style={{ fontSize: 14, margin: 0, fontFamily: "Consolas" }}>
+            2 GB
+          </p>
         </div>
       )}
       {video.data !== undefined && (
@@ -163,7 +188,14 @@ const FileDropzone = memo(({ setStepStatus }) => {
             </TableBody>
           </Table>
           <Tooltip title={t("Delete")}>
-            <IconButton color="info" size="large" onClick={handleClear}>
+            <IconButton
+              sx={{
+                color: theme.primaryButton,
+                "&:hover": { background: theme.primaryButtonHover },
+              }}
+              size="large"
+              onClick={handleClear}
+            >
               <Clear />
             </IconButton>
           </Tooltip>
@@ -184,38 +216,10 @@ const baseStyles = {
   width: "100%",
   borderWidth: 2,
   borderRadius: 4,
-  borderColor: "#eeeeee",
   borderStyle: "dashed",
-  backgroundColor: "#fafafa",
   color: "#bdbdbd",
   outline: "none",
   transition: "border .24s ease-in-out",
-};
-
-const focusedStyles = {
-  borderColor: "#2196f3",
-};
-
-const acceptStyles = {
-  borderColor: "#00e676",
-};
-
-const rejectStyles = {
-  borderColor: "#ff1744",
-};
-
-const tableStyles = {
-  cell: {
-    padding: 1,
-  },
-  text: {
-    fontSize: 14,
-    maxWidth: 120,
-    margin: "auto",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-  },
 };
 
 export default FileDropzone;

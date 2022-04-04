@@ -11,6 +11,8 @@ import { useTranslation } from "react-i18next";
 
 import { StepContext } from "../utils/StepProvider";
 import { WsContext } from "../utils/WsProvider";
+import { ThemeContext } from "../utils/ThemeProvider";
+
 import FileDropzone from "../components/FileDropzone";
 import ProcessConfig from "../components/ProcessConfig";
 import AreaSelection from "../components/AreaSelection";
@@ -26,6 +28,8 @@ const ConfigScreen = memo(() => {
     completedSteps,
     setStepStatus,
   } = useContext(StepContext);
+
+  const { theme } = useContext(ThemeContext);
   const { startProcessing } = useContext(WsContext);
 
   const optionalSteps = [false, false, true, true];
@@ -65,12 +69,55 @@ const ConfigScreen = memo(() => {
 
           if (optionalSteps[index] === true) {
             labelProps.optional = (
-              <Typography variant="caption">{t("Optional")}</Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: theme.stepperTextOptional }}
+              >
+                {t("Optional")}
+              </Typography>
             );
           }
           return (
             <Step key={label}>
-              <StepLabel {...labelProps}>{createStepLabel(label)}</StepLabel>
+              <StepLabel
+                {...labelProps}
+                sx={{
+                  // Active label color
+                  ".MuiStepLabel-label.Mui-active": {
+                    color: theme.stepperTextActive,
+                  },
+                  // Completed label color
+                  ".MuiStepLabel-label.Mui-completed": {
+                    color: theme.stepperTextCompleted,
+                  },
+                  // Disabled label color
+                  ".MuiStepLabel-label.Mui-disabled": {
+                    color: theme.stepperTextDisabled,
+                  },
+                  // Active Icon color
+                  ".MuiSvgIcon-root.Mui-active": {
+                    color: theme.primary,
+                  },
+                  // Completed Icon color
+                  ".MuiSvgIcon-root.Mui-completed": {
+                    color: theme.stepperIconDisabled,
+                  },
+                  // Disabled icon color
+                  ".MuiSvgIcon-root": {
+                    color: theme.stepperIconDisabled,
+                  },
+                  // Text inside all icons
+                  ".MuiStepIcon-text": {
+                    fill: theme.stepperIconText,
+                  },
+                  // Text inside active step
+                  ".MuiStepIcon-root.Mui-active > .MuiStepIcon-text": {
+                    fill: theme.background,
+                  },
+                }}
+              >
+                {createStepLabel(label)}
+              </StepLabel>
             </Step>
           );
         })}
@@ -80,7 +127,7 @@ const ConfigScreen = memo(() => {
           fontSize: 22,
           // opacity: 0.5,
           fontStyle: "italic",
-          color: "#1976d2",
+          color: theme.primary,
           marginTop: 30,
           marginBottom: 30,
         }}
@@ -108,7 +155,6 @@ const ConfigScreen = memo(() => {
         }}
       >
         {(() => {
-          // TODO: Dodělat componenty
           switch (currentStep) {
             case 0:
               return <FileDropzone setStepStatus={setStepStatus} />;
@@ -125,7 +171,14 @@ const ConfigScreen = memo(() => {
       </div>
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         {currentStep !== 0 && (
-          <Button onClick={backStep} sx={{ mr: 1 }}>
+          <Button
+            onClick={backStep}
+            sx={{
+              mr: 1,
+              color: theme.primaryButton,
+              "&:hover": { background: theme.primaryButtonHover },
+            }}
+          >
             {t("Back")}
           </Button>
         )}
@@ -133,6 +186,13 @@ const ConfigScreen = memo(() => {
         <Button
           onClick={handleNextStep}
           disabled={!completedSteps[currentStep]}
+          sx={{
+            color: theme.primaryButton,
+            "&:hover": { background: theme.primaryButtonHover },
+            "&:disabled": {
+              color: theme.ButtonDisabled,
+            },
+          }}
         >
           {currentStep === steps.length - 1 ? t("Finish") : t("Next")}
         </Button>

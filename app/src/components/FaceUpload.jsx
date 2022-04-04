@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useDropzone } from "react-dropzone";
 import { useSnackbar } from "notistack";
 
+import { ThemeContext } from "../utils/ThemeProvider";
 import { DataContext } from "../utils/DataProvider";
 import newID from "../utils/IDgenerator";
 
@@ -26,6 +27,7 @@ const FaceUpload = memo((props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { theme } = useContext(ThemeContext);
   const { recognitionDatabase, setRecognitionDatabase } =
     useContext(DataContext);
 
@@ -136,7 +138,7 @@ const FaceUpload = memo((props) => {
   } = useDropzone({
     accept: "image/jpeg, image/png",
     multiple: true,
-    maxSize: 1000000000,
+    maxSize: 200000000, // 200 MB
     onDropAccepted: handleDropFile,
     onDropRejected: handleDropError,
   });
@@ -144,11 +146,86 @@ const FaceUpload = memo((props) => {
   const dropzoneStyles = useMemo(
     () => ({
       ...baseStyles,
-      ...(isFocused ? focusedStyles : {}),
-      ...(isDragAccept ? acceptStyles : {}),
-      ...(isDragReject ? rejectStyles : {}),
+      backgroundColor: theme.dropZoneBackground,
+      borderColor: theme.dropZoneBorder,
+      ...(isFocused ? { borderColor: theme.primary } : {}),
+      ...(isDragAccept ? { borderColor: theme.dropZoneBorderAccept } : {}),
+      ...(isDragReject ? { borderColor: theme.dropZoneBorderReject } : {}),
     }),
-    [isFocused, isDragAccept, isDragReject]
+    [isFocused, isDragAccept, isDragReject, theme]
+  );
+
+  const styles = useMemo(
+    () => ({
+      root: {
+        width: "100%",
+        display: "flex",
+      },
+      nameContainer: {
+        display: "flex",
+        flexDirection: "column",
+        width: "50%",
+        marginRight: 10,
+      },
+      uploadArea: {
+        width: "46%",
+        height: 100,
+        marginLeft: 10,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "baseline",
+      },
+      textInput: {
+        margin: 0.2,
+        width: "100%",
+        ".MuiInput-root": {
+          color: theme.text,
+        },
+        ".MuiInput-root:hover": {
+          borderBottomColor: theme.text,
+        },
+        ".MuiInput-root:before": {
+          borderBottomColor: theme.text,
+        },
+        ".MuiInput-root:after": {
+          borderBottomColor: theme.primary,
+        },
+        "& .MuiInput-underline:hover:before": {
+          borderBottomColor: theme.text,
+        },
+        "& .MuiInput-underline:hover:after": {
+          borderBottomColor: theme.text,
+        },
+        ".MuiInputLabel-root": {
+          color: theme.textPlaceholder,
+        },
+        ".MuiInputLabel-root.Mui-focused": {
+          color: theme.primary,
+        },
+      },
+      imageList: {
+        display: "flex",
+        marginBottom: 0,
+        flexWrap: "nowrap",
+        width: "100%",
+        overflow: "display",
+        backgroundColor: theme.dropZoneBackground,
+        borderRadius: 1,
+      },
+      image: {
+        borderRadius: 4,
+      },
+      DBcontainer: {
+        width: "100%",
+        height: 300,
+        overflowY: "auto",
+        border: 2,
+        borderRadius: 4,
+        borderColor: theme.dropZoneBorder,
+        borderStyle: "solid",
+      },
+    }),
+    [theme]
   );
 
   return (
@@ -181,7 +258,19 @@ const FaceUpload = memo((props) => {
             <input {...getInputProps()} />
             {isDragActive ? t("DragImageDesc") : t("DnDImageDesc")}
             <br />
-            <p style={{ fontSize: 12, fontStyle: "italic" }}>.png, .jpeg</p>
+            <p
+              style={{
+                fontSize: 12,
+                fontStyle: "italic",
+                marginTop: 2,
+                marginBottom: 8,
+              }}
+            >
+              .png, .jpg, .jpeg
+            </p>
+            <p style={{ fontSize: 14, margin: 0, fontFamily: "Consolas" }}>
+              200 MB
+            </p>
           </div>
         </div>
       </div>
@@ -212,7 +301,7 @@ const FaceUpload = memo((props) => {
           align="left"
           width="100%"
           variant="h6"
-          sx={{ color: "rgb(25, 118, 210)" }}
+          sx={{ color: theme.primary }}
         >
           {t("Database")}
         </Typography>
@@ -242,9 +331,12 @@ const FaceUpload = memo((props) => {
           <Tooltip title={t("Reset")}>
             <IconButton
               onClick={handleReset}
-              color="info"
               size="large"
-              sx={{ margin: 0.8 }}
+              sx={{
+                margin: 0.8,
+                color: theme.primary,
+                "&:hover": { backgroundColor: theme.primaryButtonHover },
+              }}
             >
               <RestartIcon />
             </IconButton>
@@ -255,7 +347,10 @@ const FaceUpload = memo((props) => {
               size="large"
               sx={{
                 margin: 0.8,
-                color: "#2e7d32",
+                color: theme.greenButton,
+                "&:hover": {
+                  backgroundColor: theme.greenButtonHover,
+                },
               }}
             >
               <AddIcon />
@@ -267,7 +362,7 @@ const FaceUpload = memo((props) => {
         {recognitionDatabase.map((item, itemIdx) => (
           <div style={{ padding: "0px 4px 4px 4px", margin: 3 }} key={itemIdx}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography align="left" variant="h6">
+              <Typography sx={{ color: theme.text }} align="left" variant="h6">
                 {item.firstname + " " + item.lastname}
               </Typography>
               <Tooltip title={t("Delete")}>
@@ -298,59 +393,16 @@ const FaceUpload = memo((props) => {
                 ))}
               </ImageList>
             </div>
-            <Divider orientation="horizontal" sx={{ marginTop: 0.7 }} />
+            <Divider
+              orientation="horizontal"
+              sx={{ marginTop: 0.7, borderColor: theme.divider }}
+            />
           </div>
         ))}
       </div>
     </React.Fragment>
   );
 });
-
-const styles = {
-  root: {
-    width: "100%",
-    display: "flex",
-  },
-  nameContainer: {
-    display: "flex",
-    flexDirection: "column",
-    width: "50%",
-    marginRight: 10,
-  },
-  uploadArea: {
-    width: "46%",
-    height: 100,
-    marginLeft: 10,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "baseline",
-  },
-  textInput: {
-    margin: 0.2,
-    width: "100%",
-  },
-  imageList: {
-    display: "flex",
-    marginBottom: 0,
-    flexWrap: "nowrap",
-    width: "100%",
-    overflow: "display",
-    backgroundColor: "#fafafa",
-    borderRadius: 1,
-  },
-  image: {
-    borderRadius: 4,
-  },
-  DBcontainer: {
-    width: "100%",
-    height: 300,
-    overflowY: "auto",
-    border: 2,
-    borderRadius: 4,
-    borderColor: "rgb(238, 238, 238)",
-    borderStyle: "solid",
-  },
-};
 
 const baseStyles = {
   display: "flex",
@@ -363,24 +415,10 @@ const baseStyles = {
   width: "100%",
   borderWidth: 2,
   borderRadius: 4,
-  borderColor: "#eeeeee",
   borderStyle: "dashed",
-  backgroundColor: "#fafafa",
   color: "#bdbdbd",
   outline: "none",
   transition: "border .24s ease-in-out",
-};
-
-const focusedStyles = {
-  borderColor: "#2196f3",
-};
-
-const acceptStyles = {
-  borderColor: "#00e676",
-};
-
-const rejectStyles = {
-  borderColor: "#ff1744",
 };
 
 export default FaceUpload;

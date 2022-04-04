@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
@@ -13,6 +14,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import CropFreeIcon from "@mui/icons-material/CropFree";
 
 import useWindowDimensions from "../utils/windowDimensions";
+import { ThemeContext } from "../utils/ThemeProvider";
 import { DataContext } from "../utils/DataProvider";
 
 const AreaSelection = memo(() => {
@@ -28,6 +30,7 @@ const AreaSelection = memo(() => {
     procConfig,
     setProcConfig,
   } = useContext(DataContext);
+  const { theme } = useContext(ThemeContext);
 
   const [thumbnailSize, setThumbnailSize] = useState({
     width: 500,
@@ -109,6 +112,19 @@ const AreaSelection = memo(() => {
     [drawingAOI, setupAreaOfInterest, thumbnailSize]
   );
 
+  const styles = useMemo(
+    () => ({
+      coords: {
+        fontFamily: "Consolas",
+        fontSize: 14,
+        color: theme.text,
+        // width: "100%",
+        // textAlign: "right",
+      },
+    }),
+    [theme]
+  );
+
   return (
     <React.Fragment>
       {areaOfInterest.length === 1 ? (
@@ -176,7 +192,11 @@ const AreaSelection = memo(() => {
             color="info"
             size="large"
             onClick={() => reloadVideoThumbnail(video.url)}
-            sx={{ margin: 1 }}
+            sx={{
+              margin: 1,
+              color: "#0084ff",
+              "&:hover": { backgroundColor: theme.blueButtonHover },
+            }}
           >
             <RefreshIcon />
           </IconButton>
@@ -190,7 +210,12 @@ const AreaSelection = memo(() => {
             }
             sx={{
               margin: 1,
-              color: procConfig.frame ? "#2e7d32" : "#d32f2f",
+              color: procConfig.frame ? theme.greenButton : theme.redButton,
+              "&:hover": {
+                backgroundColor: procConfig.frame
+                  ? theme.greenButtonHover
+                  : theme.redButtonHover,
+              },
             }}
           >
             <CropFreeIcon />
@@ -200,14 +225,5 @@ const AreaSelection = memo(() => {
     </React.Fragment>
   );
 });
-
-const styles = {
-  coords: {
-    fontFamily: "Consolas",
-    fontSize: 14,
-    // width: "100%",
-    // textAlign: "right",
-  },
-};
 
 export default AreaSelection;

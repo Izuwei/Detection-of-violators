@@ -1,6 +1,7 @@
 import React, {
   memo,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -22,6 +23,8 @@ import { useTranslation } from "react-i18next";
 
 import config from "../config.json";
 
+import { ThemeContext } from "../utils/ThemeProvider";
+
 import DownloadIcon from "@mui/icons-material/Download";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
@@ -29,6 +32,8 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 const VideoScreen = memo((props) => {
   const { videoId } = useParams();
   const { t } = useTranslation();
+
+  const { theme } = useContext(ThemeContext);
 
   const videoRef = useRef(null);
   const [data, setData] = useState(undefined);
@@ -57,6 +62,27 @@ const VideoScreen = memo((props) => {
     videoRef.current.currentTime = newTime;
   }, []);
 
+  const styles = useMemo(
+    () => ({
+      accordion: {
+        backgroundColor: theme.accordionBackground,
+      },
+      accordionTitle: {
+        color: theme.primary,
+        fontWeight: 500,
+      },
+      chip: {
+        margin: 0.4,
+        color: theme.text,
+        backgroundColor: theme.chipBackground,
+      },
+      chipIcon: {
+        fill: theme.primary,
+      },
+    }),
+    [theme]
+  );
+
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>
       {(() => {
@@ -71,7 +97,7 @@ const VideoScreen = memo((props) => {
                 padding: 10,
                 fontSize: 42,
                 fontFamily: "Consolas",
-                color: "#1976d2",
+                color: theme.primary,
               }}
             >
               {t("VideoNotFound")}
@@ -89,31 +115,34 @@ const VideoScreen = memo((props) => {
               >
                 <source src={urls.video} />
               </video>
-              <Tooltip title={t("Download")}>
-                <a href={urls.download}>
+              <a href={urls.download}>
+                <Tooltip title={t("Download")}>
                   <IconButton
-                    color="info"
                     size="large"
                     sx={{
-                      width: 50,
-                      height: 50,
                       marginTop: 1,
                       marginBottom: 1,
+                      color: theme.primaryButton,
+                      "&:hover": { backgroundColor: theme.primaryButtonHover },
                     }}
                   >
                     <DownloadIcon />
                   </IconButton>
-                </a>
-              </Tooltip>
+                </Tooltip>
+              </a>
               <Box sx={{ marginBottom: 2 }}>
                 {Object.keys(data).map((key, index) => {
                   if (key === "person" && data[key].length !== 0) {
                     return data[key].map((person, personIdx) => (
-                      <Accordion key={"p_" + personIdx}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                          <Typography
-                            sx={{ color: "#1976d2", fontWeight: 500 }}
-                          >
+                      <Accordion key={"p_" + personIdx} sx={styles.accordion}>
+                        <AccordionSummary
+                          expandIcon={
+                            <ExpandMoreIcon
+                              sx={{ color: theme.textPlaceholder }}
+                            />
+                          }
+                        >
+                          <Typography sx={styles.accordionTitle}>
                             {person.name === "Unknown"
                               ? t("UnknownPerson")
                               : person.name}
@@ -133,14 +162,14 @@ const VideoScreen = memo((props) => {
                               {detection.timestamp.map((time, timeIdx) => (
                                 <Chip
                                   key={"ptime_" + timeIdx}
-                                  sx={{ margin: 0.4 }}
+                                  sx={styles.chip}
                                   label={new Date(time * 1000)
                                     .toISOString()
                                     .substr(11, 8)}
                                   onDelete={() => moveVideoTimestamp(time)}
                                   deleteIcon={
                                     <Tooltip title={t("Move")}>
-                                      <PlayCircleIcon />
+                                      <PlayCircleIcon sx={styles.chipIcon} />
                                     </Tooltip>
                                   }
                                 />
@@ -148,7 +177,7 @@ const VideoScreen = memo((props) => {
                             </div>
                             <Divider
                               orientation="horizontal"
-                              sx={{ margin: 2 }}
+                              sx={{ margin: 2, borderColor: theme.divider }}
                             />
                           </AccordionDetails>
                         ))}
@@ -156,11 +185,15 @@ const VideoScreen = memo((props) => {
                     ));
                   } else if (key !== "person" && data[key].length !== 0) {
                     return (
-                      <Accordion key={"o_" + index}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                          <Typography
-                            sx={{ color: "#1976d2", fontWeight: 500 }}
-                          >
+                      <Accordion key={"o_" + index} sx={styles.accordion}>
+                        <AccordionSummary
+                          expandIcon={
+                            <ExpandMoreIcon
+                              sx={{ color: theme.textPlaceholder }}
+                            />
+                          }
+                        >
+                          <Typography sx={styles.accordionTitle}>
                             {t(key)}
                           </Typography>
                         </AccordionSummary>
@@ -168,14 +201,14 @@ const VideoScreen = memo((props) => {
                           {data[key].map((time, timeIdx) => (
                             <Chip
                               key={"otime_" + timeIdx}
-                              sx={{ margin: 0.4 }}
+                              sx={styles.chip}
                               label={new Date(time * 1000)
                                 .toISOString()
                                 .substr(11, 8)}
                               onDelete={() => moveVideoTimestamp(time)}
                               deleteIcon={
                                 <Tooltip title={t("Move")}>
-                                  <PlayCircleIcon />
+                                  <PlayCircleIcon sx={styles.chipIcon} />
                                 </Tooltip>
                               }
                             />

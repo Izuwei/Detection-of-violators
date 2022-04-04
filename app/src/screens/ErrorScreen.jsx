@@ -1,8 +1,12 @@
-import React, { memo } from "react";
+import React, { memo, useContext } from "react";
 import { useTranslation } from "react-i18next";
+
+import { ThemeContext } from "../utils/ThemeProvider";
 
 const ErrorScreen = memo((props) => {
   const { t } = useTranslation();
+
+  const { theme } = useContext(ThemeContext);
 
   return (
     <p
@@ -14,7 +18,7 @@ const ErrorScreen = memo((props) => {
         padding: 10,
         fontSize: 42,
         fontFamily: "Consolas",
-        color: "#1976d2",
+        color: theme.primary,
       }}
     >
       {t("NotFound")}

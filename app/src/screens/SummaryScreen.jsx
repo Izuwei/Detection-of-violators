@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -22,9 +23,11 @@ import {
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "notistack";
 
+import config from "../config.json";
+
+import { ThemeContext } from "../utils/ThemeProvider";
 import { DataContext } from "../utils/DataProvider";
 import { StepContext } from "../utils/StepProvider";
-import config from "../config.json";
 
 import InfoIcon from "@mui/icons-material/Info";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -36,6 +39,8 @@ import PersonIcon from "@mui/icons-material/Person";
 const SummaryScreen = memo((props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+
+  const { theme } = useContext(ThemeContext);
   const { resetStep } = useContext(StepContext);
   const { video, processedVideo, recognitionDatabase } =
     useContext(DataContext);
@@ -84,6 +89,32 @@ const SummaryScreen = memo((props) => {
       });
   }, [processedVideo, enqueueSnackbar, t]);
 
+  const styles = useMemo(
+    () => ({
+      accordion: {
+        backgroundColor: theme.accordionBackground,
+      },
+      accordionTitle: {
+        color: theme.primary,
+        fontWeight: 500,
+      },
+      chip: {
+        margin: 0.4,
+        color: theme.text,
+        backgroundColor: theme.chipBackground,
+      },
+      chipIcon: {
+        fill: theme.primary,
+      },
+      icons: {
+        width: 50,
+        height: 50,
+        margin: 0.5,
+      },
+    }),
+    [theme]
+  );
+
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>
       <video
@@ -119,6 +150,33 @@ const SummaryScreen = memo((props) => {
             }}
             sx={{
               width: 380,
+              // Text color
+              ".MuiOutlinedInput-root": {
+                color: theme.text,
+              },
+              "& .MuiOutlinedInput-root": {
+                // Border color
+                "& fieldset": {
+                  borderColor: theme.textFieldOutline,
+                },
+                // Border color on hover effect
+                "&:hover fieldset": {
+                  borderColor: theme.text,
+                },
+                // Border color on focus
+                "&.Mui-focused fieldset": {
+                  borderColor: theme.primary,
+                },
+              },
+              // Label color
+              ".MuiInputLabel-root": {
+                color: theme.text,
+              },
+              // Label focused color
+              ".MuiInputLabel-root.Mui-focused": {
+                color: theme.primary,
+              },
+              // Cursor icon on hover effect
               ".MuiOutlinedInput-input:hover": {
                 cursor: "pointer",
               },
@@ -147,18 +205,28 @@ const SummaryScreen = memo((props) => {
               <InfoIcon sx={{ margin: "auto" }} />
             </Icon>
           </Tooltip>
-          <Tooltip title={t("Download")}>
-            <a href={processedVideo.downloadURL}>
-              <IconButton color="info" size="large" sx={styles.icons}>
+          <a href={processedVideo.downloadURL}>
+            <Tooltip title={t("Download")}>
+              <IconButton
+                size="large"
+                sx={{
+                  ...styles.icons,
+                  color: theme.primaryButton,
+                  "&:hover": { backgroundColor: theme.primaryButtonHover },
+                }}
+              >
                 <DownloadIcon />
               </IconButton>
-            </a>
-          </Tooltip>
+            </Tooltip>
+          </a>
           <Tooltip title={t("StartAgain")}>
             <IconButton
-              color="error"
               size="large"
-              sx={styles.icons}
+              sx={{
+                ...styles.icons,
+                color: "#de0000",
+                "&:hover": { backgroundColor: theme.redButtonHover },
+              }}
               onClick={resetStep}
             >
               <RestartIcon />
@@ -170,9 +238,13 @@ const SummaryScreen = memo((props) => {
         {Object.keys(videoData).map((key, index) => {
           if (key === "person" && videoData[key].length !== 0) {
             return videoData[key].map((person, personIdx) => (
-              <Accordion key={"p_" + personIdx}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography sx={{ color: "#1976d2", fontWeight: 500 }}>
+              <Accordion key={"p_" + personIdx} sx={styles.accordion}>
+                <AccordionSummary
+                  expandIcon={
+                    <ExpandMoreIcon sx={{ color: theme.textPlaceholder }} />
+                  }
+                >
+                  <Typography sx={styles.accordionTitle}>
                     {person.name === "Unknown"
                       ? t("UnknownPerson")
                       : person.name}
@@ -191,7 +263,13 @@ const SummaryScreen = memo((props) => {
                     <div style={{ display: "flex" }}>
                       <div style={{ width: "15%" }}>
                         {person.name === "Unknown" ? (
-                          <PersonIcon sx={{ width: "100%", height: "100%" }} />
+                          <PersonIcon
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              color: theme.text,
+                            }}
+                          />
                         ) : (
                           <img
                             style={{ width: "100%", borderRadius: 4 }}
@@ -213,43 +291,48 @@ const SummaryScreen = memo((props) => {
                         {detection.timestamp.map((time, timeIdx) => (
                           <Chip
                             key={"ptime_" + timeIdx}
-                            sx={{ margin: 0.4 }}
+                            sx={styles.chip}
                             label={new Date(time * 1000)
                               .toISOString()
                               .substr(11, 8)}
                             onDelete={() => moveVideoTimestamp(time)}
                             deleteIcon={
                               <Tooltip title={t("Move")}>
-                                <PlayCircleIcon />
+                                <PlayCircleIcon sx={styles.chipIcon} />
                               </Tooltip>
                             }
                           />
                         ))}
                       </div>
                     </div>
-                    <Divider orientation="horizontal" sx={{ margin: 2 }} />
+                    <Divider
+                      orientation="horizontal"
+                      sx={{ margin: 2, borderColor: theme.divider }}
+                    />
                   </AccordionDetails>
                 ))}
               </Accordion>
             ));
           } else if (key !== "person" && videoData[key].length !== 0) {
             return (
-              <Accordion key={"o_" + index}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography sx={{ color: "#1976d2", fontWeight: 500 }}>
-                    {t(key)}
-                  </Typography>
+              <Accordion key={"o_" + index} sx={styles.accordion}>
+                <AccordionSummary
+                  expandIcon={
+                    <ExpandMoreIcon sx={{ color: theme.textPlaceholder }} />
+                  }
+                >
+                  <Typography sx={styles.accordionTitle}>{t(key)}</Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ textAlign: "left" }}>
                   {videoData[key].map((time, timeIdx) => (
                     <Chip
                       key={"otime_" + timeIdx}
-                      sx={{ margin: 0.4 }}
+                      sx={styles.chip}
                       label={new Date(time * 1000).toISOString().substr(11, 8)}
                       onDelete={() => moveVideoTimestamp(time)}
                       deleteIcon={
                         <Tooltip title={t("Move")}>
-                          <PlayCircleIcon />
+                          <PlayCircleIcon sx={styles.chipIcon} />
                         </Tooltip>
                       }
                     />
@@ -263,13 +346,5 @@ const SummaryScreen = memo((props) => {
     </Box>
   );
 });
-
-const styles = {
-  icons: {
-    width: 50,
-    height: 50,
-    margin: 0.5,
-  },
-};
 
 export default SummaryScreen;

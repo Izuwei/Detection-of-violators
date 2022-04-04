@@ -105,7 +105,6 @@ export const DataProvider = memo(({ children }) => {
   const uploadVideo = useCallback(
     (accptedFile) => {
       if (accptedFile.length !== 0) {
-        // TODO: ošetřit MIME video/x-matroska (mkv, asi udělat jen avi a mp4)
         const videoURL = URL.createObjectURL(accptedFile[0]);
 
         var tempVideo = document.createElement("video");

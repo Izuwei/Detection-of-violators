@@ -30,12 +30,12 @@ export const WsProvider = memo(({ children }) => {
     setProcessedVideo,
   } = useContext(DataContext);
 
-  const [description, setDescription] = useState(t("Uploading"));
+  const [description, setDescription] = useState("Uploading");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [detectionProgress, setDetectionProgress] = useState(0);
 
   const startProcessing = useCallback(() => {
-    setDescription(t("Uploading"));
+    setDescription("Uploading");
     setUploadProgress(0);
     setDetectionProgress(0);
 
@@ -89,27 +89,30 @@ export const WsProvider = memo(({ children }) => {
     const socket = io(config.server_url + ":" + config.socket_port);
     var baseUploader = new SocketIOFileUpload(socket, { topicName: "video" });
 
-    baseUploader.addEventListener("progress", (event) => {
+    const onBaseProgress = (event) => {
       const progress = parseInt((event.bytesLoaded / event.file.size) * 100);
       setUploadProgress(progress);
-    });
+    };
+    baseUploader.addEventListener("progress", onBaseProgress);
 
-    baseUploader.addEventListener("complete", (event) => {
+    const onBaseComplete = (event) => {
       socket.emit("start-detection", { ...procConfig, area: areaOfInterest });
-      setDescription(t("SettingUpEnvironment"));
+      setDescription("SettingUpEnvironment");
       setUploadProgress(100);
-    });
+    };
+    baseUploader.addEventListener("complete", onBaseComplete);
 
     var imageUploader = new SocketIOFileUpload(socket, {
       topicName: "faces",
     });
 
-    imageUploader.addEventListener("complete", (event) => {
+    const onImageComplete = (event) => {
       faceSent += 1;
       if (faceSent === faceCnt) {
         baseUploader.submitFiles([video.data]); // Face images sent => upload video
       }
-    });
+    };
+    imageUploader.addEventListener("complete", onImageComplete);
 
     if (faces.length === 0) {
       baseUploader.submitFiles([video.data]); // Upload video without uploading face images
@@ -119,12 +122,13 @@ export const WsProvider = memo(({ children }) => {
 
     socket.on("progress", (progress) => {
       setDetectionProgress(progress);
-      setDescription(t("Processing"));
+      setDescription("Processing");
     });
 
     socket.on("processed", (data) => {
-      setDescription(t("Finishing"));
+      setDescription("Finishing");
       setProcessedVideo(data);
+      socket.disconnect();
       nextStep();
 
       console.log(data);
@@ -162,7 +166,6 @@ export const WsProvider = memo(({ children }) => {
       resetStep();
     });
 
-    // Clean up
     return () => {
       socket.disconnect();
     };

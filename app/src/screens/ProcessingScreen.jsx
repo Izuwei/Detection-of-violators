@@ -2,12 +2,13 @@ import React, { memo, useContext } from "react";
 import { Box, LinearProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
+import { ThemeContext } from "../utils/ThemeProvider";
 import { WsContext } from "../utils/WsProvider";
 
 function LinearProgressWithLabel(props) {
   return (
     <Box sx={{ paddingLeft: 2, paddingRight: 2 }}>
-      <Typography align="left" sx={{ marginLeft: 1 }}>
+      <Typography align="left" sx={{ marginLeft: 1, color: props.textColor }}>
         {props.name}
       </Typography>
       <Box
@@ -18,12 +19,21 @@ function LinearProgressWithLabel(props) {
         }}
       >
         <Box sx={{ width: "100%", mr: 1 }}>
-          <LinearProgress variant="determinate" {...props} />
+          <LinearProgress
+            variant="determinate"
+            value={props.value}
+            sx={{
+              background: props.barBackground,
+              "& .MuiLinearProgress-bar": {
+                backgroundColor: props.color,
+              },
+            }}
+          />
         </Box>
         <Box sx={{ minWidth: 35 }}>
           <Typography
             variant="body2"
-            color="text.secondary"
+            sx={{ color: props.textColor }}
           >{`${props.value}%`}</Typography>
         </Box>
       </Box>
@@ -34,6 +44,7 @@ function LinearProgressWithLabel(props) {
 const ProcessingScreen = memo(() => {
   const { t } = useTranslation();
 
+  const { theme } = useContext(ThemeContext);
   const { description, uploadProgress, detectionProgress } =
     useContext(WsContext);
 
@@ -192,11 +203,20 @@ const ProcessingScreen = memo(() => {
 
   return (
     <div className="container" style={styles.container}>
-      <Typography variant="h4" sx={{ margin: 6, color: "#1976d2" }}>
-        {description}
+      <Typography variant="h4" sx={{ margin: 6, color: theme.primary }}>
+        {t(description)}
       </Typography>
-      <LinearProgressWithLabel value={uploadProgress} name={t("Uploaded")} />
       <LinearProgressWithLabel
+        color={theme.primary}
+        barBackground={theme.progressBarBackground}
+        textColor={theme.text}
+        value={uploadProgress}
+        name={t("Uploaded")}
+      />
+      <LinearProgressWithLabel
+        color={theme.primary}
+        barBackground={theme.progressBarBackground}
+        textColor={theme.text}
         value={detectionProgress}
         name={t("Processed")}
       />

@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -40,6 +41,7 @@ import StraightenIcon from "@mui/icons-material/Straighten";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import TimeIcon from "@mui/icons-material/AccessTime";
 
+import { ThemeContext } from "../utils/ThemeProvider";
 import { DataContext } from "../utils/DataProvider";
 
 /**
@@ -79,33 +81,6 @@ const InfoIconContainer = (props) => {
   );
 };
 
-const SelectedIcon = (props) => {
-  return (
-    <React.Fragment>
-      {props.value === true ? (
-        <Icon color="success">
-          <DoneIcon />
-        </Icon>
-      ) : (
-        <Icon color="error">
-          <CloseIcon />
-        </Icon>
-      )}
-      <InfoIconContainer title={props.title} />
-    </React.Fragment>
-  );
-};
-
-const circularColorPicker = (value) => {
-  if (value < 33) {
-    return "#c90000";
-  } else if (value < 66) {
-    return "#ff5722";
-  } else {
-    return "#00c91b";
-  }
-};
-
 const calcAccuracy = (config) => {
   if (config.model === "high") {
     return 100;
@@ -134,6 +109,7 @@ const calcPerformance = (config) => {
 
 const ProcessConfig = memo((props) => {
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
   const { procConfig, setProcConfig } = useContext(DataContext);
   const [accuracy, setAccuracy] = useState(0);
   const [performance, setPerformance] = useState(0);
@@ -151,10 +127,68 @@ const ProcessConfig = memo((props) => {
     }
   }, [procConfig, setProcConfig]);
 
+  const circularColorPicker = useCallback(
+    (value) => {
+      if (value < 33) {
+        return theme.performanceLow;
+      } else if (value < 66) {
+        return theme.performanceMedium;
+      } else {
+        return theme.performanceHigh;
+      }
+    },
+    [theme]
+  );
+
   useEffect(() => {
     setAccuracy(calcAccuracy(procConfig));
     setPerformance(calcPerformance(procConfig));
   }, [procConfig]);
+
+  const SelectedIcon = useCallback(
+    (props) => {
+      return (
+        <React.Fragment>
+          {props.value === true ? (
+            <Icon sx={{ color: theme.greenButton }}>
+              <DoneIcon />
+            </Icon>
+          ) : (
+            <Icon sx={{ color: theme.redButton }}>
+              <CloseIcon />
+            </Icon>
+          )}
+          <InfoIconContainer title={props.title} />
+        </React.Fragment>
+      );
+    },
+    [theme]
+  );
+
+  const styles = useMemo(
+    () => ({
+      avatar: {
+        width: 32,
+        height: 32,
+        backgroundColor: theme.iconColor,
+      },
+      item: {
+        margin: 0,
+        "&:hover": {
+          backgroundColor: theme.itemHover,
+        },
+      },
+      listButton: {
+        borderRadius: 1,
+      },
+      circularBarDesc: {
+        fontWeight: 500,
+        color: theme.primary,
+        marginBottom: 0,
+      },
+    }),
+    [theme]
+  );
 
   return (
     <React.Fragment>
@@ -176,7 +210,7 @@ const ProcessConfig = memo((props) => {
               <RadialSeparators
                 count={12}
                 style={{
-                  background: "#fff",
+                  background: theme.background,
                   width: "2px",
                   // This needs to be equal to props.strokeWidth
                   height: `${12}%`,
@@ -201,7 +235,7 @@ const ProcessConfig = memo((props) => {
               <RadialSeparators
                 count={12}
                 style={{
-                  background: "#fff",
+                  background: theme.background,
                   width: "2px",
                   // This needs to be equal to props.strokeWidth
                   height: `${12}%`,
@@ -216,7 +250,12 @@ const ProcessConfig = memo((props) => {
         component="nav"
         sx={{ width: "100%" }}
         subheader={
-          <ListSubheader component="div">{t("Options")}</ListSubheader>
+          <ListSubheader
+            component="div"
+            sx={{ color: theme.text, backgroundColor: "transparent" }}
+          >
+            {t("Options")}
+          </ListSubheader>
         }
       >
         <ListItem
@@ -231,9 +270,21 @@ const ProcessConfig = memo((props) => {
             >
               <ToggleButtonGroup
                 size="small"
-                color="primary"
                 value={procConfig.model}
-                sx={{ marginRight: 8.5 }}
+                sx={{
+                  marginRight: 8.5,
+                  borderColor: theme.text,
+                  ".MuiToggleButton-root": {
+                    color: theme.ButtonDisabled,
+                  },
+                  ".MuiToggleButton-root.Mui-selected": {
+                    color: theme.primary,
+                    backgroundColor: theme.ButtonSelectedBackground,
+                  },
+                  "& button": {
+                    borderColor: theme.groupButtonBorder,
+                  },
+                }}
                 exclusive
                 onChange={(event) =>
                   setProcConfig((state) => ({
@@ -254,7 +305,10 @@ const ProcessConfig = memo((props) => {
               <TimeIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary={t("ModelAccuracy")} />
+          <ListItemText
+            sx={{ color: theme.text }}
+            primary={t("ModelAccuracy")}
+          />
         </ListItem>
         <ListItem
           disabled
@@ -270,7 +324,10 @@ const ProcessConfig = memo((props) => {
                 <RadarIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t("ObjectDetection")} />
+            <ListItemText
+              sx={{ color: theme.text }}
+              primary={t("ObjectDetection")}
+            />
           </ListItemButton>
         </ListItem>
         <ListItem
@@ -294,7 +351,10 @@ const ProcessConfig = memo((props) => {
                 <CarIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t("CarDetection")} />
+            <ListItemText
+              sx={{ color: theme.text }}
+              primary={t("CarDetection")}
+            />
           </ListItemButton>
         </ListItem>
         <ListItem
@@ -321,7 +381,10 @@ const ProcessConfig = memo((props) => {
                 <FaceIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t("FaceRecognition")} />
+            <ListItemText
+              sx={{ color: theme.text }}
+              primary={t("FaceRecognition")}
+            />
           </ListItemButton>
         </ListItem>
         <ListItem
@@ -340,7 +403,10 @@ const ProcessConfig = memo((props) => {
                 <RouteIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t("ObjectTracking")} />
+            <ListItemText
+              sx={{ color: theme.text }}
+              primary={t("ObjectTracking")}
+            />
           </ListItemButton>
         </ListItem>
         <ListItem
@@ -357,6 +423,7 @@ const ProcessConfig = memo((props) => {
           <ListItemButton
             sx={styles.listButton}
             onClick={() =>
+              procConfig.tracking === true &&
               setProcConfig((state) => ({
                 ...state,
                 counters: !state.counters,
@@ -368,7 +435,10 @@ const ProcessConfig = memo((props) => {
                 <NumbersIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t("DisplayCounters")} />
+            <ListItemText
+              sx={{ color: theme.text }}
+              primary={t("DisplayCounters")}
+            />
           </ListItemButton>
         </ListItem>
         <ListItem
@@ -394,7 +464,10 @@ const ProcessConfig = memo((props) => {
                 <GestureIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t("DrawingTracks")} />
+            <ListItemText
+              sx={{ color: theme.text }}
+              primary={t("DrawingTracks")}
+            />
           </ListItemButton>
         </ListItem>
         <ListItem
@@ -404,7 +477,7 @@ const ProcessConfig = memo((props) => {
             <div style={{ display: "flex", alignItems: "center" }}>
               <Slider
                 disabled={procConfig.tracks === false}
-                sx={{ width: 220 }}
+                sx={{ width: 220, color: theme.primary }}
                 value={procConfig.trackLen}
                 onChange={(event) =>
                   setProcConfig((state) => ({
@@ -427,7 +500,7 @@ const ProcessConfig = memo((props) => {
               <StraightenIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary={t("Length")} />
+          <ListItemText sx={{ color: theme.text }} primary={t("Length")} />
         </ListItem>
         <ListItem
           disablePadding
@@ -453,31 +526,15 @@ const ProcessConfig = memo((props) => {
                 <TimeIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t("DisplayTimestamp")} />
+            <ListItemText
+              sx={{ color: theme.text }}
+              primary={t("DisplayTimestamp")}
+            />
           </ListItemButton>
         </ListItem>
       </List>
     </React.Fragment>
   );
 });
-
-const styles = {
-  avatar: {
-    width: 32,
-    height: 32,
-    backgroundColor: "#1976d2",
-  },
-  item: {
-    margin: 0,
-  },
-  listButton: {
-    borderRadius: 1,
-  },
-  circularBarDesc: {
-    fontWeight: 500,
-    color: "#1976d2",
-    marginBottom: 0,
-  },
-};
 
 export default ProcessConfig;
