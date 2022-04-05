@@ -7,11 +7,11 @@
 
 Internet application for detection and analysis of violators in the monitored area.
 
-## Instalation
+## Installation
 
 - Download and install python 3.9.7 from https://www.python.org/downloads/release/python-397
 - Download and install Node.js v16.14.0 from https://nodejs.org/en/download/releases
-- Video codec OpenH264 for Microsoft Windows provided by Cisco Systems, Inc. For different os distribution see https://github.com/cisco/openh264/releases/tag/v1.8.0
+- Video codec OpenH264 for Microsoft Windows provided by Cisco Systems, Inc. For different system distribution see https://github.com/cisco/openh264/releases/tag/v1.8.0
 
 Go to the directory `/server/src` and install required libraries by:
 
