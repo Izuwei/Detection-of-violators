@@ -12,10 +12,9 @@ def argumentParser():
         "-i",
         "--input",
         type=str,
-        default="D:\VUT\DP\Videos/downtown_la.mp4",
-        required=False,
-        metavar="",
-        help="Path to video file.",
+        required=True,
+        metavar="FILE_PATH",
+        help="Path to the video file.",
     )
     parser.add_argument(
         "-n",
@@ -23,7 +22,7 @@ def argumentParser():
         type=str,
         default="processed",
         required=False,
-        metavar="",
+        metavar="FILENAME",
         help="The name of the output file.",
     )
     parser.add_argument(
@@ -32,8 +31,8 @@ def argumentParser():
         type=str,
         default="database",
         required=False,
-        metavar="",
-        help="Path to face database.",
+        metavar="PATH_TO_DB",
+        help="Path to the face database.",
     )
     # TODO: dodělat tiny?
     parser.add_argument(
@@ -43,7 +42,7 @@ def argumentParser():
         default="yolo320",
         choices=["yolo320", "yolo608"],
         required=False,
-        metavar="",
+        metavar="MODEL",
         help="Defines a model for object detection. (default: yolo320)",
     )
     parser.add_argument(
@@ -52,7 +51,7 @@ def argumentParser():
         type=int,
         nargs=4,
         required=False,
-        metavar="",
+        metavar="INTEGER",
         help="Defines a detection area as [x, y, width, height]. (default: fullscreen)",
     )
     parser.add_argument(
@@ -61,7 +60,7 @@ def argumentParser():
         type=float,
         default=1.5,
         required=False,
-        metavar="",
+        metavar="FLOAT",
         help="Sets path length of the tracked object in seconds. (require '-t' and '-p', default: 1.5)",
     )
     parser.add_argument(
@@ -69,7 +68,7 @@ def argumentParser():
         "--output",
         default=".",
         required=False,
-        metavar="",
+        metavar="PATH",
         help="Sets path for the output. (default: .)",
     )
     parser.add_argument(
@@ -77,7 +76,7 @@ def argumentParser():
         "--cars",
         default=False,
         required=False,
-        metavar="",
+        metavar="CARS",
         action=argparse.BooleanOptionalAction,
         help="Include cars into detected objects.",
     )
@@ -86,7 +85,7 @@ def argumentParser():
         "--frame",
         default=False,
         required=False,
-        metavar="",
+        metavar="FRAME",
         action=argparse.BooleanOptionalAction,
         help="Draw a box around the detection area for its visibility. (require: '-a')",
     )
@@ -95,7 +94,7 @@ def argumentParser():
         "--recognition",
         default=False,
         required=False,
-        metavar="",
+        metavar="RECOGNITION",
         action=argparse.BooleanOptionalAction,
         help="Set to recognize people by face.",
     )
@@ -104,7 +103,7 @@ def argumentParser():
         "--tracking",
         default=False,
         required=False,
-        metavar="",
+        metavar="TRACKING",
         action=argparse.BooleanOptionalAction,
         help="Sets tracking of objects.",
     )
@@ -113,7 +112,7 @@ def argumentParser():
         "--paths",
         default=False,
         required=False,
-        metavar="",
+        metavar="PATHS",
         action=argparse.BooleanOptionalAction,
         help="Set to draw paths of tracked objects. (require '-t')",
     )
@@ -122,7 +121,7 @@ def argumentParser():
         "--counter",
         default=False,
         required=False,
-        metavar="",
+        metavar="COUNTER",
         action=argparse.BooleanOptionalAction,
         help="Set to display counters of tracked objects. (require '-t')",
     )
@@ -131,7 +130,7 @@ def argumentParser():
         "--timestamp",
         default=False,
         required=False,
-        metavar="",
+        metavar="TIMESTAMP",
         action=argparse.BooleanOptionalAction,
         help="Set to display current timestamp.",
     )

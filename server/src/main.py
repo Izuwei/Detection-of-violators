@@ -169,6 +169,8 @@ def main():
     sentProgress = 1
     progressFrame = 0
 
+    print("Progress: 0 %", flush=True)
+
     while True:
         ret, frame = video.read()
 

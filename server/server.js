@@ -36,8 +36,9 @@ console.log("TmpDir location: " + tmpDir);
  * Setup video folder.
  */
 var videoDir = path.join(__dirname, "videos");
-utils.rmDirRecursive(videoDir);
-fs.mkdirSync(videoDir);
+if (fs.existsSync(videoDir) === false) {
+  fs.mkdirSync(videoDir);
+}
 
 console.log("Videos location: " + videoDir);
 
