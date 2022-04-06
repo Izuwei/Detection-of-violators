@@ -44,8 +44,8 @@ npm start
 
 To run the detector on the graphics card, it is necessary to install additional software, including Nvidia CUDA and cuDNN, download the source code of the OpenCV library and then compile it.
 
-1. Set python 3.9.7 as the default version of python
-2. Uninstall the current OpenCV library by command:
+1. Set python 3.9.7 as default version of python
+2. Uninstall current OpenCV library by command:
 
 ```
 pip uninstall opencv-python
@@ -54,15 +54,15 @@ pip uninstall opencv-python
 3. Install Microsoft Visual Studio 2019 with the C++ addon
 4. Download and install CUDA 11.0 Update 1 from https://developer.nvidia.com/cuda-11.0-update1-download-archive
 5. Download and extract cuDNN v8.0.5 for CUDA 11.0 from https://developer.nvidia.com/rdp/cudnn-archive
-6. Move the content of the cuDNN directory to `"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0"` and replace all files
+6. Move content of the cuDNN directory to `"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0"` and replace all files
 7. Download and install CMake (current ver. 3.23.0) from https://cmake.org/download
-8. Create the directory `opencv_build` for example on disk `C:\`
+8. Create directory `opencv_build` (for example on disk `C:\`)
 9. Download OpenCV 4.5.5 source code from https://opencv.org/releases
 10. Download source code OpenCV-contrib 4.5.5 from https://github.com/opencv/opencv_contrib/releases/tag/4.5.5
 11. Extract both `OpenCV-4.5.5` and `OpenCV-contrib-4.5.5` archives into the `opencv_build` directory, resulting in 2 directories with the corresponding files
 12. In the directory `opencv_build` create new directories `build` and `install`
-13. Launch CMake and set the source code at the `opencv_build/opencv-4.5.5` directory (ie the OpenCV source code)
-14. Set the build directory to the `opencv_build/build` directory and check the `grouped` option
+13. Launch CMake and set source code at the `opencv_build/opencv-4.5.5` directory (ie the OpenCV source code)
+14. Set build directory to the `opencv_build/build` directory and check the `grouped` option
 15. Click on `Configure`, then specify generator on Visual Studio 2019, set the platform according to your architecture (eg x64) and confirm `Finish`
 16. When finished, set (fill) the configuration by checking:
     - `WITH/WITH_CUDA`
@@ -75,7 +75,7 @@ pip uninstall opencv-python
 18. Press `Configure` again
 19. Configure again when finished by checking:
     - `CUDA/CUDA_FAST_MATH`
-20. In the `CUDA/CUDA_ARCH_BIN` property, leave only the architecture of your graphic card, which can be found at [wiki](https://en.wikipedia.org/wiki/CUDA) according to your model (eg GTX 1050Ti uses version 6.1)
+20. In the `CUDA/CUDA_ARCH_BIN` property, leave only the architecture of your graphic card, which can be found on [wiki](https://en.wikipedia.org/wiki/CUDA) according to your model (eg GTX 1050Ti uses version 6.1)
 21. Set the property `CMAKE/CMAKE_INSTALL_PREFIX` to the created directory `opencv_build/install`
 22. From property `CMAKE/CMAKE_CONFIGURATION_TYPES` remove `Debug;` and leave only `Release`
 23. Last time click on `Configure`
@@ -87,7 +87,7 @@ pip uninstall opencv-python
 ```
 
 26. Compilation takes about 2 hours
-27. In the end, the OpenCV library version 4.5.5 should be available in python and the generated file should be located in the directories:
+27. In the end, the OpenCV library version 4.5.5 should be available in python and the generated file should be located in following directories:
     - `/opencv_build/build/lib/python3/Release/cv2.cp39-win_amd64.py`
     - `.../AppData/Local/Programs/Python/Python39/Lib/site-packages/cv2/python-3.9/cv2.cp39-win_amd64.py`
 
