@@ -23,8 +23,11 @@ class Detector:
             self.model = cv2.dnn.readNetFromDarknet(
                 self.yolo320Config, self.yoloWeights
             )
-        # self.model.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
-        # self.model.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+
+        # Uncomment for GPU acceleration with OpenCV support
+        # self.model.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+        # self.model.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+        
         print(f"Detector: Detection model {modelName} has been used.")
 
     def filterPredictions(self, frame, outputs):
