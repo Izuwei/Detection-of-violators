@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, {
   memo,
   useCallback,
@@ -45,6 +53,7 @@ import { ThemeContext } from "../utils/ThemeProvider";
 import { DataContext } from "../utils/DataProvider";
 
 /**
+ * Separator in performance indicators.
  * Source: https://www.npmjs.com/package/react-circular-progressbar
  */
 const Separator = (props) => {
@@ -62,6 +71,7 @@ const Separator = (props) => {
 };
 
 /**
+ * Radial separators in performance indicators.
  * Source: https://www.npmjs.com/package/react-circular-progressbar
  */
 const RadialSeparators = (props) => {
@@ -71,6 +81,11 @@ const RadialSeparators = (props) => {
   ));
 };
 
+/**
+ * Function returns an icon for displaying information about corresponding option selection.
+ *
+ * @param {Object} props Contains information for the user.
+ */
 const InfoIconContainer = (props) => {
   return (
     <Tooltip title={props.title}>
@@ -81,6 +96,13 @@ const InfoIconContainer = (props) => {
   );
 };
 
+/**
+ * Function returns a number representing the accuracy of detection model in percentage
+ * according to the selected precision. Used to display accuracy in indicator.
+ *
+ * @param {Object} config Structure containing current configuration.
+ * @returns {Int} Number representing accuracy of the model
+ */
 const calcAccuracy = (config) => {
   if (config.model === "high") {
     return 100;
@@ -90,6 +112,13 @@ const calcAccuracy = (config) => {
   }
 };
 
+/**
+ * Function calculates performance of current configuration and
+ * displays it to the user to estimate video processing time.
+ *
+ * @param {Object} config Structure containing current configuration.
+ * @returns {Int} Number representing current performance.
+ */
 const calcPerformance = (config) => {
   var performance = 0;
   if (config.model === "high") {
@@ -107,6 +136,9 @@ const calcPerformance = (config) => {
   return performance;
 };
 
+/**
+ * Component renders options for processing configuration.
+ */
 const ProcessConfig = memo((props) => {
   const { t } = useTranslation();
   const { theme } = useContext(ThemeContext);
@@ -114,6 +146,10 @@ const ProcessConfig = memo((props) => {
   const [accuracy, setAccuracy] = useState(0);
   const [performance, setPerformance] = useState(0);
 
+  /**
+   * Function toggles tracking option and ensures that options associated
+   * with disabled tracking are also switched off.
+   */
   const handleTrackingClick = useCallback(() => {
     if (procConfig.tracking === true) {
       setProcConfig((state) => ({
@@ -127,6 +163,9 @@ const ProcessConfig = memo((props) => {
     }
   }, [procConfig, setProcConfig]);
 
+  /**
+   * Function is used to select color of indicators according to their current value.
+   */
   const circularColorPicker = useCallback(
     (value) => {
       if (value < 33) {
@@ -140,11 +179,17 @@ const ProcessConfig = memo((props) => {
     [theme]
   );
 
+  /**
+   * Function is triggered on configuration change to recalculate current accuracy and performance.
+   */
   useEffect(() => {
     setAccuracy(calcAccuracy(procConfig));
     setPerformance(calcPerformance(procConfig));
   }, [procConfig]);
 
+  /**
+   * Function returns an icon depending on whether the given option is enabled or not.
+   */
   const SelectedIcon = useCallback(
     (props) => {
       return (

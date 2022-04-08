@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 const config = require("./config.json");
 const utils = require("./utils");
 

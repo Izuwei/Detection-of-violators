@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, {
   memo,
   useCallback,
@@ -29,6 +37,9 @@ import DownloadIcon from "@mui/icons-material/Download";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
+/**
+ * Component is a screen that the user can access using a shared video link.
+ */
 const VideoScreen = memo((props) => {
   const { videoId } = useParams();
   const { t } = useTranslation();
@@ -47,6 +58,10 @@ const VideoScreen = memo((props) => {
     [videoId]
   );
 
+  /**
+   * In component mounting phase, the function searches for detection
+   * results on the server in JSON format and puts it into the object.
+   */
   useEffect(() => {
     fetch(urls.data)
       .then((response) => response.json())
@@ -58,6 +73,11 @@ const VideoScreen = memo((props) => {
       });
   }, [urls]);
 
+  /**
+   * Function sets video time to the specified time.
+   *
+   * @param {Int} newTime New video time in seconds.
+   */
   const moveVideoTimestamp = useCallback((newTime) => {
     videoRef.current.currentTime = newTime;
   }, []);
@@ -86,6 +106,7 @@ const VideoScreen = memo((props) => {
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>
       {(() => {
+        // Data not found
         if (data === undefined) {
           return (
             <p
@@ -104,6 +125,7 @@ const VideoScreen = memo((props) => {
             </p>
           );
         } else {
+          // Data found
           return (
             <React.Fragment>
               <video

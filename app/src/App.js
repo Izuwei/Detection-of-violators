@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import { useContext, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -16,10 +24,16 @@ const App = () => {
 
   const { theme } = useContext(ThemeContext);
 
+  /**
+   * Function changes name of the tab in the browser according to the selected language.
+   */
   useEffect(() => {
     document.title = t("AppName");
   }, [t]);
 
+  /**
+   * Function changes background color of body according to the selected theme.
+   */
   useEffect(() => {
     document.body.style.backgroundColor = theme.background;
   }, [theme]);

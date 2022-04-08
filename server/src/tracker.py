@@ -1,3 +1,9 @@
+# Author: Jakub Sadilek
+#
+# Faculty of Information Technology
+# Brno University of Technology
+# 2022
+
 from deep_sort import generate_detections as gdet
 from deep_sort import nn_matching
 from deep_sort.tracker import Tracker as DeepSortTracker
@@ -8,39 +14,59 @@ import random
 
 
 class Tracker:
+    """
+    Class serves as a tracker for object tracking, which is built on DeepSort.
+    """
 
-    # Inicializace trackeru DeepSort
     def __init__(self):
         self.model = "deep_sort\mars-small128.pb"
         self.maxAge = 900
         self.matchingThreshold = 0.7
         self.nnBudget = None
-        self.timeSinceUpdate = 2  # Počet snímků od poslední aktualizace měření.
+        self.timeSinceUpdate = 2  # Number of frames since the last measurement update
 
         self.encoder = gdet.create_box_encoder(self.model, batch_size=1)
         self.metric = nn_matching.NearestNeighborDistanceMetric(
             "cosine", self.matchingThreshold, self.nnBudget
         )
+        # Deepsort tracker initialization
         self.tracker = DeepSortTracker(self.metric, max_age=self.maxAge)
         self.colors = [  # [BGR]
-            (0, 220, 0),  # Zelená
-            (0, 111, 255),  # Oranžová
-            (220, 220, 0),  # Tyrkysová
-            (255, 170, 0),  # Světle modrá
-            (255, 100, 0),  # Modrá
-            (255, 0, 255),  # Fialová
-            (160, 0, 255),  # Růžová
-            (0, 0, 220),  # Červená
+            (0, 220, 0),  # Green
+            (0, 111, 255),  # Orange
+            (220, 220, 0),  # Turquoise
+            (255, 170, 0),  # Light blue
+            (255, 100, 0),  # Blue
+            (255, 0, 255),  # Purple
+            (160, 0, 255),  # Pink
+            (0, 0, 220),  # Red
         ]
 
     def colorGenerator(self):
+        """
+        Function selects and returns a random color from predefined colors in init.
+        """
+
         return random.choice(self.colors)
 
     def track(self, frame, inputDetections):
+        """
+        Function perform tracking on input detections and returns the same detections,
+        but with supplemented data from previous iterations (possibly updated data).
+
+        Parameters:
+        frame: Frame on which the current detections were obtained.
+        inputDetections: Obtained detections.
+
+        Returns:
+        detections: Supplemented input detections.
+        """
+
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         bboxes = [detection.bbox for detection in inputDetections]
         features = self.encoder(frame, bboxes)
 
+        # Convert Detection class to the Detection class used by DeepSort
         detections = []
         for detection, feature in zip(inputDetections, features):
             color = self.colorGenerator()
@@ -60,9 +86,11 @@ class Tracker:
                 )
             )
 
+        # Perform tracking
         self.tracker.predict()
         self.tracker.update(detections)
 
+        # Parse results and return objects of Detection class again
         detections = []
         for track in self.tracker.tracks:
             if (

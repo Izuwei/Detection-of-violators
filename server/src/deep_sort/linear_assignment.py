@@ -1,9 +1,14 @@
 # vim: expandtab:ts=4:sw=4
+
+# Author: Nicolai Wojke
+# Source: https://github.com/nwojke/deep_sort/tree/master/deep_sort
+# License: GPLv3
+
 from __future__ import absolute_import
 import numpy as np
 from . import kalman_filter
 
-# Zastaralá verze - nahrazeno ekvivalent. metodou ze Scipy
+# Deprecated version - replaced with equivalent method from Scipy
 # from sklearn.utils.linear_assignment_ import linear_assignment
 from scipy.optimize import linear_sum_assignment as linear_assignment
 

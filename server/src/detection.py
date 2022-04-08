@@ -1,4 +1,29 @@
+# Author: Jakub Sadilek
+#
+# Faculty of Information Technology
+# Brno University of Technology
+# 2022
+
+
 class Detection:
+    """
+    Class represents an individual detection in image and keeps information about it.
+
+    Parameters:
+    label: Detection class.
+    conf: Confidence score of detection.
+    bbox: Array representing bounding box of detection in format [x, y, w, h].
+    indentity: Identity of the person, if any (default: "Unknown").
+    faceDistance: Face distance of recognized person, if any (default: 1).
+    personId: Person identifier, if any.
+    faceId: Recognized face image identifier, if any.
+    trackId: Detection identifier for tracking.
+    trailPts: Array of points for drawing paths.
+    bboxColor: Color of bounding box.
+    cornerColor: Color of bounding box corners.
+    textColor: Color of text inside the bounding box.
+    """
+
     def __init__(
         self,
         label,
@@ -32,6 +57,16 @@ class Detection:
         ]  # [centerX, centerY]
 
     def setIdentity(self, name, faceDistance, personId, faceId):
+        """
+        Function sets identity of the detected person.
+
+        Parameters:
+        name: Name of the person.
+        faceDistance: Face distance of recognized person.
+        personId: Person identifier.
+        faceId: Identifier of the face image against which it was recognized.
+        """
+
         self.identity = name
         self.faceDistance = faceDistance
         self.personId = personId

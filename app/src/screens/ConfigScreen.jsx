@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, { memo, useCallback, useContext } from "react";
 import {
   Stepper,
@@ -18,6 +26,9 @@ import ProcessConfig from "../components/ProcessConfig";
 import AreaSelection from "../components/AreaSelection";
 import FaceUpload from "../components/FaceUpload";
 
+/**
+ * Component represents screen from video load, through configuration to video upload to the server.
+ */
 const ConfigScreen = memo(() => {
   const { t } = useTranslation();
   const {
@@ -34,6 +45,9 @@ const ConfigScreen = memo(() => {
 
   const optionalSteps = [false, false, true, true];
 
+  /**
+   * Function takes step label and returns corresponding translated name of the label.
+   */
   const createStepLabel = useCallback(
     (label) => {
       switch (label) {
@@ -52,6 +66,9 @@ const ConfigScreen = memo(() => {
     [steps, t]
   );
 
+  /**
+   * Function moves user to the next step of configuration.
+   */
   const handleNextStep = useCallback(() => {
     if (currentStep === steps.length - 1) {
       nextStep();

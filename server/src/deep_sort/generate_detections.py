@@ -1,4 +1,9 @@
 # vim: expandtab:ts=4:sw=4
+
+# Author: Nicolai Wojke
+# Source: https://github.com/nwojke/deep_sort/tree/master/deep_sort
+# License: GPLv3
+
 import os
 import errno
 import argparse

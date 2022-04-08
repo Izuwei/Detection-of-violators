@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, {
   memo,
   useCallback,
@@ -17,6 +25,9 @@ import useWindowDimensions from "../utils/windowDimensions";
 import { ThemeContext } from "../utils/ThemeProvider";
 import { DataContext } from "../utils/DataProvider";
 
+/**
+ * The component renders a section for area of interest selection on video frame.
+ */
 const AreaSelection = memo(() => {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
@@ -39,6 +50,9 @@ const AreaSelection = memo(() => {
   }); // Random values, has no effect but fixes warnings.
   const [drawingAOI, setDrawingAOI] = useState([]);
 
+  /**
+   * On mounting or video upload recalculate thumbnail dimensions.
+   */
   useEffect(() => {
     var contentArea = parseInt(width * 0.4);
     contentArea = contentArea < 500 ? 500 : contentArea;
@@ -53,6 +67,9 @@ const AreaSelection = memo(() => {
     });
   }, [video, width]);
 
+  /**
+   * On mouse-down event start drawing rectangle to the canvas.
+   */
   const handleMouseDown = useCallback(
     (event) => {
       if (drawingAOI.length === 0) {
@@ -71,6 +88,10 @@ const AreaSelection = memo(() => {
     [drawingAOI, thumbnailSize]
   );
 
+  /**
+   * On mouse-move change shape of the rectangle
+   * when drawing already started by mouse-down event.
+   */
   const handleMouseMove = useCallback(
     (event) => {
       if (drawingAOI.length === 1) {
@@ -92,6 +113,10 @@ const AreaSelection = memo(() => {
     [drawingAOI, setupAreaOfInterest, thumbnailSize]
   );
 
+  /**
+   * On mouse-up event store current rectangle shape as an area of interest
+   * if it meets at least the minimum size (50x50).
+   */
   const handleMouseUp = useCallback(
     (event) => {
       if (drawingAOI.length === 1) {

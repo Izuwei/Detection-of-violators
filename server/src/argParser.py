@@ -1,13 +1,23 @@
+# Author: Jakub Sadilek
+#
+# Faculty of Information Technology
+# Brno University of Technology
+# 2022
+
 import os
 import sys
 import argparse
 
 
 def argumentParser():
+    """
+    Function parse and check program arguments and returns an object of class ArgumentParser.
+    """
+
     parser = argparse.ArgumentParser(
         description="Detection and analysis of objects in video sequence."
     )
-    # TODO: předělat na 'required'., zkontrolovat validní soubor, při chybjicí koncovce háže vyjímku (např. .mp4)
+
     parser.add_argument(
         "-i",
         "--input",
@@ -34,7 +44,6 @@ def argumentParser():
         metavar="PATH_TO_DB",
         help="Path to the face database.",
     )
-    # TODO: dodělat tiny?
     parser.add_argument(
         "-m",
         "--model",
@@ -137,15 +146,20 @@ def argumentParser():
 
     parser = parser.parse_args()
 
-    # Ošetření cesty
+    # Check if input video file exists.
+    if os.path.exists(parser.input) == False:
+        sys.stderr.write("The input video file does not exist.\n")
+        exit(1)
+
+    # Validity check of output path.
     if os.path.exists(parser.output) == False:
         sys.stderr.write("Specified output path does not exist.\n")
         exit(1)
 
-    # Cesta výstupního video souboru
+    # Path for the output video file.
     parser.output = os.path.join(parser.output, parser.name)
 
-    # Převod formátu detekční oblasti z [x,y,w,h] na [x1,y1,x2,y2]
+    # Conversion of the detection area format from [x, y, w, h] to [x1, y1, x2, y2]
     if parser.area != None:
         parser.area[0] = abs(parser.area[0])
         parser.area[1] = abs(parser.area[1])

@@ -1,9 +1,9 @@
-[![License badge](https://img.shields.io/badge/License-GPLv3-4bc61e.svg)](https://github.com/Izuwei/Detection-of-violators/blob/master/LICENSE)
+[![License badge](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://github.com/Izuwei/Detection-of-violators/blob/master/LICENSE)
 [![Python badge](https://img.shields.io/badge/Python-3.9.7-blue.svg)](https://www.python.org/downloads/release/python-397)
 [![NodeJS badge](https://img.shields.io/badge/Node-v16.14.0-026e00.svg)](https://nodejs.org/en/download/releases)
 [![NPM badge](https://img.shields.io/badge/npm-8.1.0-cc3534.svg)](https://www.npmjs.com/package/npm/v/8.1.0)
 
-# Detection-of-violators
+# Detection Of Violators
 
 Internet application for detection and analysis of violators in the monitored area.
 
@@ -91,7 +91,7 @@ pip uninstall opencv-python
     - `/opencv_build/build/lib/python3/Release/cv2.cp39-win_amd64.py`
     - `.../AppData/Local/Programs/Python/Python39/Lib/site-packages/cv2/python-3.9/cv2.cp39-win_amd64.py`
 
-## Acknowledgment
+## Credits
 
 | Project     | License | Link                                                     |
 | ----------- | ------- | -------------------------------------------------------- |

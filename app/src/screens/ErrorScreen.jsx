@@ -1,8 +1,19 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, { memo, useContext } from "react";
 import { useTranslation } from "react-i18next";
 
 import { ThemeContext } from "../utils/ThemeProvider";
 
+/**
+ * Component defines an error screen if user proceed to the wrong path of application.
+ */
 const ErrorScreen = memo((props) => {
   const { t } = useTranslation();
 

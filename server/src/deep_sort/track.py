@@ -1,5 +1,10 @@
 # vim: expandtab:ts=4:sw=4
 
+# Author: Nicolai Wojke
+# Source: https://github.com/nwojke/deep_sort/tree/master/deep_sort
+# License: GPLv3
+# Modified by Jakub Sadilek
+
 
 class TrackState:
     """
@@ -175,7 +180,7 @@ class Track:
         self.label = detection.label
         self.confidence = detection.get_confidence()
 
-        # Lepší shoda obličejů => aktualizace jména (identity)
+        # Better face matching => update name (identity)
         if self.label == "person":
             newFaceDistance = detection.get_faceDistance()
 

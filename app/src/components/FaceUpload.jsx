@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, { memo, useCallback, useContext, useMemo, useState } from "react";
 import {
   Box,
@@ -23,6 +31,10 @@ import RestartIcon from "@mui/icons-material/RestartAlt";
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+/**
+ * Component renders a portion of the screen for inserting facial images
+ * into the face database used for recognition.
+ */
 const FaceUpload = memo((props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -38,6 +50,9 @@ const FaceUpload = memo((props) => {
   const [firstnameError, setFirstnameError] = useState(false);
   const [lastnameError, setLastnameError] = useState(false);
 
+  /**
+   * On reset set entire form to the default state.
+   */
   const handleReset = useCallback(() => {
     setFirstname("");
     setLastname("");
@@ -46,17 +61,25 @@ const FaceUpload = memo((props) => {
     setLastnameError(false);
   }, []);
 
+  /**
+   * Function checks and stores entered data about person when it's going
+   * to be added into database or notifies user in case of an error.
+   */
   const handleAdd = useCallback(
     (event) => {
+      // Check length of firstname
       if (firstname.length < 1) {
         setFirstnameError(true);
       }
+      // Check length of lastname
       if (lastname.length < 1) {
         setLastnameError(true);
       }
+      // Checking for presence of at least one image
       if (images.length < 1) {
         enqueueSnackbar(t("EmptyImageError"), { variant: "error" });
       }
+      // If an error occurs, notify the user, else add person to the database
       if (firstname.length < 1 || lastname.length < 1 || images.length < 1) {
         enqueueSnackbar(t("AddPersonError"), { variant: "error" });
       } else {
@@ -69,11 +92,11 @@ const FaceUpload = memo((props) => {
             images: images,
           },
         ]);
+        // Announce successful addition and reset form
         enqueueSnackbar(t("Person added into database"), {
           variant: "success",
         });
         handleReset();
-        console.log(recognitionDatabase);
       }
     },
     [
@@ -83,21 +106,31 @@ const FaceUpload = memo((props) => {
       enqueueSnackbar,
       t,
       setRecognitionDatabase,
-      recognitionDatabase,
       handleReset,
     ]
   );
 
+  /**
+   * The function is called on typing person's firstname and filters whitespaces
+   */
   const handleFirstnameChange = useCallback((event) => {
     setFirstname(event.target.value.replace(/\s/g, ""));
     setFirstnameError(false);
   }, []);
 
+  /**
+   * The function is called on typing person's lastname and filters whitespaces
+   */
   const handleLastnameChange = useCallback((event) => {
     setLastname(event.target.value.replace(/\s/g, ""));
     setLastnameError(false);
   }, []);
 
+  /**
+   * Function removes a person from the database when delete button is pressed.
+   *
+   * @param {Int} atIndex Index of person in array.
+   */
   const handleRemoveItemDB = useCallback(
     (atIndex) => {
       setRecognitionDatabase((state) =>
@@ -107,6 +140,10 @@ const FaceUpload = memo((props) => {
     [setRecognitionDatabase]
   );
 
+  /**
+   * Function is called on face image upload, face is stored
+   * under a unique id and its url is also created.
+   */
   const handleDropFile = useCallback((event) => {
     var fnb = [];
 
@@ -121,6 +158,10 @@ const FaceUpload = memo((props) => {
     setImages((state) => state.concat(fnb));
   }, []);
 
+  /**
+   * Function notifies user about error when he tries to
+   * upload an unsupported file as an image of person's face.
+   */
   const handleDropError = useCallback(
     (event) => {
       enqueueSnackbar(t("ImageUploadErrorNotification"), { variant: "error" });

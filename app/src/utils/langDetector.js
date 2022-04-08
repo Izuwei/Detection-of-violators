@@ -1,3 +1,17 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
+/**
+ * Function gets value of the specified cookie.
+ *
+ * @param {String} name Name of the cookie.
+ * @returns Value of the cookie.
+ */
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);

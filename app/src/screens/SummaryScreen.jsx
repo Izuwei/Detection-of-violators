@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, {
   memo,
   useCallback,
@@ -36,6 +44,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PersonIcon from "@mui/icons-material/Person";
 
+/**
+ * Component represents screen with detection results to which
+ * the user is redirected after his video is completely processed.
+ */
 const SummaryScreen = memo((props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -48,10 +60,14 @@ const SummaryScreen = memo((props) => {
   const videoRef = useRef(null);
   const [videoData, setVideoData] = useState({});
 
+  // Link for share
   const shareLink = `${config.client_url}:${
     config.client_port
   }/video/${processedVideo.videoURL.split("/").pop()}`;
 
+  /**
+   * Function stores a share link to the clipboard.
+   */
   const copyToClipboard = useCallback(() => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareLink);
@@ -61,10 +77,19 @@ const SummaryScreen = memo((props) => {
     }
   }, [shareLink, enqueueSnackbar, t]);
 
+  /**
+   * Function sets video time to the specified time.
+   *
+   * @param {Int} newTime New video time in seconds.
+   */
   const moveVideoTimestamp = useCallback((newTime) => {
     videoRef.current.currentTime = newTime;
   }, []);
 
+  /**
+   * Function searches for the face image in structure created by user
+   * by person id and face id and returns its url.
+   */
   const getImageUrlByID = useCallback(
     (personID, imageID) => {
       const personImages = recognitionDatabase.find(
@@ -75,6 +100,10 @@ const SummaryScreen = memo((props) => {
     [recognitionDatabase]
   );
 
+  /**
+   * In component mounting phase, the function searches for detection
+   * results on the server in JSON format and puts it into the object.
+   */
   useEffect(() => {
     fetch(processedVideo.dataURL)
       .then((response) => response.json())

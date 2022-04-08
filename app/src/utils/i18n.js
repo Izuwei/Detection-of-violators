@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 
@@ -6,6 +14,9 @@ import languageDetector from "./langDetector";
 import english from "../constants/lang/english.json";
 import czech from "../constants/lang/czech.json";
 
+/**
+ * Initialization of translator.
+ */
 i18next
   .use(languageDetector)
   .use(initReactI18next)

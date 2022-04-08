@@ -1,7 +1,20 @@
+# Author: Jakub Sadilek
+#
+# Faculty of Information Technology
+# Brno University of Technology
+# 2022
+
 import json
 
 
 class Recorder:
+    """
+    Class is used to record detections during video processing, which will be summarized at the end of the process.
+
+    Parameters:
+    labels: Array with detection classes.
+    """
+
     def __init__(self, labels):
         self.records = {label: [] for label in labels}
         self.last = {
@@ -10,6 +23,14 @@ class Recorder:
         self.timeDist = 5  # Time distance between image time record in seconds
 
     def add(self, detection, timestamp):
+        """
+        Function adds a new detection record.
+
+        Parameters:
+        detection: Data object of class Detection.
+        timestamp: Time when the detection was obtained.
+        """
+
         # Person
         if detection.label == "person":
             # Loop over all recorded persons
@@ -59,4 +80,11 @@ class Recorder:
             self.last[detection.label] = timestamp
 
     def parseJSON(self):
+        """
+        Function returns recorded data in JSON format.
+
+        Returns:
+        data: Summary of detections in JSON dump.
+        """
+
         return json.dumps(self.records, indent=2)

@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, {
   createContext,
   memo,
@@ -17,6 +25,10 @@ import config from "../config.json";
 
 export const WsContext = createContext();
 
+/**
+ * WsProvider is responsible for stateful socket communication with the server,
+ * sending user data and receiving responses.
+ */
 export const WsProvider = memo(({ children }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -34,6 +46,10 @@ export const WsProvider = memo(({ children }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [detectionProgress, setDetectionProgress] = useState(0);
 
+  /**
+   * Function sends all the data obtained from the user to the server,
+   * where the video will be processed according to the configuration.
+   */
   const startProcessing = useCallback(() => {
     setDescription("Uploading");
     setUploadProgress(0);
@@ -43,6 +59,7 @@ export const WsProvider = memo(({ children }) => {
     var faceCnt = 0;
     var faceSent = 0;
 
+    // Create a structure with face images to make them traceable in the results
     for (
       let personIdx = 0;
       personIdx < recognitionDatabase.length;
@@ -86,15 +103,19 @@ export const WsProvider = memo(({ children }) => {
       }
     }
 
+    // Socket initialization
     const socket = io(config.server_url + ":" + config.socket_port);
+    // Uploader for video file
     var baseUploader = new SocketIOFileUpload(socket, { topicName: "video" });
 
+    // Function for displaying video upload progress
     const onBaseProgress = (event) => {
       const progress = parseInt((event.bytesLoaded / event.file.size) * 100);
       setUploadProgress(progress);
     };
     baseUploader.addEventListener("progress", onBaseProgress);
 
+    // Function starts detection processing after video file is completely uploaded
     const onBaseComplete = (event) => {
       socket.emit("start-detection", { ...procConfig, area: areaOfInterest });
       setDescription("SettingUpEnvironment");
@@ -102,10 +123,12 @@ export const WsProvider = memo(({ children }) => {
     };
     baseUploader.addEventListener("complete", onBaseComplete);
 
+    // Uploader for face images
     var imageUploader = new SocketIOFileUpload(socket, {
       topicName: "faces",
     });
 
+    // After the face images are successfully uploaded, it will start sending video file
     const onImageComplete = (event) => {
       faceSent += 1;
       if (faceSent === faceCnt) {
@@ -120,20 +143,21 @@ export const WsProvider = memo(({ children }) => {
       imageUploader.submitFiles(faces); // Upload face images before video
     }
 
+    // Value of progress bar for video processing
     socket.on("progress", (progress) => {
       setDetectionProgress(progress);
       setDescription("Processing");
     });
 
+    // After video is processed, go to the next step
     socket.on("processed", (data) => {
       setDescription("Finishing");
       setProcessedVideo(data);
       socket.disconnect();
       nextStep();
-
-      console.log(data);
     });
 
+    // On error during processing
     socket.on("process_error", (err) => {
       enqueueSnackbar(t("ProcessingError"), {
         variant: "error",
@@ -142,6 +166,7 @@ export const WsProvider = memo(({ children }) => {
       resetStep();
     });
 
+    // On error during video upload
     socket.on("upload_error", (err) => {
       enqueueSnackbar(t("UploadError"), {
         variant: "error",
@@ -150,6 +175,7 @@ export const WsProvider = memo(({ children }) => {
       resetStep();
     });
 
+    // On error during uploading face images
     socket.on("face_upload_error", (err) => {
       enqueueSnackbar(t("FaceUploadError"), {
         variant: "error",
@@ -158,6 +184,7 @@ export const WsProvider = memo(({ children }) => {
       resetStep();
     });
 
+    // On connection error
     socket.on("connect_error", (err) => {
       enqueueSnackbar(t("ConnectionError"), {
         variant: "error",

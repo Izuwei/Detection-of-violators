@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, { memo, useCallback, useContext, useMemo, useState } from "react";
 import {
   AppBar,
@@ -32,6 +40,9 @@ import gbFlag from "../assets/icons/gb_flag.svg";
 import czFlag from "../assets/icons/cz_flag.svg";
 import appIcon from "../assets/icons/app_icon.svg";
 
+/**
+ * Function renders top panel of the application.
+ */
 const TopPanel = memo(() => {
   const { t, i18n } = useTranslation();
   const [, setCookie] = useCookies(["lang"]);
@@ -40,6 +51,11 @@ const TopPanel = memo(() => {
 
   const [openDrawer, setOpenDrawer] = useState(false);
 
+  /**
+   * Function changes language of the application.
+   *
+   * @param {Object} event Event carrying selected language code.
+   */
   const onLanguageChange = useCallback(
     (event) => {
       const lang = event.target.value;

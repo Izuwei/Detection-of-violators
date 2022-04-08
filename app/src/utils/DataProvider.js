@@ -1,7 +1,19 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, { createContext, memo, useCallback, useState } from "react";
 
 export const DataContext = createContext();
 
+/**
+ * Data provider that is used across application to store data provided by the user,
+ * which is sent to the server then.
+ */
 export const DataProvider = memo(({ children }) => {
   const [video, setVideo] = useState({
     data: undefined,
@@ -27,6 +39,12 @@ export const DataProvider = memo(({ children }) => {
   const [detectionArea, setDetectionArea] = useState([]);
   const [recognitionDatabase, setRecognitionDatabase] = useState([]);
 
+  /**
+   * Function setups area of interest in video frame, checks its boundaries
+   * and saves it in format [x, y, w, h].
+   *
+   * @param {List} boxes List containing one rectangle.
+   */
   const setupAreaOfInterest = useCallback(
     (boxes) => {
       if (boxes.length === 0) {
@@ -63,10 +81,17 @@ export const DataProvider = memo(({ children }) => {
     [video]
   );
 
+  /**
+   * Function reloads a random thumbnail from the video and saves it.
+   *
+   * @param {String} videoURL Link to the video.
+   */
   const reloadVideoThumbnail = useCallback((videoURL) => {
+    // Create a video element
     var tempVideo = document.createElement("video");
     tempVideo.src = videoURL;
 
+    // After data is loaded, then set random video time
     tempVideo.addEventListener(
       "loadeddata",
       function () {
@@ -75,6 +100,7 @@ export const DataProvider = memo(({ children }) => {
       false
     );
 
+    // After time in the video is shifted, get the frame and save it as a image
     tempVideo.addEventListener(
       "seeked",
       function () {
@@ -93,6 +119,7 @@ export const DataProvider = memo(({ children }) => {
       false
     );
 
+    // Function sets random time in the video
     function reloadRandomFrame() {
       if (!isNaN(tempVideo.duration)) {
         var rand = Math.round(Math.random() * tempVideo.duration) + 1;
@@ -102,6 +129,10 @@ export const DataProvider = memo(({ children }) => {
     }
   }, []);
 
+  /**
+   * Function saves uploaded video from the user along with its metadata
+   * and creates its first thumbnail at the same time.
+   */
   const uploadVideo = useCallback(
     (accptedFile) => {
       if (accptedFile.length !== 0) {
@@ -124,7 +155,6 @@ export const DataProvider = memo(({ children }) => {
               duration: parseInt(tempVideo.duration),
               aspectRatio: tempVideo.videoWidth / tempVideo.videoHeight,
             }));
-            console.log("Info: Video uploaded.");
           },
           false
         );
@@ -133,6 +163,9 @@ export const DataProvider = memo(({ children }) => {
     [reloadVideoThumbnail]
   );
 
+  /**
+   * Function removes uploaded video.
+   */
   const removeVideo = useCallback(() => {
     setVideoThumbnail(undefined);
     setDetectionArea([]);

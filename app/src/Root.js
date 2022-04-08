@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import "./utils/i18n";
 
 import { createRef, useCallback } from "react";
@@ -16,6 +24,9 @@ import { WsProvider } from "./utils/WsProvider";
 
 import App from "./App";
 
+/**
+ * Top level component, serves primarily to initialize providers.
+ */
 const Root = () => {
   const notistackRef = createRef();
   const { t } = useTranslation();

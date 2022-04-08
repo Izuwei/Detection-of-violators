@@ -1,6 +1,21 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 const fs = require("fs");
 const path = require("path");
 
+/**
+ * Function converts the configuration received
+ * from the user to the program parameters.
+ *
+ * @param {Object} data Configuration from the user.
+ * @returns {List} List with program parameters.
+ */
 const parseArgsCLI = (data) => {
   var args = [];
 
@@ -97,6 +112,11 @@ const deleteFiles = (dir, age) => {
   });
 };
 
+/**
+ * Function deletes the specified directory if exists.
+ *
+ * @param {String} dir Path to the directory.
+ */
 const rmDirRecursive = (dir) => {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, { recursive: true });

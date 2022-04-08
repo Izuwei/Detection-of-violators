@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, { memo, useCallback, useContext, useMemo } from "react";
 import {
   IconButton,
@@ -18,7 +26,7 @@ import { DataContext } from "../utils/DataProvider";
 import { ThemeContext } from "../utils/ThemeProvider";
 
 /**
- * https://react-dropzone.js.org/#section-styling-dropzone
+ * Component renders part of splash screen for uploading a video file.
  */
 const FileDropzone = memo(({ setStepStatus }) => {
   const { t } = useTranslation();
@@ -26,13 +34,19 @@ const FileDropzone = memo(({ setStepStatus }) => {
 
   const { theme } = useContext(ThemeContext);
   const { video, uploadVideo, removeVideo } = useContext(DataContext);
-  console.log("Render: Dropzone");
 
+  /**
+   * Function removes uploaded video file.
+   */
   const handleClear = useCallback(() => {
     setStepStatus(false);
     removeVideo();
   }, [setStepStatus, removeVideo]);
 
+  /**
+   * Function saves the video when it is dropped into the box,
+   * allow user to proceed to the next step and notifies him.
+   */
   const handleDropFile = useCallback(
     (event) => {
       uploadVideo(event);
@@ -44,6 +58,9 @@ const FileDropzone = memo(({ setStepStatus }) => {
     [uploadVideo, setStepStatus, enqueueSnackbar, t]
   );
 
+  /**
+   * Function notifies user when he tries to upload video in unsupported format.
+   */
   const handleDropError = useCallback(
     (event) => {
       enqueueSnackbar(t("VideoUploadErrorNotification"), { variant: "error" });
@@ -51,6 +68,10 @@ const FileDropzone = memo(({ setStepStatus }) => {
     [enqueueSnackbar, t]
   );
 
+  /**
+   * Setup for file dropzone.
+   * @link https://react-dropzone.js.org/#section-styling-dropzone
+   */
   const {
     getRootProps,
     getInputProps,

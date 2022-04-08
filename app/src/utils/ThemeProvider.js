@@ -1,3 +1,11 @@
+/**
+ * @author Jakub Sadilek
+ *
+ * Faculty of Information Technology
+ * Brno University of Technology
+ * 2022
+ */
+
 import React, { memo, useCallback, useState } from "react";
 import { useCookies } from "react-cookie";
 
@@ -6,6 +14,10 @@ import darkTheme from "../constants/theme/dark";
 
 export const ThemeContext = React.createContext();
 
+/**
+ * Theme provider is responsible for providing name of theme
+ * and corresponding colors across the application.
+ */
 export const ThemeProvider = memo(({ children }) => {
   const [cookies, setCookie] = useCookies(["theme"]);
   const [theme, setTheme] = useState(() => {
@@ -19,6 +31,11 @@ export const ThemeProvider = memo(({ children }) => {
     }
   });
 
+  /**
+   * Function changes theme of the application.
+   *
+   * @param {String} newTheme Name of the new theme.
+   */
   const changeTheme = useCallback(
     (newTheme) => {
       setCookie("theme", newTheme, {

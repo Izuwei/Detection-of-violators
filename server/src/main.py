@@ -1,3 +1,9 @@
+# Author: Jakub Sadilek
+#
+# Faculty of Information Technology
+# Brno University of Technology
+# 2022
+
 import sys
 import cv2
 import time
@@ -34,6 +40,15 @@ args = argumentParser()
 
 
 def draw(frame, detection, fps):
+    """
+    Function draws a bounding box into the given frame.
+
+    Parameters:
+    frame: Frame for write into.
+    detection: Detection whose bounding box will be plotted.
+    fps: Video FPS, it is used to calculate length of tracks.
+    """
+
     x, y, w, h = (
         detection.bbox[0],
         detection.bbox[1],
@@ -42,7 +57,7 @@ def draw(frame, detection, fps):
     )
 
     if args.recognition == True and detection.label == "person":
-        # Identita osoby
+        # Identity of person
         cv2.putText(
             frame,
             detection.identity,
@@ -59,20 +74,20 @@ def draw(frame, detection, fps):
     # Bounding box
     cv2.rectangle(frame, (x, y), (x2, y2), detection.bboxColor, 1)
 
-    # Horní levý roh
+    # Upper left corner
     cv2.line(frame, (x, y), (x + cornerLen, y), detection.cornerColor, 2)
     cv2.line(frame, (x, y), (x, y + cornerLen), detection.cornerColor, 2)
-    # Horní pravý roh
+    # Upper right corner
     cv2.line(frame, (x2, y), (x2 - cornerLen, y), detection.cornerColor, 2)
     cv2.line(frame, (x2, y), (x2, y + cornerLen), detection.cornerColor, 2)
-    # Dolní levý roh
+    # Lower left corner
     cv2.line(frame, (x, y2), (x + cornerLen, y2), detection.cornerColor, 2)
     cv2.line(frame, (x, y2), (x, y2 - cornerLen), detection.cornerColor, 2)
-    # Dolní pravý roh
+    # Lower right corner
     cv2.line(frame, (x2, y2), (x2 - cornerLen, y2), detection.cornerColor, 2)
     cv2.line(frame, (x2, y2), (x2, y2 - cornerLen), detection.cornerColor, 2)
 
-    # Třída (label)
+    # Class (label)
     cv2.putText(
         frame,
         f"{detection.label.upper()}",
@@ -82,7 +97,7 @@ def draw(frame, detection, fps):
         detection.textColor,
         1,
     )
-    # Confidence
+    # Confidence score
     cv2.putText(
         frame,
         f"{int(detection.conf*100)}%",
@@ -92,8 +107,9 @@ def draw(frame, detection, fps):
         detection.textColor,
         1,
     )
-    # Tracking: ID + path
+    # Tracking
     if args.tracking == True:
+        # ID of object
         cv2.putText(
             frame,
             f"ID:{detection.trackId}",
@@ -104,11 +120,12 @@ def draw(frame, detection, fps):
             1,
         )
 
+        # Tracks
         if args.paths == True:
-            # Výpočet indexu pro indexování v poli centrálních souřadnic, min. 0
+            # Index calculation for indexing in the array of central coordinate, min. 0
             lineCount = len(detection.trail) - 1
             lineCount = 0 if lineCount < 0 else lineCount
-            # Výpočet počtu bodů k vykreslení podle zadaného času a FPS, min. == počet bodů
+            # Calculation of the number of points to be plotted according to the specified length and FPS
             trailLength = int(fps * args.traillen)
             trailLength = trailLength if trailLength < lineCount else lineCount
 
@@ -123,26 +140,27 @@ def draw(frame, detection, fps):
 
 
 def main():
-    # Načtení tříd ze souboru
+    # Load classes from a file
     classNames = []
     with open(labelFile) as f:
         classNames = f.read().rstrip("\n").split("\n")
 
-    # Inicializace detektoru
+    # Detector initialization
     detector = Detector(classNames, args.model)
 
-    # Inicializace DeepFace
+    # DeepFace initialization
     recognizer = Recognizer(args.database)
 
-    # Inicializace trackeru DeepSort
+    # DeepSort tracker initialization
     if args.tracking == True:
         tracker = Tracker()
 
+    # Initialization of recorder for the output summary
     recorder = Recorder(OBJECTS)
 
     video = cv2.VideoCapture(args.input)
 
-    if not video.isOpened():  # Kontrola, zda se video povedlo otevřít
+    if not video.isOpened():  # Check if video was successfully opened
         sys.stderr.write("Failed to open the video.\n")
         exit(1)
 
@@ -152,7 +170,7 @@ def main():
     videoFPS = video.get(cv2.CAP_PROP_FPS)
     codec = cv2.VideoWriter_fourcc(*"avc1")
 
-    # Ošetření hranic detekční oblasti
+    # Check detection area boundaries
     if args.area != None:
         args.area[0] = args.area[0] if args.area[0] >= 0 else 0
         args.area[1] = args.area[1] if args.area[1] >= 0 else 0
@@ -163,8 +181,10 @@ def main():
         args.output + ".mp4", codec, videoFPS, (videoWidth, videoHeight)
     )
 
+    # Set of object IDs, used to count unique objects in the video
     objectIDs = set()
 
+    # Variables for progress calculation
     sendLimit = frameCnt // 20
     sentProgress = 1
     progressFrame = 0
@@ -174,31 +194,36 @@ def main():
     while True:
         ret, frame = video.read()
 
-        # Kontrola dostupnosti snímku
+        # Frame availability check
         if not ret:
             break
 
         frameNum = int(video.get(cv2.CAP_PROP_POS_FRAMES))
         timeStamp = int(frameNum / videoFPS)
 
+        # Show progress every 5%
         if progressFrame == sendLimit:
             print("Progress: " + str(min(sentProgress * 5, 100)) + " %", flush=True)
             sentProgress += 1
             progressFrame = 0
         progressFrame += 1
 
-        # Detekce objektů
+        # Object detection
         labels, confs, bboxes = detector.predict(frame)
 
+        # Store obtained detections into objects
         detections = []
         for label, conf, bbox in zip(labels, confs, bboxes):
             detections.append(Detection(label, conf, bbox))
 
-        # Rozpoznávání obličejů
+        # Face recognition
         if args.recognition == True:
+            # Redirect stdout due to DeepFace dumps
             with QuietStdout():
+                # Trying to recognize each person
                 for detection in detections:
                     if detection.label == "person":
+                        # Crop bounding box with detected person
                         bbox = detection.bbox
                         x, y, w, h = bbox[0], bbox[1], bbox[2], bbox[3]
 
@@ -209,28 +234,31 @@ def main():
 
                         personCrop = frame[startY:endY, startX:endX]
 
+                        # Feed DeepFace with image of the person and get informations
+                        # that will determine identity of the person
                         identity, faceDistance, personId, faceId = recognizer.find(
                             personCrop
                         )
                         detection.setIdentity(identity, faceDistance, personId, faceId)
 
-        # Trasování
+        # Tracking, if set, returns new objects of class Detection
         if args.tracking == True:
             detections = tracker.track(frame, detections)
 
-        # Vykreslení zjištěných detekcí
+        # Render detections
         for detection in detections:
-            # Jestli nedetekujeme auta, tak skip
+            # If car detection is not set, then skip
             if detection.label == "car" and args.cars == False:
                 continue
 
+            # Detected class must be among detection classes
             if detection.label in OBJECTS:
-                # Detekce na celém snímku
+                # Full frame detection
                 if args.area == None:
                     draw(frame, detection, videoFPS)
                     recorder.add(detection, timeStamp)
 
-                # Detekce ve vymezené části snímku
+                # Detection in defined part of frame
                 elif (
                     detection.center[0] >= args.area[0]
                     and detection.center[0] <= args.area[2]
@@ -240,7 +268,7 @@ def main():
                     draw(frame, detection, videoFPS)
                     recorder.add(detection, timeStamp)
 
-        # Vykreslení rámečku detekční oblasti
+        # Render detection area in frame, if set
         if args.frame == True and args.area != None:
             cv2.rectangle(
                 frame,
@@ -250,7 +278,7 @@ def main():
                 2,
             )
 
-        # Výpis počítadel na snímek
+        # Plot counters on frame, if set
         if args.tracking == True and args.counter == True:
             currentObjects = 0
             for detection in detections:
@@ -277,7 +305,7 @@ def main():
                 1,
             )
 
-        # Výpis času ve videu na snímek
+        # Write current time of the video on frame, if set
         if args.timestamp == True:
             cv2.putText(
                 frame,
@@ -289,7 +317,8 @@ def main():
                 1,
             )
 
-        cv2.imshow("Detector", frame)
+        # Displaying images during processing, used for debugging
+        cv2.imshow("Detection of Violators", frame)
         outputVideo.write(frame)
 
         if cv2.waitKey(2) & 0xFF == ord("q"):
@@ -299,6 +328,7 @@ def main():
     video.release()
     cv2.destroyAllWindows()
 
+    # Summary of detections is stored into JSON file (same directory as video file)
     summaryData = recorder.parseJSON()
     with open(args.output + ".json", "w") as f:
         f.write(summaryData)
