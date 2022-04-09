@@ -155,223 +155,227 @@ const SummaryScreen = memo((props) => {
       >
         <source src={processedVideo.videoURL} />
       </video>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: 2,
-          marginBottom: 2,
-        }}
-      >
-        <Tooltip title={t("CopyToClipboard")}>
-          <TextField
-            variant="outlined"
-            label={t("ShareLink")}
-            defaultValue={shareLink}
-            onClick={copyToClipboard}
-            InputProps={{
-              readOnly: true,
-            }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{
-              width: 380,
-              // Text color
-              ".MuiOutlinedInput-root": {
-                color: theme.text,
-              },
-              "& .MuiOutlinedInput-root": {
-                // Border color
-                "& fieldset": {
-                  borderColor: theme.textFieldOutline,
-                },
-                // Border color on hover effect
-                "&:hover fieldset": {
-                  borderColor: theme.text,
-                },
-                // Border color on focus
-                "&.Mui-focused fieldset": {
-                  borderColor: theme.primary,
-                },
-              },
-              // Label color
-              ".MuiInputLabel-root": {
-                color: theme.text,
-              },
-              // Label focused color
-              ".MuiInputLabel-root.Mui-focused": {
-                color: theme.primary,
-              },
-              // Cursor icon on hover effect
-              ".MuiOutlinedInput-input:hover": {
-                cursor: "pointer",
-              },
-            }}
-          />
-        </Tooltip>
-        <div
-          style={{
+      <div style={{ marginLeft: 12, marginRight: 12 }}>
+        <Box
+          sx={{
             display: "flex",
-            contentAlign: "center",
-            justifyContent: "center",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: 2,
+            marginBottom: 2,
           }}
         >
-          <Tooltip title={t("SummaryInfo")}>
-            <Icon
-              fontSize="large"
-              color="info"
-              sx={{
-                margin: "auto",
-                display: "flex",
-                width: 58,
-                height: 58,
-                cursor: "help",
+          <Tooltip title={t("CopyToClipboard")}>
+            <TextField
+              variant="outlined"
+              label={t("ShareLink")}
+              defaultValue={shareLink}
+              onClick={copyToClipboard}
+              InputProps={{
+                readOnly: true,
               }}
-            >
-              <InfoIcon sx={{ margin: "auto" }} />
-            </Icon>
+              InputLabelProps={{
+                shrink: true,
+              }}
+              sx={{
+                width: 380,
+                // Text color
+                ".MuiOutlinedInput-root": {
+                  color: theme.text,
+                },
+                "& .MuiOutlinedInput-root": {
+                  // Border color
+                  "& fieldset": {
+                    borderColor: theme.textFieldOutline,
+                  },
+                  // Border color on hover effect
+                  "&:hover fieldset": {
+                    borderColor: theme.text,
+                  },
+                  // Border color on focus
+                  "&.Mui-focused fieldset": {
+                    borderColor: theme.primary,
+                  },
+                },
+                // Label color
+                ".MuiInputLabel-root": {
+                  color: theme.text,
+                },
+                // Label focused color
+                ".MuiInputLabel-root.Mui-focused": {
+                  color: theme.primary,
+                },
+                // Cursor icon on hover effect
+                ".MuiOutlinedInput-input:hover": {
+                  cursor: "pointer",
+                },
+              }}
+            />
           </Tooltip>
-          <a href={processedVideo.downloadURL}>
-            <Tooltip title={t("Download")}>
+          <div
+            style={{
+              display: "flex",
+              contentAlign: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Tooltip title={t("SummaryInfo")}>
+              <Icon
+                fontSize="large"
+                color="info"
+                sx={{
+                  margin: "auto",
+                  display: "flex",
+                  width: 58,
+                  height: 58,
+                  cursor: "help",
+                }}
+              >
+                <InfoIcon sx={{ margin: "auto" }} />
+              </Icon>
+            </Tooltip>
+            <a href={processedVideo.downloadURL}>
+              <Tooltip title={t("Download")}>
+                <IconButton
+                  size="large"
+                  sx={{
+                    ...styles.icons,
+                    color: theme.primaryButton,
+                    "&:hover": { backgroundColor: theme.primaryButtonHover },
+                  }}
+                >
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
+            </a>
+            <Tooltip title={t("StartAgain")}>
               <IconButton
                 size="large"
                 sx={{
                   ...styles.icons,
-                  color: theme.primaryButton,
-                  "&:hover": { backgroundColor: theme.primaryButtonHover },
+                  color: "#de0000",
+                  "&:hover": { backgroundColor: theme.redButtonHover },
                 }}
+                onClick={resetStep}
               >
-                <DownloadIcon />
+                <RestartIcon />
               </IconButton>
             </Tooltip>
-          </a>
-          <Tooltip title={t("StartAgain")}>
-            <IconButton
-              size="large"
-              sx={{
-                ...styles.icons,
-                color: "#de0000",
-                "&:hover": { backgroundColor: theme.redButtonHover },
-              }}
-              onClick={resetStep}
-            >
-              <RestartIcon />
-            </IconButton>
-          </Tooltip>
-        </div>
-      </Box>
-      <Box>
-        {Object.keys(videoData).map((key, index) => {
-          if (key === "person" && videoData[key].length !== 0) {
-            return videoData[key].map((person, personIdx) => (
-              <Accordion key={"p_" + personIdx} sx={styles.accordion}>
-                <AccordionSummary
-                  expandIcon={
-                    <ExpandMoreIcon sx={{ color: theme.textPlaceholder }} />
-                  }
-                >
-                  <Typography sx={styles.accordionTitle}>
-                    {person.name === "Unknown"
-                      ? t("UnknownPerson")
-                      : person.name}
-                  </Typography>
-                </AccordionSummary>
-                {person.detections.map((detection, detectionIdx) => (
-                  <AccordionDetails
-                    key={"det_" + detectionIdx}
-                    sx={{
-                      paddingTop: 0,
-                      paddingRight: 2,
-                      paddingBottom: 0,
-                      paddingLeft: 2,
-                    }}
+          </div>
+        </Box>
+        <Box>
+          {Object.keys(videoData).map((key, index) => {
+            if (key === "person" && videoData[key].length !== 0) {
+              return videoData[key].map((person, personIdx) => (
+                <Accordion key={"p_" + personIdx} sx={styles.accordion}>
+                  <AccordionSummary
+                    expandIcon={
+                      <ExpandMoreIcon sx={{ color: theme.textPlaceholder }} />
+                    }
                   >
-                    <div style={{ display: "flex" }}>
-                      <div style={{ width: "15%" }}>
-                        {person.name === "Unknown" ? (
-                          <PersonIcon
-                            sx={{
-                              width: "100%",
-                              height: "100%",
-                              color: theme.text,
-                            }}
-                          />
-                        ) : (
-                          <img
-                            style={{ width: "100%", borderRadius: 4 }}
-                            src={getImageUrlByID(
-                              parseInt(person.id),
-                              parseInt(detection.id)
-                            )}
-                            alt={person.id}
-                          />
-                        )}
+                    <Typography sx={styles.accordionTitle}>
+                      {person.name === "Unknown"
+                        ? t("UnknownPerson")
+                        : person.name}
+                    </Typography>
+                  </AccordionSummary>
+                  {person.detections.map((detection, detectionIdx) => (
+                    <AccordionDetails
+                      key={"det_" + detectionIdx}
+                      sx={{
+                        paddingTop: 0,
+                        paddingRight: 2,
+                        paddingBottom: 0,
+                        paddingLeft: 2,
+                      }}
+                    >
+                      <div style={{ display: "flex" }}>
+                        <div style={{ width: "15%" }}>
+                          {person.name === "Unknown" ? (
+                            <PersonIcon
+                              sx={{
+                                width: "100%",
+                                height: "100%",
+                                color: theme.text,
+                              }}
+                            />
+                          ) : (
+                            <img
+                              style={{ width: "100%", borderRadius: 4 }}
+                              src={getImageUrlByID(
+                                parseInt(person.id),
+                                parseInt(detection.id)
+                              )}
+                              alt={person.id}
+                            />
+                          )}
+                        </div>
+                        <div
+                          style={{
+                            width: "85%",
+                            textAlign: "left",
+                            padding: 10,
+                          }}
+                        >
+                          {detection.timestamp.map((time, timeIdx) => (
+                            <Chip
+                              key={"ptime_" + timeIdx}
+                              sx={styles.chip}
+                              label={new Date(time * 1000)
+                                .toISOString()
+                                .substr(11, 8)}
+                              onDelete={() => moveVideoTimestamp(time)}
+                              deleteIcon={
+                                <Tooltip title={t("Move")}>
+                                  <PlayCircleIcon sx={styles.chipIcon} />
+                                </Tooltip>
+                              }
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <div
-                        style={{
-                          width: "85%",
-                          textAlign: "left",
-                          padding: 10,
-                        }}
-                      >
-                        {detection.timestamp.map((time, timeIdx) => (
-                          <Chip
-                            key={"ptime_" + timeIdx}
-                            sx={styles.chip}
-                            label={new Date(time * 1000)
-                              .toISOString()
-                              .substr(11, 8)}
-                            onDelete={() => moveVideoTimestamp(time)}
-                            deleteIcon={
-                              <Tooltip title={t("Move")}>
-                                <PlayCircleIcon sx={styles.chipIcon} />
-                              </Tooltip>
-                            }
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <Divider
-                      orientation="horizontal"
-                      sx={{ margin: 2, borderColor: theme.divider }}
-                    />
-                  </AccordionDetails>
-                ))}
-              </Accordion>
-            ));
-          } else if (key !== "person" && videoData[key].length !== 0) {
-            return (
-              <Accordion key={"o_" + index} sx={styles.accordion}>
-                <AccordionSummary
-                  expandIcon={
-                    <ExpandMoreIcon sx={{ color: theme.textPlaceholder }} />
-                  }
-                >
-                  <Typography sx={styles.accordionTitle}>{t(key)}</Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ textAlign: "left" }}>
-                  {videoData[key].map((time, timeIdx) => (
-                    <Chip
-                      key={"otime_" + timeIdx}
-                      sx={styles.chip}
-                      label={new Date(time * 1000).toISOString().substr(11, 8)}
-                      onDelete={() => moveVideoTimestamp(time)}
-                      deleteIcon={
-                        <Tooltip title={t("Move")}>
-                          <PlayCircleIcon sx={styles.chipIcon} />
-                        </Tooltip>
-                      }
-                    />
+                      <Divider
+                        orientation="horizontal"
+                        sx={{ margin: 2, borderColor: theme.divider }}
+                      />
+                    </AccordionDetails>
                   ))}
-                </AccordionDetails>
-              </Accordion>
-            );
-          } else return <React.Fragment key={"e_" + index} />;
-        })}
-      </Box>
+                </Accordion>
+              ));
+            } else if (key !== "person" && videoData[key].length !== 0) {
+              return (
+                <Accordion key={"o_" + index} sx={styles.accordion}>
+                  <AccordionSummary
+                    expandIcon={
+                      <ExpandMoreIcon sx={{ color: theme.textPlaceholder }} />
+                    }
+                  >
+                    <Typography sx={styles.accordionTitle}>{t(key)}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ textAlign: "left" }}>
+                    {videoData[key].map((time, timeIdx) => (
+                      <Chip
+                        key={"otime_" + timeIdx}
+                        sx={styles.chip}
+                        label={new Date(time * 1000)
+                          .toISOString()
+                          .substr(11, 8)}
+                        onDelete={() => moveVideoTimestamp(time)}
+                        deleteIcon={
+                          <Tooltip title={t("Move")}>
+                            <PlayCircleIcon sx={styles.chipIcon} />
+                          </Tooltip>
+                        }
+                      />
+                    ))}
+                  </AccordionDetails>
+                </Accordion>
+              );
+            } else return <React.Fragment key={"e_" + index} />;
+          })}
+        </Box>
+      </div>
     </Box>
   );
 });

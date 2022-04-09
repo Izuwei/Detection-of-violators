@@ -137,110 +137,114 @@ const VideoScreen = memo((props) => {
               >
                 <source src={urls.video} />
               </video>
-              <a href={urls.download}>
-                <Tooltip title={t("Download")}>
-                  <IconButton
-                    size="large"
-                    sx={{
-                      marginTop: 1,
-                      marginBottom: 1,
-                      color: theme.primaryButton,
-                      "&:hover": { backgroundColor: theme.primaryButtonHover },
-                    }}
-                  >
-                    <DownloadIcon />
-                  </IconButton>
-                </Tooltip>
-              </a>
-              <Box sx={{ marginBottom: 2 }}>
-                {Object.keys(data).map((key, index) => {
-                  if (key === "person" && data[key].length !== 0) {
-                    return data[key].map((person, personIdx) => (
-                      <Accordion key={"p_" + personIdx} sx={styles.accordion}>
-                        <AccordionSummary
-                          expandIcon={
-                            <ExpandMoreIcon
-                              sx={{ color: theme.textPlaceholder }}
-                            />
-                          }
-                        >
-                          <Typography sx={styles.accordionTitle}>
-                            {person.name === "Unknown"
-                              ? t("UnknownPerson")
-                              : person.name}
-                          </Typography>
-                        </AccordionSummary>
-                        {person.detections.map((detection, detectionIdx) => (
-                          <AccordionDetails
-                            key={"det_" + detectionIdx}
-                            sx={{
-                              paddingTop: 0,
-                              paddingRight: 2,
-                              paddingBottom: 0,
-                              paddingLeft: 2,
-                            }}
+              <div style={{ marginLeft: 12, marginRight: 12 }}>
+                <a href={urls.download}>
+                  <Tooltip title={t("Download")}>
+                    <IconButton
+                      size="large"
+                      sx={{
+                        marginTop: 1,
+                        marginBottom: 1,
+                        color: theme.primaryButton,
+                        "&:hover": {
+                          backgroundColor: theme.primaryButtonHover,
+                        },
+                      }}
+                    >
+                      <DownloadIcon />
+                    </IconButton>
+                  </Tooltip>
+                </a>
+                <Box sx={{ marginBottom: 2 }}>
+                  {Object.keys(data).map((key, index) => {
+                    if (key === "person" && data[key].length !== 0) {
+                      return data[key].map((person, personIdx) => (
+                        <Accordion key={"p_" + personIdx} sx={styles.accordion}>
+                          <AccordionSummary
+                            expandIcon={
+                              <ExpandMoreIcon
+                                sx={{ color: theme.textPlaceholder }}
+                              />
+                            }
                           >
-                            <div style={{ display: "flex" }}>
-                              {detection.timestamp.map((time, timeIdx) => (
-                                <Chip
-                                  key={"ptime_" + timeIdx}
-                                  sx={styles.chip}
-                                  label={new Date(time * 1000)
-                                    .toISOString()
-                                    .substr(11, 8)}
-                                  onDelete={() => moveVideoTimestamp(time)}
-                                  deleteIcon={
-                                    <Tooltip title={t("Move")}>
-                                      <PlayCircleIcon sx={styles.chipIcon} />
-                                    </Tooltip>
-                                  }
-                                />
-                              ))}
-                            </div>
-                            <Divider
-                              orientation="horizontal"
-                              sx={{ margin: 2, borderColor: theme.divider }}
-                            />
-                          </AccordionDetails>
-                        ))}
-                      </Accordion>
-                    ));
-                  } else if (key !== "person" && data[key].length !== 0) {
-                    return (
-                      <Accordion key={"o_" + index} sx={styles.accordion}>
-                        <AccordionSummary
-                          expandIcon={
-                            <ExpandMoreIcon
-                              sx={{ color: theme.textPlaceholder }}
-                            />
-                          }
-                        >
-                          <Typography sx={styles.accordionTitle}>
-                            {t(key)}
-                          </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{ textAlign: "left" }}>
-                          {data[key].map((time, timeIdx) => (
-                            <Chip
-                              key={"otime_" + timeIdx}
-                              sx={styles.chip}
-                              label={new Date(time * 1000)
-                                .toISOString()
-                                .substr(11, 8)}
-                              onDelete={() => moveVideoTimestamp(time)}
-                              deleteIcon={
-                                <Tooltip title={t("Move")}>
-                                  <PlayCircleIcon sx={styles.chipIcon} />
-                                </Tooltip>
-                              }
-                            />
+                            <Typography sx={styles.accordionTitle}>
+                              {person.name === "Unknown"
+                                ? t("UnknownPerson")
+                                : person.name}
+                            </Typography>
+                          </AccordionSummary>
+                          {person.detections.map((detection, detectionIdx) => (
+                            <AccordionDetails
+                              key={"det_" + detectionIdx}
+                              sx={{
+                                paddingTop: 0,
+                                paddingRight: 2,
+                                paddingBottom: 0,
+                                paddingLeft: 2,
+                              }}
+                            >
+                              <div style={{ display: "flex" }}>
+                                {detection.timestamp.map((time, timeIdx) => (
+                                  <Chip
+                                    key={"ptime_" + timeIdx}
+                                    sx={styles.chip}
+                                    label={new Date(time * 1000)
+                                      .toISOString()
+                                      .substr(11, 8)}
+                                    onDelete={() => moveVideoTimestamp(time)}
+                                    deleteIcon={
+                                      <Tooltip title={t("Move")}>
+                                        <PlayCircleIcon sx={styles.chipIcon} />
+                                      </Tooltip>
+                                    }
+                                  />
+                                ))}
+                              </div>
+                              <Divider
+                                orientation="horizontal"
+                                sx={{ margin: 2, borderColor: theme.divider }}
+                              />
+                            </AccordionDetails>
                           ))}
-                        </AccordionDetails>
-                      </Accordion>
-                    );
-                  } else return <React.Fragment key={"e_" + index} />;
-                })}
-              </Box>
+                        </Accordion>
+                      ));
+                    } else if (key !== "person" && data[key].length !== 0) {
+                      return (
+                        <Accordion key={"o_" + index} sx={styles.accordion}>
+                          <AccordionSummary
+                            expandIcon={
+                              <ExpandMoreIcon
+                                sx={{ color: theme.textPlaceholder }}
+                              />
+                            }
+                          >
+                            <Typography sx={styles.accordionTitle}>
+                              {t(key)}
+                            </Typography>
+                          </AccordionSummary>
+                          <AccordionDetails sx={{ textAlign: "left" }}>
+                            {data[key].map((time, timeIdx) => (
+                              <Chip
+                                key={"otime_" + timeIdx}
+                                sx={styles.chip}
+                                label={new Date(time * 1000)
+                                  .toISOString()
+                                  .substr(11, 8)}
+                                onDelete={() => moveVideoTimestamp(time)}
+                                deleteIcon={
+                                  <Tooltip title={t("Move")}>
+                                    <PlayCircleIcon sx={styles.chipIcon} />
+                                  </Tooltip>
+                                }
+                              />
+                            ))}
+                          </AccordionDetails>
+                        </Accordion>
+                      );
+                    } else return <React.Fragment key={"e_" + index} />;
+                  })}
+                </Box>
+              </div>
             </React.Fragment>
           );
         }

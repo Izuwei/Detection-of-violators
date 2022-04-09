@@ -523,7 +523,7 @@ const ProcessConfig = memo((props) => {
             <div style={{ display: "flex", alignItems: "center" }}>
               <Slider
                 disabled={procConfig.tracks === false}
-                sx={{ width: 220, color: theme.primary }}
+                sx={{ width: 200, color: theme.primary }}
                 value={procConfig.trackLen}
                 onChange={(event) =>
                   setProcConfig((state) => ({

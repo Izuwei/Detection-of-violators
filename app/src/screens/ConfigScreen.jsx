@@ -83,144 +83,146 @@ const ConfigScreen = memo(() => {
 
   return (
     <Box sx={{ maxWidth: "40%", minWidth: 500, margin: "auto" }}>
-      <Stepper activeStep={currentStep} alternativeLabel>
-        {steps.map((label, index) => {
-          const labelProps = {};
+      <div style={{ marginLeft: 12, marginRight: 12 }}>
+        <Stepper activeStep={currentStep} alternativeLabel>
+          {steps.map((label, index) => {
+            const labelProps = {};
 
-          if (optionalSteps[index] === true) {
-            labelProps.optional = (
-              <Typography
-                variant="caption"
-                sx={{ color: theme.stepperTextOptional }}
-              >
-                {t("Optional")}
-              </Typography>
+            if (optionalSteps[index] === true) {
+              labelProps.optional = (
+                <Typography
+                  variant="caption"
+                  sx={{ color: theme.stepperTextOptional }}
+                >
+                  {t("Optional")}
+                </Typography>
+              );
+            }
+            return (
+              <Step key={label}>
+                <StepLabel
+                  {...labelProps}
+                  sx={{
+                    // Active label color
+                    ".MuiStepLabel-label.Mui-active": {
+                      color: theme.stepperTextActive,
+                    },
+                    // Completed label color
+                    ".MuiStepLabel-label.Mui-completed": {
+                      color: theme.stepperTextCompleted,
+                    },
+                    // Disabled label color
+                    ".MuiStepLabel-label.Mui-disabled": {
+                      color: theme.stepperTextDisabled,
+                    },
+                    // Active Icon color
+                    ".MuiSvgIcon-root.Mui-active": {
+                      color: theme.primary,
+                    },
+                    // Completed Icon color
+                    ".MuiSvgIcon-root.Mui-completed": {
+                      color: theme.stepperIconDisabled,
+                    },
+                    // Disabled icon color
+                    ".MuiSvgIcon-root": {
+                      color: theme.stepperIconDisabled,
+                    },
+                    // Text inside all icons
+                    ".MuiStepIcon-text": {
+                      fill: theme.stepperIconText,
+                    },
+                    // Text inside active step
+                    ".MuiStepIcon-root.Mui-active > .MuiStepIcon-text": {
+                      fill: theme.background,
+                    },
+                  }}
+                >
+                  {createStepLabel(label)}
+                </StepLabel>
+              </Step>
             );
-          }
-          return (
-            <Step key={label}>
-              <StepLabel
-                {...labelProps}
-                sx={{
-                  // Active label color
-                  ".MuiStepLabel-label.Mui-active": {
-                    color: theme.stepperTextActive,
-                  },
-                  // Completed label color
-                  ".MuiStepLabel-label.Mui-completed": {
-                    color: theme.stepperTextCompleted,
-                  },
-                  // Disabled label color
-                  ".MuiStepLabel-label.Mui-disabled": {
-                    color: theme.stepperTextDisabled,
-                  },
-                  // Active Icon color
-                  ".MuiSvgIcon-root.Mui-active": {
-                    color: theme.primary,
-                  },
-                  // Completed Icon color
-                  ".MuiSvgIcon-root.Mui-completed": {
-                    color: theme.stepperIconDisabled,
-                  },
-                  // Disabled icon color
-                  ".MuiSvgIcon-root": {
-                    color: theme.stepperIconDisabled,
-                  },
-                  // Text inside all icons
-                  ".MuiStepIcon-text": {
-                    fill: theme.stepperIconText,
-                  },
-                  // Text inside active step
-                  ".MuiStepIcon-root.Mui-active > .MuiStepIcon-text": {
-                    fill: theme.background,
-                  },
-                }}
-              >
-                {createStepLabel(label)}
-              </StepLabel>
-            </Step>
-          );
-        })}
-      </Stepper>
-      <div
-        style={{
-          fontSize: 22,
-          // opacity: 0.5,
-          fontStyle: "italic",
-          color: theme.primary,
-          marginTop: 30,
-          marginBottom: 30,
-        }}
-      >
-        {(() => {
-          switch (currentStep) {
-            case 0:
-              return <p>{t("Step1Desc")}</p>;
-            case 1:
-              return <p>{t("Step2Desc")}</p>;
-            case 2:
-              return <p>{t("Step3Desc")}</p>;
-            case 3:
-              return <p>{t("Step4Desc")}</p>;
-            case 4:
-              return <p>{t("Step5Desc")}</p>;
-            default:
-              return "error"; // TODO: Dodělat Error componentu
-          }
-        })()}
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          flexDirection: "column",
-        }}
-      >
-        {(() => {
-          switch (currentStep) {
-            case 0:
-              return <FileDropzone setStepStatus={setStepStatus} />;
-            case 1:
-              return <ProcessConfig />;
-            case 2:
-              return <AreaSelection />;
-            case 3:
-              return <FaceUpload />;
-            case 4:
-              return <WeightsUpload />;
-            default:
-              return "error"; // TODO: Dodělat Error componentu
-          }
-        })()}
-      </div>
-      <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-        {currentStep !== 0 && (
-          <Button
-            onClick={backStep}
-            sx={{
-              mr: 1,
-              color: theme.primaryButton,
-              "&:hover": { background: theme.primaryButtonHover },
-            }}
-          >
-            {t("Back")}
-          </Button>
-        )}
-        <Box sx={{ flex: "1 1 auto" }} />
-        <Button
-          onClick={handleNextStep}
-          disabled={!completedSteps[currentStep]}
-          sx={{
-            color: theme.primaryButton,
-            "&:hover": { background: theme.primaryButtonHover },
-            "&:disabled": {
-              color: theme.ButtonDisabled,
-            },
+          })}
+        </Stepper>
+        <div
+          style={{
+            fontSize: 22,
+            // opacity: 0.5,
+            fontStyle: "italic",
+            color: theme.primary,
+            marginTop: 30,
+            marginBottom: 30,
           }}
         >
-          {currentStep === steps.length - 1 ? t("Finish") : t("Next")}
-        </Button>
-      </Box>
+          {(() => {
+            switch (currentStep) {
+              case 0:
+                return <p>{t("Step1Desc")}</p>;
+              case 1:
+                return <p>{t("Step2Desc")}</p>;
+              case 2:
+                return <p>{t("Step3Desc")}</p>;
+              case 3:
+                return <p>{t("Step4Desc")}</p>;
+              case 4:
+                return <p>{t("Step5Desc")}</p>;
+              default:
+                return "error"; // TODO: Dodělat Error componentu
+            }
+          })()}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          {(() => {
+            switch (currentStep) {
+              case 0:
+                return <FileDropzone setStepStatus={setStepStatus} />;
+              case 1:
+                return <ProcessConfig />;
+              case 2:
+                return <AreaSelection />;
+              case 3:
+                return <FaceUpload />;
+              case 4:
+                return <WeightsUpload />;
+              default:
+                return "error"; // TODO: Dodělat Error componentu
+            }
+          })()}
+        </div>
+        <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+          {currentStep !== 0 && (
+            <Button
+              onClick={backStep}
+              sx={{
+                mr: 1,
+                color: theme.primaryButton,
+                "&:hover": { background: theme.primaryButtonHover },
+              }}
+            >
+              {t("Back")}
+            </Button>
+          )}
+          <Box sx={{ flex: "1 1 auto" }} />
+          <Button
+            onClick={handleNextStep}
+            disabled={!completedSteps[currentStep]}
+            sx={{
+              color: theme.primaryButton,
+              "&:hover": { background: theme.primaryButtonHover },
+              "&:disabled": {
+                color: theme.ButtonDisabled,
+              },
+            }}
+          >
+            {currentStep === steps.length - 1 ? t("Finish") : t("Next")}
+          </Button>
+        </Box>
+      </div>
     </Box>
   );
 });
