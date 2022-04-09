@@ -40,6 +40,7 @@ import _ from "lodash";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoIcon from "@mui/icons-material/Info";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import RadarIcon from "@mui/icons-material/Radar";
 import CarIcon from "@mui/icons-material/DirectionsCar";
 import FaceIcon from "@mui/icons-material/Face";
@@ -347,7 +348,7 @@ const ProcessConfig = memo((props) => {
         >
           <ListItemAvatar>
             <Avatar sx={styles.avatar}>
-              <TimeIcon />
+              <LightbulbIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText

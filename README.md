@@ -80,7 +80,7 @@ pip uninstall opencv-python
 22. From property `CMAKE/CMAKE_CONFIGURATION_TYPES` remove `Debug;` and leave only `Release`
 23. Last time click on `Configure`
 24. When finished, press `Generate`
-25. Open terminal and launch compilation by the following command:
+25. Open terminal and launch compilation by following command:
 
 ```ps
 "C:\Program Files\CMake\bin\cmake.exe" --build "C:\opencv_build\build" --target INSTALL --config Release
