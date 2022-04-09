@@ -17,10 +17,10 @@ class Detector:
     modelName: Name of the model to be used for detection.
     """
 
-    def __init__(self, classNames, modelName):
+    def __init__(self, classNames, modelName, weights):
         self.yolo320Config = "yolov3/yolov3-320.cfg"
         self.yolo608Config = "yolov3/yolov3-608.cfg"
-        self.yoloWeights = "yolov3/yolov3.weights"  # Pretrained weights
+        self.yoloWeights = weights
         self.classNames = classNames
 
         self.confThreshold = 0.55
@@ -43,6 +43,7 @@ class Detector:
         # self.model.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
         print(f"Detector: {modelName}")
+        print(f"Weights: {weights}")
 
     def filterPredictions(self, frame, outputs):
         """

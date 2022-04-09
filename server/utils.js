@@ -76,6 +76,11 @@ const parseArgsCLI = (data) => {
     args.push("--timestamp");
   }
 
+  // Custom weights
+  if (data.weights !== undefined) {
+    args.push("--weights", data.weights);
+  }
+
   return args;
 };
 

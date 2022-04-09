@@ -25,6 +25,7 @@ import FileDropzone from "../components/FileDropzone";
 import ProcessConfig from "../components/ProcessConfig";
 import AreaSelection from "../components/AreaSelection";
 import FaceUpload from "../components/FaceUpload";
+import WeightsUpload from "../components/WeightsUpload";
 
 /**
  * Component represents screen from video load, through configuration to video upload to the server.
@@ -43,7 +44,7 @@ const ConfigScreen = memo(() => {
   const { theme } = useContext(ThemeContext);
   const { startProcessing } = useContext(WsContext);
 
-  const optionalSteps = [false, false, true, true];
+  const optionalSteps = [false, false, true, true, true];
 
   /**
    * Function takes step label and returns corresponding translated name of the label.
@@ -59,6 +60,8 @@ const ConfigScreen = memo(() => {
           return t("AreaLabel");
         case steps[3]: // Faces
           return t("RecognitionLabel");
+        case steps[4]: // Weights
+          return t("DetectorLabel");
         default:
           return t("Unknown");
       }
@@ -159,6 +162,8 @@ const ConfigScreen = memo(() => {
               return <p>{t("Step3Desc")}</p>;
             case 3:
               return <p>{t("Step4Desc")}</p>;
+            case 4:
+              return <p>{t("Step5Desc")}</p>;
             default:
               return "error"; // TODO: Dodělat Error componentu
           }
@@ -181,6 +186,8 @@ const ConfigScreen = memo(() => {
               return <AreaSelection />;
             case 3:
               return <FaceUpload />;
+            case 4:
+              return <WeightsUpload />;
             default:
               return "error"; // TODO: Dodělat Error componentu
           }

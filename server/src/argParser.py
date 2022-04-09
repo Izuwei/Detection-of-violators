@@ -81,6 +81,14 @@ def argumentParser():
         help="Sets path for the output. (default: .)",
     )
     parser.add_argument(
+        "-w",
+        "--weights",
+        default="yolov3/yolov3.weights",  #  Pretrained weights
+        required=False,
+        metavar="PATH",
+        help="Path to YOLOv3 weights. (default: Default pretrained weights)",
+    )
+    parser.add_argument(
         "-v",
         "--cars",
         default=False,
@@ -149,6 +157,11 @@ def argumentParser():
     # Check if input video file exists.
     if os.path.exists(parser.input) == False:
         sys.stderr.write("The input video file does not exist.\n")
+        exit(1)
+
+    # Check if file with weights exists.
+    if os.path.exists(parser.weights) == False:
+        sys.stderr.write("File with YOLOv3 weights does not exist.\n")
         exit(1)
 
     # Validity check of output path.

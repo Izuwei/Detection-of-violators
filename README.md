@@ -3,7 +3,7 @@
 [![NodeJS badge](https://img.shields.io/badge/Node-v16.14.0-026e00.svg)](https://nodejs.org/en/download/releases)
 [![NPM badge](https://img.shields.io/badge/npm-8.1.0-cc3534.svg)](https://www.npmjs.com/package/npm/v/8.1.0)
 
-# Detection Of Violators
+# Detection of Violators
 
 Internet application for detection and analysis of violators in the monitored area.
 

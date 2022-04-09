@@ -8,6 +8,8 @@
 
 import React, { memo, useCallback, useContext, useMemo } from "react";
 import {
+  Box,
+  Icon,
   IconButton,
   Table,
   TableBody,
@@ -24,50 +26,50 @@ import { useSnackbar } from "notistack";
 import { DataContext } from "../utils/DataProvider";
 import { ThemeContext } from "../utils/ThemeProvider";
 
-import Clear from "@mui/icons-material/Clear";
+import InfoIcon from "@mui/icons-material/Info";
+import ClearIcon from "@mui/icons-material/Clear";
+import DocumentIcon from "@mui/icons-material/DocumentScanner";
 
-/**
- * Component renders part of splash screen for uploading a video file.
- */
-const FileDropzone = memo(({ setStepStatus }) => {
+const WeightsUpload = memo((props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const { theme } = useContext(ThemeContext);
-  const { video, uploadVideo, removeVideo } = useContext(DataContext);
+  const { weights, setWeights } = useContext(DataContext);
 
   /**
-   * Function removes uploaded video file.
-   */
-  const handleClear = useCallback(() => {
-    setStepStatus(false);
-    removeVideo();
-  }, [setStepStatus, removeVideo]);
-
-  /**
-   * Function saves the video when it is dropped into the box,
-   * allow user to proceed to the next step and notifies him.
+   * Function saves file with weights when it is dropped into the box.
    */
   const handleDropFile = useCallback(
-    (event) => {
-      uploadVideo(event);
-      setStepStatus(true);
-      enqueueSnackbar(t("VideoUploadSuccessNotification"), {
-        variant: "success",
-      });
+    (acceptedFiles) => {
+      if (acceptedFiles !== 0) {
+        setWeights(acceptedFiles[0]);
+        enqueueSnackbar(t("WeightsUploadSuccessNotification"), {
+          variant: "success",
+        });
+      }
     },
-    [uploadVideo, setStepStatus, enqueueSnackbar, t]
+    [setWeights, enqueueSnackbar, t]
   );
 
   /**
-   * Function notifies user when he tries to upload video in unsupported format.
+   * Function notifies user when he tries to upload file with unsupported format.
    */
   const handleDropError = useCallback(
     (event) => {
-      enqueueSnackbar(t("VideoUploadErrorNotification"), { variant: "error" });
+      enqueueSnackbar(t("WeightsUploadErrorNotification"), {
+        variant: "error",
+      });
     },
     [enqueueSnackbar, t]
   );
+
+  /**
+   * Function removes uploaded file with weights.
+   */
+  const handleClear = useCallback(() => {
+    setWeights(undefined);
+  }, [setWeights]);
 
   /**
    * Setup for file dropzone.
@@ -81,10 +83,10 @@ const FileDropzone = memo(({ setStepStatus }) => {
     isDragAccept,
     isDragReject,
   } = useDropzone({
-    accept: "video/mp4, video/webm",
+    accept: ".weights",
     multiple: false,
     maxFiles: 1,
-    maxSize: 2000000000, // 2 GB
+    maxSize: 800000000, // 800 MB
     onDropAccepted: handleDropFile,
     onDropRejected: handleDropError,
   });
@@ -95,8 +97,8 @@ const FileDropzone = memo(({ setStepStatus }) => {
       backgroundColor: theme.dropZoneBackground,
       borderColor: theme.dropZoneBorder,
       ...(isFocused ? { borderColor: theme.primary } : {}),
-      ...(isDragAccept ? { borderColor: theme.dropZoneBorderAccept } : {}),
-      ...(isDragReject ? { borderColor: theme.dropZoneBorderReject } : {}),
+      ...(isDragAccept ? { borderColor: theme.primary } : {}),
+      ...(isDragReject ? { borderColor: theme.primary } : {}),
     }),
     [isFocused, isDragAccept, isDragReject, theme]
   );
@@ -121,39 +123,43 @@ const FileDropzone = memo(({ setStepStatus }) => {
 
   return (
     <React.Fragment>
-      {video.data === undefined && (
+      {weights === undefined && (
         <div {...getRootProps({ style: styles })}>
           <input {...getInputProps()} />
           <p style={{ marginBottom: 0, marginLeft: 20, marginRight: 20 }}>
-            {isDragActive ? t("DragDesc") : t("DnDDesc")}
+            {isDragActive ? t("DragWeightsDesc") : t("DnDWeightsDesc")}
           </p>
-          <p style={{ fontSize: 14, fontStyle: "italic" }}>.mp4, .webm</p>
+          <p style={{ fontSize: 14, fontStyle: "italic" }}>.weights</p>
           <p style={{ fontSize: 14, margin: 0, fontFamily: "Consolas" }}>
-            2 GB
+            800 MB
           </p>
         </div>
       )}
-      {video.data !== undefined && (
+      {weights !== undefined && (
         <React.Fragment>
-          <video
-            width={video.aspectRatio < 1.5 && video.height > 400 ? 500 : "100%"}
-            controls
-            muted
-            style={{ borderRadius: 4 }}
+          <Icon
+            color="info"
+            sx={{
+              margin: 2,
+              display: "flex",
+              width: 300,
+              height: 300,
+            }}
           >
-            <source src={video.url} />
-          </video>
+            <DocumentIcon
+              sx={{
+                margin: "auto",
+                color: theme.primary,
+                width: 300,
+                height: 300,
+              }}
+            />
+          </Icon>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell sx={tableStyles.cell} align="center">
                   {t("Name")}
-                </TableCell>
-                <TableCell sx={tableStyles.cell} align="center">
-                  {t("Duration")}
-                </TableCell>
-                <TableCell sx={tableStyles.cell} align="center">
-                  {t("Resolution")}
                 </TableCell>
                 <TableCell sx={tableStyles.cell} align="center">
                   {t("Size")}
@@ -164,13 +170,13 @@ const FileDropzone = memo(({ setStepStatus }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow key="video-details">
+              <TableRow key="weights-details">
                 <TableCell
                   sx={{ borderBottom: "none", ...tableStyles.cell }}
                   align="center"
                 >
                   <Typography noWrap={true} sx={tableStyles.text}>
-                    {video.data.name}
+                    {weights.name}
                   </Typography>
                 </TableCell>
                 <TableCell
@@ -178,9 +184,7 @@ const FileDropzone = memo(({ setStepStatus }) => {
                   align="center"
                 >
                   <Typography sx={tableStyles.text}>
-                    {new Date(1000 * video.duration)
-                      .toISOString()
-                      .substr(11, 8)}
+                    {(weights.size / 1000000).toFixed(2)} MB
                   </Typography>
                 </TableCell>
                 <TableCell
@@ -188,42 +192,46 @@ const FileDropzone = memo(({ setStepStatus }) => {
                   align="center"
                 >
                   <Typography sx={tableStyles.text}>
-                    {video.width}x{video.height}
-                  </Typography>
-                </TableCell>
-                <TableCell
-                  sx={{ borderBottom: "none", ...tableStyles.cell }}
-                  align="center"
-                >
-                  <Typography sx={tableStyles.text}>
-                    {(video.data.size / 1000000).toFixed(2)} MB
-                  </Typography>
-                </TableCell>
-                <TableCell
-                  sx={{ borderBottom: "none", ...tableStyles.cell }}
-                  align="center"
-                >
-                  <Typography sx={tableStyles.text}>
-                    {new Date(video.data.lastModified).toDateString()}
+                    {new Date(weights.lastModified).toDateString()}
                   </Typography>
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
+        </React.Fragment>
+      )}
+      <Box sx={{ display: "flex", alignContent: "center", marginTop: 1 }}>
+        <Tooltip title={t("WeightsInfo")}>
+          <Icon
+            fontSize="large"
+            color="info"
+            sx={{
+              margin: 0.8,
+              display: "flex",
+              width: 48,
+              height: 48,
+              cursor: "help",
+            }}
+          >
+            <InfoIcon sx={{ margin: "auto" }} />
+          </Icon>
+        </Tooltip>
+        {weights !== undefined && (
           <Tooltip title={t("Delete")}>
             <IconButton
               sx={{
+                margin: 0.8,
                 color: theme.primaryButton,
                 "&:hover": { background: theme.primaryButtonHover },
               }}
               size="large"
               onClick={handleClear}
             >
-              <Clear />
+              <ClearIcon />
             </IconButton>
           </Tooltip>
-        </React.Fragment>
-      )}
+        )}
+      </Box>
     </React.Fragment>
   );
 });
@@ -245,4 +253,4 @@ const baseStyles = {
   transition: "border .24s ease-in-out",
 };
 
-export default FileDropzone;
+export default WeightsUpload;

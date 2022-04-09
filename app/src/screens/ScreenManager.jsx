@@ -17,17 +17,17 @@ import SummaryScreen from "./SummaryScreen";
  * user's progress from loading the video to showing the results.
  */
 const ScreenMnager = memo((props) => {
-  const { currentStep, resetStep } = useContext(StepContext);
+  const { steps, currentStep, resetStep } = useContext(StepContext);
 
   return (
     <div style={{ marginBottom: 18 }}>
       {(() => {
         // TODO: fix comparison to '=='
-        if (currentStep < 4) {
+        if (currentStep < steps.length) {
           return <ConfigScreen />;
-        } else if (currentStep < 5) {
+        } else if (currentStep < steps.length + 1) {
           return <ProcessingScreen />;
-        } else if (currentStep < 6) {
+        } else if (currentStep < steps.length + 2) {
           return <SummaryScreen />;
         } else {
           // Should not happen, but in case of error it will return user to the start

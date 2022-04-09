@@ -108,7 +108,7 @@ const SummaryScreen = memo((props) => {
     fetch(processedVideo.dataURL)
       .then((response) => response.json())
       .then((message) => {
-        console.log(message);
+        // console.log(message);
         setVideoData(message);
       })
       .catch((error) => {

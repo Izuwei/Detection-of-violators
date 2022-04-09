@@ -14,11 +14,12 @@ export const StepContext = createContext();
  * Step provider provides functions across application associated with steps.
  */
 export const StepProvider = memo(({ children }) => {
-  const STEPS = ["Upload", "Configuration", "Area", "Recognition"];
+  const STEPS = ["Upload", "Configuration", "Area", "Recognition", "Detector"];
 
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([
     false,
+    true,
     true,
     true,
     true,

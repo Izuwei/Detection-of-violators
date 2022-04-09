@@ -38,7 +38,7 @@ var tmpDir = path.join(__dirname, "tmp");
 utils.rmDirRecursive(tmpDir);
 fs.mkdirSync(tmpDir);
 
-console.log("TmpDir location: " + tmpDir);
+console.log("Tmp: " + tmpDir);
 
 /**
  * Setup video folder.
@@ -48,13 +48,14 @@ if (fs.existsSync(videoDir) === false) {
   fs.mkdirSync(videoDir);
 }
 
-console.log("Videos location: " + videoDir);
+console.log("Videos: " + videoDir);
 
 /**
  * Socket.io
  */
 io.on("connection", (socket) => {
   var videoPath = "";
+  var weightsPath = undefined;
   var pythonProcess = undefined;
 
   const clientTmpDir = path.join(tmpDir, socket.id);
@@ -63,6 +64,7 @@ io.on("connection", (socket) => {
   const clientDatabaseDir = path.join(clientTmpDir, "database");
   fs.mkdirSync(clientDatabaseDir);
 
+  // Video upload
   var siofu = new SocketIOFileUpload({ topicName: "video" });
   siofu.dir = clientTmpDir;
   siofu.listen(socket);
@@ -76,6 +78,21 @@ io.on("connection", (socket) => {
     console.log("Video upload error", event);
   });
 
+  // Weights upload
+  var weightsUpload = new SocketIOFileUpload({ topicName: "weights" });
+  weightsUpload.dir = clientTmpDir;
+  weightsUpload.listen(socket);
+
+  weightsUpload.on("saved", (event) => {
+    weightsPath = event.file.pathName;
+  });
+
+  weightsUpload.on("error", (event) => {
+    socket.emit("upload_error", event);
+    console.log("Weights upload error", event);
+  });
+
+  // Face images upload
   var faceUpload = new SocketIOFileUpload({ topicName: "faces" });
   faceUpload.dir = clientDatabaseDir;
   faceUpload.listen(socket);
@@ -87,7 +104,7 @@ io.on("connection", (socket) => {
 
   socket.on("start-detection", (data) => {
     console.log("Processing: " + videoPath);
-    const args = utils.parseArgsCLI(data);
+    const args = utils.parseArgsCLI({ ...data, weights: weightsPath });
 
     pythonProcess = spawn(
       "python",
@@ -109,6 +126,7 @@ io.on("connection", (socket) => {
 
     pythonProcess.stdout.on("data", (data) => {
       const text = data.toString();
+      // console.log(text);
       if (text.match(/^Progress:/)) {
         socket.emit("progress", parseInt(text.split(" ")[1]));
       }

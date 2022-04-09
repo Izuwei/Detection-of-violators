@@ -38,6 +38,7 @@ export const DataProvider = memo(({ children }) => {
   const [videoThumbnail, setVideoThumbnail] = useState(undefined);
   const [detectionArea, setDetectionArea] = useState([]);
   const [recognitionDatabase, setRecognitionDatabase] = useState([]);
+  const [weights, setWeights] = useState(undefined);
 
   /**
    * Function setups area of interest in video frame, checks its boundaries
@@ -195,6 +196,8 @@ export const DataProvider = memo(({ children }) => {
         setProcessedVideo: setProcessedVideo,
         recognitionDatabase: recognitionDatabase,
         setRecognitionDatabase: setRecognitionDatabase,
+        weights: weights,
+        setWeights: setWeights,
       }}
     >
       {children}

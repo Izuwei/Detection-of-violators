@@ -39,19 +39,24 @@ export const WsProvider = memo(({ children }) => {
     procConfig,
     areaOfInterest,
     recognitionDatabase,
+    weights,
     setProcessedVideo,
   } = useContext(DataContext);
 
   const [description, setDescription] = useState("Uploading");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [weightsProgress, setWeightsProgress] = useState(0);
   const [detectionProgress, setDetectionProgress] = useState(0);
 
   /**
    * Function sends all the data obtained from the user to the server,
    * where the video will be processed according to the configuration.
+   *
+   * Order: faces -> weights -> video
    */
   const startProcessing = useCallback(() => {
     setDescription("Uploading");
+    setWeightsProgress(0);
     setUploadProgress(0);
     setDetectionProgress(0);
 
@@ -123,23 +128,56 @@ export const WsProvider = memo(({ children }) => {
     };
     baseUploader.addEventListener("complete", onBaseComplete);
 
+    // Uploader for weights
+    var weightsUploader = new SocketIOFileUpload(socket, {
+      topicName: "weights",
+    });
+
+    // Function for displaying upload progress of weights
+    const onWeightsProgress = (event) => {
+      const progress = parseInt((event.bytesLoaded / event.file.size) * 100);
+      setWeightsProgress(progress);
+    };
+    weightsUploader.addEventListener("progress", onWeightsProgress);
+
+    // After file with weights is successfully uploaded, send video file
+    const onWeightsComplete = (event) => {
+      baseUploader.submitFiles([video.data]); // Weights sent => upload video
+    };
+    weightsUploader.addEventListener("complete", onWeightsComplete);
+
     // Uploader for face images
     var imageUploader = new SocketIOFileUpload(socket, {
       topicName: "faces",
     });
 
-    // After the face images are successfully uploaded, it will start sending video file
+    // After all face images are successfully uploaded, send next data
     const onImageComplete = (event) => {
       faceSent += 1;
       if (faceSent === faceCnt) {
-        baseUploader.submitFiles([video.data]); // Face images sent => upload video
+        // All face images sent
+        if (weights === undefined) {
+          // No weights => upload video
+          baseUploader.submitFiles([video.data]);
+        } else {
+          // Weights loaded => upload weights
+          weightsUploader.submitFiles([weights]);
+        }
       }
     };
     imageUploader.addEventListener("complete", onImageComplete);
 
     if (faces.length === 0) {
-      baseUploader.submitFiles([video.data]); // Upload video without uploading face images
+      // No face images
+      if (weights === undefined) {
+        // No weights => upload video
+        baseUploader.submitFiles([video.data]);
+      } else {
+        // With weights => upload weights
+        weightsUploader.submitFiles([weights]);
+      }
     } else {
+      // With face images => upload face images
       imageUploader.submitFiles(faces); // Upload face images before video
     }
 
@@ -200,6 +238,7 @@ export const WsProvider = memo(({ children }) => {
     video,
     areaOfInterest,
     recognitionDatabase,
+    weights,
     setProcessedVideo,
     procConfig,
     t,
@@ -214,6 +253,7 @@ export const WsProvider = memo(({ children }) => {
         startProcessing: startProcessing,
         description: description,
         uploadProgress: uploadProgress,
+        weightsProgress: weightsProgress,
         detectionProgress: detectionProgress,
       }}
     >

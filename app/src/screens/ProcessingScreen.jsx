@@ -11,6 +11,7 @@ import { Box, LinearProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 import { ThemeContext } from "../utils/ThemeProvider";
+import { DataContext } from "../utils/DataProvider";
 import { WsContext } from "../utils/WsProvider";
 
 /**
@@ -63,7 +64,8 @@ const ProcessingScreen = memo(() => {
   const { t } = useTranslation();
 
   const { theme } = useContext(ThemeContext);
-  const { description, uploadProgress, detectionProgress } =
+  const { weights } = useContext(DataContext);
+  const { description, uploadProgress, weightsProgress, detectionProgress } =
     useContext(WsContext);
 
   return (
@@ -71,12 +73,21 @@ const ProcessingScreen = memo(() => {
       <Typography variant="h4" sx={{ margin: 6, color: theme.primary }}>
         {t(description)}
       </Typography>
+      {weights !== undefined && (
+        <LinearProgressWithLabel
+          color={theme.primary}
+          barBackground={theme.progressBarBackground}
+          textColor={theme.text}
+          value={weightsProgress}
+          name={t("Weights")}
+        />
+      )}
       <LinearProgressWithLabel
         color={theme.primary}
         barBackground={theme.progressBarBackground}
         textColor={theme.text}
         value={uploadProgress}
-        name={t("Uploaded")}
+        name={t("Video")}
       />
       <LinearProgressWithLabel
         color={theme.primary}

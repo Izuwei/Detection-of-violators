@@ -146,7 +146,7 @@ def main():
         classNames = f.read().rstrip("\n").split("\n")
 
     # Detector initialization
-    detector = Detector(classNames, args.model)
+    detector = Detector(classNames, args.model, args.weights)
 
     # DeepFace initialization
     recognizer = Recognizer(args.database)
