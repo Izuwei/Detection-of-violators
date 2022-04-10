@@ -283,8 +283,20 @@ def main():
             currentObjects = 0
             for detection in detections:
                 if detection.label in OBJECTS:
-                    objectIDs.add(detection.trackId)
-                    currentObjects += 1
+                    # Counting all objects
+                    if args.area == None:
+                        objectIDs.add(detection.trackId)
+                        currentObjects += 1
+
+                    # Counting objects in defined area
+                    elif (
+                        detection.center[0] >= args.area[0]
+                        and detection.center[0] <= args.area[2]
+                        and detection.center[1] >= args.area[1]
+                        and detection.center[1] <= args.area[3]
+                    ):
+                        objectIDs.add(detection.trackId)
+                        currentObjects += 1
 
             cv2.putText(
                 frame,
