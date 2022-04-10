@@ -87,7 +87,9 @@ pip uninstall opencv-python
 ```
 
 26. Compilation takes about 2 hours
-27. In the end, the OpenCV library version 4.5.5 should be available in python and the generated file should be located in following directories:
+27. Inside directory `.../AppData/Local/Programs/Python/Python39/Lib/site-packages/cv2` create new folder `data`
+28. Copy content from `/opencv_build/install/etc/haarcascades` to `.../AppData/Local/Programs/Python/Python39/Lib/site-packages/cv2/data`
+29. In the end, the OpenCV library version 4.5.5 should be available in python and generated file should be located in following directories:
     - `/opencv_build/build/lib/python3/Release/cv2.cp39-win_amd64.py`
     - `.../AppData/Local/Programs/Python/Python39/Lib/site-packages/cv2/python-3.9/cv2.cp39-win_amd64.py`
 

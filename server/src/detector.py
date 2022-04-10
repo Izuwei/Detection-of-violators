@@ -38,7 +38,7 @@ class Detector:
                 self.yolo320Config, self.yoloWeights
             )
 
-        # Uncomment for GPU acceleration with OpenCV support
+        # FIXME: Uncomment for GPU acceleration with OpenCV support
         # self.model.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
         # self.model.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
