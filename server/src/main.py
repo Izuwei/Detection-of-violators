@@ -282,6 +282,10 @@ def main():
         if args.tracking == True and args.counter == True:
             currentObjects = 0
             for detection in detections:
+                # Skip cars if not set
+                if detection.label == "car" and args.cars == False:
+                    continue
+
                 if detection.label in OBJECTS:
                     # Counting all objects
                     if args.area == None:
