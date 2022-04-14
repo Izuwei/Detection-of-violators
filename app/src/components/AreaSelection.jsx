@@ -155,8 +155,8 @@ const AreaSelection = memo(() => {
       {areaOfInterest.length === 1 ? (
         <Typography sx={styles.coords}>
           X:{parseInt(areaOfInterest[0].x)} Y:
-          {parseInt(areaOfInterest[0].y)} Width:
-          {parseInt(areaOfInterest[0].width)} Height:
+          {parseInt(areaOfInterest[0].y)} {t("Width")}:
+          {parseInt(areaOfInterest[0].width)} {t("Height")}:
           {parseInt(areaOfInterest[0].height)}
         </Typography>
       ) : (
