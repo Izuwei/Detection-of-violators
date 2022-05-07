@@ -4,5 +4,5 @@ node_modules
 server/tmp
 server/videos
 server/src/processed.*
-*.mp4
+server/src/*.mp4
 *.webm
