@@ -18,6 +18,8 @@ Internet application for detection and analysis of violators in the monitored ar
 - Definition of path length
 - Usage of own detector
 - Display of timestamp
+- English and Czech localization
+- Light and dark theme
 
 ## Installation
 
