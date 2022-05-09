@@ -5,7 +5,19 @@
 
 # Detection of Violators
 
-Internet application for detection and analysis of violators in the monitored area.
+Internet application for detection and analysis of violators in the monitored area with the possibility of configuration. Processed videos can be played, downloaded or together with a list of detected violators shared on the internet via link for 24 hours. The application provides the following functionality:
+
+- Detetection of violators (with optional cars)
+- Definition of bounding box accuracy
+- Definition of monitored area
+- Face recognition
+- Upload of own facial images
+- Object tracking
+- Object counting
+- Path drawing
+- Definition of path length
+- Usage of own detector
+- Display of timestamp
 
 ## Installation
 
