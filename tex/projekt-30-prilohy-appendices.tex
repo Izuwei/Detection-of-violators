@@ -1,0 +1,91 @@
+% FIT VUT
+% Diplomová práce
+% Autor: Jakub Sadílek
+% Rok: 2021/2022
+
+
+\chapter{Instalační manuál}
+V této příloze je uveden postup pro zprovoznění aplikace a~serveru na lokálním počítači.
+
+\begin{itemize}
+    \item Stáhněte a~nainstalujte python 3.9.7 z \newline\url{https://www.python.org/downloads/release/python-397}
+    \item Stáhněte a~nainstalujte Node.js v16.14.0 z \newline\url{https://nodejs.org/en/download/releases}
+    \item Pro Microsoft Windows byl použit video kodek OpenH264. V~případě jiné systémové distribuce navštivte \url{https://github.com/cisco/openh264/releases/tag/v1.8.0}
+\end{itemize}
+Přejděte do adresáře \texttt{/server/src} a~nainstalujte požadované knihovny.
+\begin{enumerate}
+    \item \texttt{cd server/src}
+    \item \texttt{pip install -r requirements.txt}
+\end{enumerate}
+Přejděte do adresáře \texttt{/server}, nainstalujte závislosti a~spusťte lokální server.
+\begin{enumerate}
+    \item \texttt{cd server}
+    \item \texttt{npm install}
+    \item \texttt{npm start}
+\end{enumerate}
+Otevřete nový terminál, přejděte do adresáře \texttt{/app}, nainstalujte závislosti a~spusťte aplikaci.
+\begin{enumerate}
+    \item \texttt{cd app}
+    \item \texttt{npm install}
+    \item \texttt{npm start}
+\end{enumerate}
+\begin{itemize}
+    \item Aplikace bude dostupná v~prohlížeči na adrese \url{http://localhost:3000}
+    \item Server používá sokety na portu \texttt{3001}
+    \item Express naslouchá na portu \texttt{3002}
+\end{itemize}
+
+
+\chapter{Akcelerace pomocí grafické karty}
+Tato příloha obsahuje postup pro akceleraci zpracování videozáznamu pomocí grafické karty, konkrétně neuronové sítě pro detekci a~klasifikaci objektů. Pro zprovoznění detektoru na grafické kartě je nutné nainstalovat další software, včetně Nvidia CUDA a~cuDNN, stáhnout zdrojový kód knihovny OpenCV a~následně ho zkompilovat. Na konci tohoto procesu bude umožněno DNN modulu OpenCV přistupovat na GPU.
+
+\begin{enumerate}
+    \item Nastavte python 3.9.7 jako výchozí verzi pythonu
+    \item Odinstalujte současnou knihovnu OpenCV následujícím příkazem: 
+    
+    \texttt{pip uninstall opencv-python}
+    \item Nainstalujte Microsoft Visual Studio 2019 s~doplňkem C++
+    \item Stáhněte a~nainstalujte CUDA 11.0 Update 1 z \newline\url{https://developer.nvidia.com/cuda-11.0-update1-download-archive}
+    \item Stáhněte a~extrahujte cuDNN v8.0.5 pro CUDA 11.0 z \newline\url{https://developer.nvidia.com/rdp/cudnn-archive}
+    \item Přesuňte obsah adresáře cuDNN do \texttt{"C:\textbackslash Program Files\newline \textbackslash NVIDIA GPU Computing Toolkit\textbackslash CUDA\textbackslash v11.0"} a~nahraďte všechny soubory
+    \item Stáhněte a~nainstalujte CMake (aktuální verze 3.23.0) z \newline\url{https://cmake.org/download}
+    \item Vytvořte adresář \texttt{opencv\_build} (například na disku \texttt{C:\textbackslash})
+    \item Stáhněte zdrojový kód OpenCV 4.5.5 z \url{https://opencv.org/releases}
+    \item Stáhněte zdrojový kód OpenCV-contrib 4.5.5 z \newline\url{https://github.com/opencv/opencv_contrib/releases/tag/4.5.5}
+    \item Extrahujte oba archivy \texttt{OpenCV-4.5.5} a~\texttt{OpenCV-contrib-4.5.5} do adresáře \newline\texttt{opencv\_build}, výsledkem budou uvnitř 2 adresáře s~odpovídajícími soubory
+    \item V~adresáři \texttt{opencv\_build} vytvořte adresáře \texttt{build} a~\texttt{install}
+    \item Spusťte CMake a~nastavte zdrojový kód na adresář \texttt{opencv\_build/opencv-4.5.5} (tj.~zdrojový kód OpenCV)
+    \item Nastavte adresář pro sestavení do \texttt{opencv\_build/build} a~zaškrtněte možnost \emph{grouped}
+    \item Klikněte na \emph{Configure}, specifikujte generátor na Visual Studio 2019, nastavte platformu podle vaší architektury (např. x64) a~potvrďte \emph{Finish}
+    \item Po skončení doplňte konfiguraci zaškrtnutím:
+    \begin{itemize}
+        \item \texttt{WITH/WITH\_CUDA}
+        \item \texttt{BUILD/BUILD\_opencv\_dnn}
+        \item \texttt{OPENCV/OPENCV\_DNN\_CUDA}
+        \item \texttt{ENABLE/ENABLE\_FAST\_MATH}
+        \item \texttt{BUILD/BUILD\_opencv\_world}
+        \item \texttt{BUILD/BUILD\_opencv\_python3}
+    \end{itemize}
+
+    \item Přejděte na volbu \texttt{OPENCV/OPENCV\_EXTRA\_MODULES\_PATH}, klikněte na procházet a~vyberte adresář \texttt{opencv\_build/opencv\_contrib-4.5.5/modules}
+    \item Stiskněte znovu \emph{Configure}
+    \item Po skončení konfigurace zaškrtněte \texttt{CUDA/CUDA\_FAST\_MATH}
+    \item V~konfiguraci \texttt{CUDA/CUDA\_ARCH\_BIN} nechte pouze architekturu vaší grafické karty, kterou lze dohledat na \url{https://en.wikipedia.org/wiki/CUDA} podle vašeho modelu (např. GTX 1050Ti používá verzi 6.1).
+    \item Nastavte \texttt{CMAKE/CMAKE\_INSTALL\_PREFIX} na adresář \texttt{opencv\_build/install}
+    \item Z~možnosti \texttt{CMAKE/CMAKE\_CONFIGURATION\_TYPES} odstraňte \texttt{Debug;} a~ponechte pouze \texttt{Release}
+    \item Naposledy klikněte na \emph{Configure}
+    \item Po dokončení stiskněte \emph{Generate}
+    \item Otevřete terminál a~spusťte kompilaci následujícím příkazem:
+    \begin{verbatim}
+"C:\Program Files\CMake\bin\cmake.exe" --build "C:\opencv_build\build" 
+    --target INSTALL --config Release
+    \end{verbatim}
+    \item Kompilace zabere asi 2 hodiny
+    \item Uvnitř adresáře \texttt{.../AppData/Local/Programs/Python/Python39/Lib\newline /site-packages/cv2} vytvořte novou složku \texttt{data}
+    \item Zkopírujte obsah adresáře \texttt{opencv\_build/install/etc/haarcascades} do \newline\texttt{.../AppData/Local/Programs/Python/Python39/Lib/site-packages/cv2/data}
+    \item Na konci tohoto procesu by měla být v~pythonu dostupná knihovna OpenCV verze 4.5.5 a~vygenerovaný soubor by měl být umístěn v:
+    \begin{itemize}
+        \item \texttt{opencv\_build/build/lib/python3/Release/cv2.cp39-win\_amd64.py}
+        \item \texttt{.../AppData/Local/Programs/Python/Python39/Lib/site-packages\newline /cv2/python-3.9/cv2.cp39-win\_amd64.py}
+    \end{itemize}
+\end{enumerate}
