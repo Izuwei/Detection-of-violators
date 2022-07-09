@@ -21,6 +21,8 @@ Internet application for detection and analysis of violators in the monitored ar
 - English and Czech localization
 - Light and dark theme
 
+See demo on [YouTube](https://youtu.be/k5E_cH9d1_o).
+
 ## Installation
 
 - Download and install python 3.9.7 from https://www.python.org/downloads/release/python-397

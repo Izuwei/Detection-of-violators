@@ -334,15 +334,15 @@ def main():
             )
 
         # Displaying images during processing, used for debugging
-        cv2.imshow("Detection of Violators", frame)
+        # cv2.imshow("Detection of Violators", frame)
         outputVideo.write(frame)
 
-        if cv2.waitKey(2) & 0xFF == ord("q"):
-            break
+        # if cv2.waitKey(2) & 0xFF == ord("q"):
+        #     break
 
     print("Progress: 100 %", flush=True)
     video.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
     # Summary of detections is stored into JSON file (same directory as video file)
     summaryData = recorder.parseJSON()
